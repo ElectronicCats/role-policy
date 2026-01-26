@@ -3,7 +3,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 */
 
-odoo.define("role_policy.role_policy", function(require) {
+odoo.define("role_policy.role_policy", function (require) {
     "use strict";
 
     var AbstractController = require("web.AbstractController");
@@ -14,7 +14,7 @@ odoo.define("role_policy.role_policy", function(require) {
     var session = require("web.session");
 
     KanbanController.include({
-        renderButtons: function() {
+        renderButtons: function () {
             this._super.apply(this, arguments);
             var buttons = {
                 create: "button.o-kanban-button-new",
@@ -43,7 +43,7 @@ odoo.define("role_policy.role_policy", function(require) {
     });
 
     ListController.include({
-        renderSidebar: function($node) {
+        renderSidebar: function ($node) {
             var sidebarProm = this._super($node);
             if (session.exclude_from_role_policy) {
                 return sidebarProm;
@@ -72,7 +72,7 @@ odoo.define("role_policy.role_policy", function(require) {
     });
 
     AbstractController.include({
-        init: function(parent, model, renderer, params) {
+        init: function (parent, model, renderer, params) {
             this._super.apply(this, arguments);
             if (!session.is_admin) {
                 var archiveOperations = session.model_operations.archive;

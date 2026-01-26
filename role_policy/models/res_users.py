@@ -3,8 +3,6 @@
 
 import logging
 
-from lxml import etree
-
 from odoo import api, fields, models
 from odoo.tools import config
 
@@ -42,7 +40,7 @@ class ResUsers(models.Model):
     )
 
     def __init__(self, pool, cr):
-        """ Override of __init__ to add access rights.
+        """Override of __init__ to add access rights.
         Access rights are disabled by default, but allowed on some specific
         fields defined in self.SELF_{READ/WRITE}ABLE_FIELDS.
         """
@@ -147,7 +145,7 @@ class ResUsers(models.Model):
         roles = self.env.user.enabled_role_ids or self.env.user.role_ids
         return code in roles.mapped("code")
 
-    def _get_view(self, view_id=None, view_type='form', **options):
+    def _get_view(self, view_id=None, view_type="form", **options):
         arch, view = super()._get_view(view_id, view_type, **options)
         if view_type == "form" and view_id == self.env.ref("base.view_users_form").id:
             role_categ = self.env.ref("role_policy.ir_module_category_role")

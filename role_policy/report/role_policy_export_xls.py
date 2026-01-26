@@ -39,7 +39,6 @@ class RolePolicyExportXls(models.AbstractModel):
         return ws_params
 
     def _get_ws_params_acl(self, data, role):
-
         acl_template = {
             "name": {
                 "header": {"value": "Name"},
@@ -87,7 +86,6 @@ class RolePolicyExportXls(models.AbstractModel):
         return params
 
     def _export_acl(self, workbook, ws, ws_params, data, role):
-
         ws.set_portrait()
         ws.fit_to_pages(1, 0)
         ws.set_header(self.xls_headers["standard"])
@@ -116,7 +114,6 @@ class RolePolicyExportXls(models.AbstractModel):
             )
 
     def _get_ws_params_menu(self, data, role):
-
         menu_template = {
             "name": {
                 "header": {"value": "Menu"},
@@ -141,7 +138,6 @@ class RolePolicyExportXls(models.AbstractModel):
         return params
 
     def _export_menu(self, workbook, ws, ws_params, data, role):
-
         ws.set_portrait()
         ws.fit_to_pages(1, 0)
         ws.set_header(self.xls_headers["standard"])
@@ -171,7 +167,6 @@ class RolePolicyExportXls(models.AbstractModel):
             )
 
     def _get_ws_params_act_window(self, data, role):
-
         act_window_template = {
             "name": {
                 "header": {"value": "Window Action"},
@@ -196,7 +191,6 @@ class RolePolicyExportXls(models.AbstractModel):
         return params
 
     def _export_act_window(self, workbook, ws, ws_params, data, role):
-
         ws.set_portrait()
         ws.fit_to_pages(1, 0)
         ws.set_header(self.xls_headers["standard"])
@@ -226,7 +220,6 @@ class RolePolicyExportXls(models.AbstractModel):
             )
 
     def _get_ws_params_act_client(self, data, role):
-
         act_client_template = {
             "name": {
                 "header": {"value": "Client Action"},
@@ -251,7 +244,6 @@ class RolePolicyExportXls(models.AbstractModel):
         return params
 
     def _export_act_client(self, workbook, ws, ws_params, data, role):
-
         ws.set_portrait()
         ws.fit_to_pages(1, 0)
         ws.set_header(self.xls_headers["standard"])
@@ -281,7 +273,6 @@ class RolePolicyExportXls(models.AbstractModel):
             )
 
     def _get_ws_params_act_server(self, data, role):
-
         act_server_template = {
             "name": {
                 "header": {"value": "Server Action"},
@@ -306,7 +297,6 @@ class RolePolicyExportXls(models.AbstractModel):
         return params
 
     def _export_act_server(self, workbook, ws, ws_params, data, role):
-
         ws.set_portrait()
         ws.fit_to_pages(1, 0)
         ws.set_header(self.xls_headers["standard"])
@@ -336,7 +326,6 @@ class RolePolicyExportXls(models.AbstractModel):
             )
 
     def _get_ws_params_act_report(self, data, role):
-
         act_report_template = {
             "name": {
                 "header": {"value": "Report Action"},
@@ -361,7 +350,6 @@ class RolePolicyExportXls(models.AbstractModel):
         return params
 
     def _export_act_report(self, workbook, ws, ws_params, data, role):
-
         ws.set_portrait()
         ws.fit_to_pages(1, 0)
         ws.set_header(self.xls_headers["standard"])
@@ -391,7 +379,6 @@ class RolePolicyExportXls(models.AbstractModel):
             )
 
     def _get_ws_params_modifier_rule(self, data, role):
-
         modifier_template = {
             "model": {
                 "header": {"value": "Model"},
@@ -466,7 +453,6 @@ class RolePolicyExportXls(models.AbstractModel):
         return params
 
     def _export_modifier_rule(self, workbook, ws, ws_params, data, role):
-
         ws.set_portrait()
         ws.fit_to_pages(1, 0)
         ws.set_header(self.xls_headers["standard"])
@@ -495,7 +481,6 @@ class RolePolicyExportXls(models.AbstractModel):
             )
 
     def _get_ws_params_view_type_attribute(self, data, role):
-
         view_type_attribute_template = {
             "priority": {
                 "header": {"value": "Prio"},
@@ -550,7 +535,6 @@ class RolePolicyExportXls(models.AbstractModel):
         return params
 
     def _export_view_type_attribute(self, workbook, ws, ws_params, data, role):
-
         ws.set_portrait()
         ws.fit_to_pages(1, 0)
         ws.set_header(self.xls_headers["standard"])
@@ -579,7 +563,6 @@ class RolePolicyExportXls(models.AbstractModel):
             )
 
     def _get_ws_params_model_operation(self, data, role):
-
         model_operation_template = {
             "model": {
                 "header": {"value": "Model"},
@@ -619,7 +602,6 @@ class RolePolicyExportXls(models.AbstractModel):
         return params
 
     def _export_model_operation(self, workbook, ws, ws_params, data, role):
-
         ws.set_portrait()
         ws.fit_to_pages(1, 0)
         ws.set_header(self.xls_headers["standard"])
@@ -648,7 +630,6 @@ class RolePolicyExportXls(models.AbstractModel):
             )
 
     def _get_ws_params_model_method(self, data, role):
-
         method_template = {
             "name": {
                 "header": {"value": "Model,Method"},
@@ -673,7 +654,6 @@ class RolePolicyExportXls(models.AbstractModel):
         return params
 
     def _export_model_method(self, workbook, ws, ws_params, data, role):
-
         ws.set_portrait()
         ws.fit_to_pages(1, 0)
         ws.set_header(self.xls_headers["standard"])

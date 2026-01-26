@@ -124,7 +124,7 @@ class IrUiView(models.Model):
 
     def _apply_view_modifier_rules(self, model, archs_in):
         archs = []
-        for (arch, view_id) in archs_in:
+        for arch, view_id in archs_in:
             view = self.browse(view_id)
             rules = self.env["view.modifier.rule"]._get_rules(
                 model, view_id, view_type=view.type

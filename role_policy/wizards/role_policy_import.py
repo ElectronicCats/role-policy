@@ -426,7 +426,6 @@ class RolePolicyImport(models.TransientModel):
         """placeholder for extra checks"""
 
     def _read_rule_sheet(self, sheet, role, role_field, fields_dict):
-
         header = [f for f in fields_dict]
         match_fields = [
             fields_dict[f]["field"] for f in fields_dict if fields_dict[f].get("match")

@@ -113,8 +113,8 @@ class ViewModifierRule(models.Model):
             raise UserError(errors)
 
     def _resolve_rule_element(self, line_errors):
-        """ return modifier rule element which is equal to element_ui
-            but with replacement of XML Id by DB Id for actions buttons.
+        """return modifier rule element which is equal to element_ui
+        but with replacement of XML Id by DB Id for actions buttons.
         """
         element = element_ui = self.element_ui
         if not element:
