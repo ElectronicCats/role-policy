@@ -22,7 +22,7 @@ class ModelMethodExecutionRight(models.Model):
         )
     ]
 
-    name = fields.Selection(selection="_selection_name", requireed=True)
+    name = fields.Selection(selection="_selection_name", required=True)
     role_id = fields.Many2one(string="Role", comodel_name="res.role", required=True)
     model_id = fields.Many2one(
         comodel_name="ir.model",
