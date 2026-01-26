@@ -3,20 +3,19 @@
 
 {
     "name": "Role Policy",
-    "version": "13.0.1.3.0",
+    "version": "18.0.1.0.0",
     "license": "AGPL-3",
     "author": "Noviat, Odoo Community Association (OCA)",
     "website": "https://github.com/OCA/role-policy",
     "category": "Tools",
     "depends": ["mail", "report_xlsx_helper"],
-    "external_dependencies": {"python": ["lxml", "xlrd"]},
+    "external_dependencies": {"python": ["lxml", "openpyxl"]},
     "maintainers": ["luc-demeyer"],
     "post_init_hook": "post_init_hook",
     "data": [
         "data/ir_module_category_data.xml",
         "security/ir.model.access.csv",
         "security/role_policy_security.xml",
-        "views/assets_backend.xml",
         "views/ir_actions_views.xml",
         "views/ir_ui_menu_views.xml",
         "views/res_groups_views.xml",
@@ -30,5 +29,10 @@
         "wizards/role_policy_import_views.xml",
         "views/menu.xml",
     ],
+    "assets": {
+        "web.assets_backend": [
+            "role_policy/static/src/js/**/*",
+        ],
+    },
     "installable": True,
 }
