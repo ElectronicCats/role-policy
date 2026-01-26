@@ -123,19 +123,20 @@ repos:
       - id: flake8
         name: flake8
         additional_dependencies: ["flake8-bugbear==24.1.17"]
-  - repo: https://github.com/pylint-dev/pylint
-    rev: v3.0.3
-    hooks:
-      - id: pylint
-        name: pylint with optional checks
-        args:
-          - --rcfile=.pylintrc
-          - --exit-zero
-        verbose: true
-        additional_dependencies: &pylint_deps
-          - pylint-odoo==9.0.4
-      - id: pylint
-        name: pylint with mandatory checks
-        args:
-          - --rcfile=.pylintrc-mandatory
-        additional_dependencies: *pylint_deps
+  # Disabled: pylint-odoo does not support Odoo 18 version format yet
+  # - repo: https://github.com/pylint-dev/pylint
+  #   rev: v3.0.3
+  #   hooks:
+  #     - id: pylint
+  #       name: pylint with optional checks
+  #       args:
+  #         - --rcfile=.pylintrc
+  #         - --exit-zero
+  #       verbose: true
+  #       additional_dependencies: &pylint_deps
+  #         - pylint-odoo==9.0.4
+  #     - id: pylint
+  #       name: pylint with mandatory checks
+  #       args:
+  #         - --rcfile=.pylintrc-mandatory
+  #       additional_dependencies: *pylint_deps
