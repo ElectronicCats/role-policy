@@ -6,11 +6,7 @@
         <field name="inherit_id" ref="base.view_users_form" />
         <field name="arch" type="xml">
             <xpath expr="//notebook" position="inside">
-                <page
-                    name="roles"
-                    string="Roles"
-                    invisible="exclude_from_role_policy"
-                >
+                <page name="roles" string="Roles" invisible="exclude_from_role_policy">
                     <group name="roles">
                         <field name="role_ids" widget="many2many_tags" />
                         <field name="enabled_role_ids" widget="many2many_tags" />

@@ -34,26 +34,14 @@
                     readonly="not context.get('base_model_name')"
                     invisible="context.get('base_model_name')"
                 />
-                <field
-                    name="model_id"
-                    readonly="view_type == 'qweb'"
-                    force_save="1"
-                />
+                <field name="model_id" readonly="view_type == 'qweb'" force_save="1" />
                 <field name="model" optional="hide" />
                 <field name="priority" string="Prio" />
                 <field name="view_id" required="remove" />
                 <field name="view_xml_id" optional="hide" />
-                <field
-                    name="view_type"
-                    readonly="view_id"
-                    force_save="1"
-                />
+                <field name="view_type" readonly="view_id" force_save="1" />
                 <field name="element_ui" />
-                <field
-                    name="remove"
-                    readonly="not view_id"
-                    force_save="1"
-                />
+                <field name="remove" readonly="not view_id" force_save="1" />
                 <field name="modifier_invisible" />
                 <field name="modifier_readonly" />
                 <field name="modifier_required" />

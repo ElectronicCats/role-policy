@@ -4,7 +4,6 @@
 import logging
 
 from lxml import etree
-
 from odoo import _, api, models
 from odoo.exceptions import UserError
 from odoo.tools import locate_node, safe_eval

@@ -369,28 +369,36 @@ ul.auto-toc {
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !! source digest: sha256:a2e1a4b780d7185aca64b542a8c92e6680788d1f7f37ae41340e149632602a40
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
-<p><a class="reference external image-reference" href="https://odoo-community.org/page/development-status"><img alt="Beta" src="https://img.shields.io/badge/maturity-Beta-yellow.png" /></a> <a class="reference external image-reference" href="http://www.gnu.org/licenses/agpl-3.0-standalone.html"><img alt="License: AGPL-3" src="https://img.shields.io/badge/licence-AGPL--3-blue.png" /></a> <a class="reference external image-reference" href="https://github.com/OCA/role-policy/tree/13.0/role_policy"><img alt="OCA/role-policy" src="https://img.shields.io/badge/github-OCA%2Frole--policy-lightgray.png?logo=github" /></a> <a class="reference external image-reference" href="https://translation.odoo-community.org/projects/role-policy-13-0/role-policy-13-0-role_policy"><img alt="Translate me on Weblate" src="https://img.shields.io/badge/weblate-Translate%20me-F47D42.png" /></a> <a class="reference external image-reference" href="https://runboat.odoo-community.org/builds?repo=OCA/role-policy&amp;target_branch=13.0"><img alt="Try me on Runboat" src="https://img.shields.io/badge/runboat-Try%20me-875A7B.png" /></a></p>
+<p><a class="reference external image-reference" href="https://odoo-community.org/page/development-status"><img alt="Beta" src="https://img.shields.io/badge/maturity-Beta-yellow.png" /></a> <a class="reference external image-reference" href="http://www.gnu.org/licenses/agpl-3.0-standalone.html"><img alt="License: AGPL-3" src="https://img.shields.io/badge/licence-AGPL--3-blue.png" /></a> <a class="reference external image-reference" href="https://github.com/OCA/role-policy/tree/18.0/role_policy"><img alt="OCA/role-policy" src="https://img.shields.io/badge/github-OCA%2Frole--policy-lightgray.png?logo=github" /></a> <a class="reference external image-reference" href="https://translation.odoo-community.org/projects/role-policy-18-0/role-policy-18-0-role_policy"><img alt="Translate me on Weblate" src="https://img.shields.io/badge/weblate-Translate%20me-F47D42.png" /></a> <a class="reference external image-reference" href="https://runboat.odoo-community.org/builds?repo=OCA/role-policy&amp;target_branch=18.0"><img alt="Try me on Runboat" src="https://img.shields.io/badge/runboat-Try%20me-875A7B.png" /></a></p>
 <p>This module replaces the standard Odoo Security Groups by Roles.</p>
-<p>When installing the module, all security groups are removed from users, actions and menu items.
-When the user interface is loaded, the group definition within the XML screen maps are also ignored.</p>
-<p>A role is equivalent to a group (every role has an associated ‘role group’), but the main difference is the flat nature of a role.
-Due to the hierarchical nature of a group, simple actions like installing a new module or adding a group to e.g. a menu item
-may lead to automatic and uncontrolled granting of security rights.</p>
-<p>With this approach, every right must be granted explicitely to every role.
-This implies an extra management cost which can be high and hence we advice to do a risk calculation before
-implementing this module.</p>
-<p>In order to keep the cost of maintaining the security policies to an acceptable level, the module has an Excel export/import function.</p>
-<p>Creating a new role is as simple as exporting an existing one.
-In the export file, rights can be added/removed and the result can be reimported in a new role.</p>
-<p>From a technical standpoint, this module does not make any changes to the Odoo kernel.
-The role groups are used to enforce the security policy.</p>
+<p>When installing the module, all security groups are removed from users,
+actions and menu items. When the user interface is loaded, the group
+definition within the XML screen maps are also ignored.</p>
+<p>A role is equivalent to a group (every role has an associated ‘role
+group’), but the main difference is the flat nature of a role. Due to
+the hierarchical nature of a group, simple actions like installing a new
+module or adding a group to e.g. a menu item may lead to automatic and
+uncontrolled granting of security rights.</p>
+<p>With this approach, every right must be granted explicitely to every
+role. This implies an extra management cost which can be high and hence
+we advice to do a risk calculation before implementing this module.</p>
+<p>In order to keep the cost of maintaining the security policies to an
+acceptable level, the module has an Excel export/import function.</p>
+<p>Creating a new role is as simple as exporting an existing one. In the
+export file, rights can be added/removed and the result can be
+reimported in a new role.</p>
+<p>From a technical standpoint, this module does not make any changes to
+the Odoo kernel. The role groups are used to enforce the security
+policy.</p>
 <div class="section" id="default-access-rights-on-menus-actions-fields">
 <h1>Default Access Rights on Menus, Actions &amp; Fields</h1>
-<p>The standard Odoo approach is to give users access to all menu items and action bindings without a security group.
-This approach is changed by this module. Note: client actions can be added too!
-Every menu item and action binding must be added explicitely to a role in order to be available for the user.</p>
-<p>All standard groups are removed from the menus and actions except the ‘untouchable groups’.
-These are defaulted to:</p>
+<p>The standard Odoo approach is to give users access to all menu items and
+action bindings without a security group. This approach is changed by
+this module. Note: client actions can be added too! Every menu item and
+action binding must be added explicitely to a role in order to be
+available for the user.</p>
+<p>All standard groups are removed from the menus and actions except the
+‘untouchable groups’. These are defaulted to:</p>
 <ul class="simple">
 <li>base.group_no_one</li>
 <li>base.group_erp_manager</li>
@@ -401,20 +409,21 @@ These are defaulted to:</p>
 </div>
 <div class="section" id="default-access-rights-on-views">
 <h1>Default Access Rights on Views</h1>
-<p>In the current version of this module, view access is as a consequence secured by a combination of:</p>
+<p>In the current version of this module, view access is as a consequence
+secured by a combination of:</p>
 <ul class="simple">
 <li>view model ACLs</li>
 <li>action bindings</li>
 <li>menu items</li>
 </ul>
-<p>Also the groups inside view architecture are removed at view loading time.</p>
-<p>In order to compensate for the capability to add groups on view elements a new
-attribute has been added: “roles” with attritue value a list of role codes.</p>
-<p>The roles attribute works similar as the groups attribute:
-the view element will be removed if a user does not belong to one of the specified roles.</p>
-<div class="line-block">
-<div class="line"><br /></div>
-</div>
+<p>Also the groups inside view architecture are removed at view loading
+time.</p>
+<p>In order to compensate for the capability to add groups on view elements
+a new attribute has been added: “roles” with attritue value a list of
+role codes.</p>
+<p>The roles attribute works similar as the groups attribute: the view
+element will be removed if a user does not belong to one of the
+specified roles.</p>
 <p>Syntax:</p>
 <pre class="code xml literal-block">
 <span class="nt">&lt;button</span><span class="w"> </span><span class="na">roles=</span><span class="s">&quot;R1, R2&quot;</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;button_name&quot;</span><span class="w"> </span><span class="na">type=</span><span class="s">&quot;object&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
@@ -423,30 +432,49 @@ the view element will be removed if a user does not belong to one of the specifi
 </div>
 <div class="section" id="view-modifier-rules">
 <h1>View Modifier Rules</h1>
-<p>The biggest difference is probably the ‘View Modifier Rules’ part which replaces the standard view inheritance mechanism when
-e.g. some fields need to be hidden for certain roles.
-The View Modifier Rules have a <em>priority</em> field which determines the winning rule in case you grant multiple roles to a single user.</p>
-<p>Combined roles may lead to unexpected results for the end user.
-E.g. a user can have access to a button in a certain role but loose that access in a combined role.</p>
-<p>A user with multiple roles is recommended to select the enabled role via his <em>Preferences</em> (by default, all his roles are combined).</p>
-<p>The view/view element approach is different from the other role policy rules in the sense that every view/view element is sent to the user interface since the standard security groups are removed at view rendering time. We do not want to introduce the administrative burden to define every view/view element explicitly in the role.
-As a consequence, unwanted view or view elements must be removed via the <em>remove</em> option.</p>
-<p>The difference between <em>Invisible</em> and <em>Remove</em> is essential since <em>Invisible</em> implies that the user needs ACL access to the field that should not be rendered.</p>
-<p>The View Modifier Rules also allow to set the modifiers of a certain element without specifying a view, e.g. to hide a certain field for all views on an object.
-This can be further refined by applying a specific view type. The <em>Remove</em> option is not allowed without defining a view.</p>
-<p>Since complex environments may have a large number of View Modifier Rules, this module allows to load a large ruleset without syntax checking.
-Hence loading a new role from Excel may result in screen errors for the concerned users. A syntax check button will be made available in order to check the syntax with autocorrection where feasible.</p>
+<p>The biggest difference is probably the ‘View Modifier Rules’ part which
+replaces the standard view inheritance mechanism when e.g. some fields
+need to be hidden for certain roles. The View Modifier Rules have a
+<em>priority</em> field which determines the winning rule in case you grant
+multiple roles to a single user.</p>
+<p>Combined roles may lead to unexpected results for the end user. E.g. a
+user can have access to a button in a certain role but loose that access
+in a combined role.</p>
+<p>A user with multiple roles is recommended to select the enabled role via
+his <em>Preferences</em> (by default, all his roles are combined).</p>
+<p>The view/view element approach is different from the other role policy
+rules in the sense that every view/view element is sent to the user
+interface since the standard security groups are removed at view
+rendering time. We do not want to introduce the administrative burden to
+define every view/view element explicitly in the role. As a consequence,
+unwanted view or view elements must be removed via the <em>remove</em> option.</p>
+<p>The difference between <em>Invisible</em> and <em>Remove</em> is essential since
+<em>Invisible</em> implies that the user needs ACL access to the field that
+should not be rendered.</p>
+<p>The View Modifier Rules also allow to set the modifiers of a certain
+element without specifying a view, e.g. to hide a certain field for all
+views on an object. This can be further refined by applying a specific
+view type. The <em>Remove</em> option is not allowed without defining a view.</p>
+<p>Since complex environments may have a large number of View Modifier
+Rules, this module allows to load a large ruleset without syntax
+checking. Hence loading a new role from Excel may result in screen
+errors for the concerned users. A syntax check button will be made
+available in order to check the syntax with autocorrection where
+feasible.</p>
 </div>
 <div class="section" id="view-type-attribute-rules">
 <h1>View Type Attribute Rules</h1>
-<p>With this feature the view type attributes such as create, edit, delete, duplicate, import, export_xlsx become role-based.
-Any such attribute can be replaced with these rules (e.g. role based decoration-%).</p>
+<p>With this feature the view type attributes such as create, edit, delete,
+duplicate, import, export_xlsx become role-based. Any such attribute can
+be replaced with these rules (e.g. role based decoration-%).</p>
 </div>
 <div class="section" id="view-model-operation-rules">
 <h1>View Model Operation Rules</h1>
-<p>With this feature a number of operations for the selected models become role-based.
-Defining these operations will have an effect on all views defined on the model.</p>
-<p>You can also set defaults for all models by specifying <em>default</em> as the model name.</p>
+<p>With this feature a number of operations for the selected models become
+role-based. Defining these operations will have an effect on all views
+defined on the model.</p>
+<p>You can also set defaults for all models by specifying <em>default</em> as the
+model name.</p>
 <p>Supported Operations:</p>
 <ul class="simple">
 <li>create</li>
@@ -460,14 +488,17 @@ Defining these operations will have an effect on all views defined on the model.
 </div>
 <div class="section" id="model-methods">
 <h1>Model Methods</h1>
-<p>Via the “Model Methods” tab, you can grant execution rights to a set of predefined methods on ORM models.</p>
+<p>Via the “Model Methods” tab, you can grant execution rights to a set of
+predefined methods on ORM models.</p>
 <p>The <em>role_policy</em> base module provides the framework for this feature.
-Application-specific modules are required to extend the predefined set of methods.</p>
-<p>Adding extra methods requires only a few lines of code.
-It consists of extending a selection list with the Model Method,
-adding a role_policy lookup to the method and pass the <em>role_policy_has_groups_ok</em> context.</p>
-<p>e.g. the module <em>role_policy_account</em> adds the account.move,post method to this list</p>
-<pre class="code literal-block">
+Application-specific modules are required to extend the predefined set
+of methods.</p>
+<p>Adding extra methods requires only a few lines of code. It consists of
+extending a selection list with the Model Method, adding a role_policy
+lookup to the method and pass the <em>role_policy_has_groups_ok</em> context.</p>
+<p>e.g. the module <em>role_policy_account</em> adds the account.move,post method
+to this list</p>
+<pre class="literal-block">
 class AccountMove(models.Model):
     _inherit = &quot;account.move&quot;
 
@@ -479,25 +510,31 @@ class AccountMove(models.Model):
         self = self.with_context(ctx)
         return super().post()
 </pre>
-<p>Methods defined in this set are available only for those roles which have added them in the <em>Model Methods</em> notebook page.</p>
+<p>Methods defined in this set are available only for those roles which
+have added them in the <em>Model Methods</em> notebook page.</p>
 </div>
 <div class="section" id="combined-roles-role-policy-selector">
 <h1>Combined Roles - Role Policy Selector</h1>
-<p>Combined roles may lead to unexpected results for the end user.
-E.g. a user can have access to a button in a certain role but loose that access in a combined role.</p>
-<p>The following rules have a priority field which determines the winning rule in case you grant multiple roles to a single user:</p>
+<p>Combined roles may lead to unexpected results for the end user. E.g. a
+user can have access to a button in a certain role but loose that access
+in a combined role.</p>
+<p>The following rules have a priority field which determines the winning
+rule in case you grant multiple roles to a single user:</p>
 <ul class="simple">
 <li>View Modifier Rules</li>
 <li>View Type Attribute Rules</li>
 <li>View Model Operation Rules</li>
 </ul>
-<p>whereby no rule for one of the user roles is considered highest priority.</p>
-<p>This logic makes sense in certain business scenarios but can be completely faulty for other use cases.
-In reality it’s impossible to come to a maintainable set of roles and configure all possible use cases
+<p>whereby no rule for one of the user roles is considered highest
+priority.</p>
+<p>This logic makes sense in certain business scenarios but can be
+completely faulty for other use cases. In reality it’s impossible to
+come to a maintainable set of roles and configure all possible use cases
 for combined roles.</p>
 <p>In a large organisation new roles will be added on a regular basis.
-Maintaining a consistent set of rules so that this new role can be combined with all existing roles leads to millions of
-combinations hence impossible to maintain.</p>
+Maintaining a consistent set of rules so that this new role can be
+combined with all existing roles leads to millions of combinations hence
+impossible to maintain.</p>
 <p>A concrete example to illustrate the winning rule logic:</p>
 <pre class="literal-block">
 Let's assume we have three roles: Back Office Sales (BO), Sales Manager (SM), Finance Manager (FM)
@@ -518,11 +555,15 @@ change the Sale Order partner_id field because no rule for one of the user roles
 But if we now add the partner_id rule to the SM role with readonly=0 and standard priority 16, than we get
 as result that the SM can update the partner_id in his SM role but looses this capability in the combined SM/BO role.
 </pre>
-<p>These types of conflicts should be resolved by either the creation of a new role, hence avoiding the need for combined roles.</p>
-<p>In case someone needs to take over the activities of a colleague on temporarily basis, the creation of a new role is not realistic.</p>
+<p>These types of conflicts should be resolved by either the creation of a
+new role, hence avoiding the need for combined roles.</p>
+<p>In case someone needs to take over the activities of a colleague on
+temporarily basis, the creation of a new role is not realistic.</p>
 <p>For that purpose the <strong>Role Policy Selector</strong> should be used.</p>
-<p>Via the ‘My Profile’ form, the user can select his ‘Enabled Roles’ as a subset of the roles that he is entitled to.
-By doing so he will get access to the capabilities of the Enabled Role(s) and not the combination of all his roles.</p>
+<p>Via the ‘My Profile’ form, the user can select his ‘Enabled Roles’ as a
+subset of the roles that he is entitled to. By doing so he will get
+access to the capabilities of the Enabled Role(s) and not the
+combination of all his roles.</p>
 </div>
 <div class="section" id="admin-user">
 <h1>Admin User</h1>
@@ -531,62 +572,79 @@ By doing so he will get access to the capabilities of the Enabled Role(s) and no
 <li>base.user_admin</li>
 <li>base.user_root</li>
 </ul>
-<p>This is done to avoid that the admin user can no longer correct mistakes (e.g. when disabling edit on res.users).</p>
-<p>From a security standpoint it is recommended to use the admin account (base.user_admin) only in exceptional circumstances
-and create other accounts with administration rights to maintain the Odoo configuration.</p>
+<p>This is done to avoid that the admin user can no longer correct mistakes
+(e.g. when disabling edit on res.users).</p>
+<p>From a security standpoint it is recommended to use the admin account
+(base.user_admin) only in exceptional circumstances and create other
+accounts with administration rights to maintain the Odoo configuration.</p>
 </div>
 <div class="section" id="user-types-internal-user">
 <h1>User Types / Internal User</h1>
-<p>In the current implementation of this module every user is added to the standard ‘base.group_user (User Types / Internal User)’ security group.
-Most Odoo modules are adding new objects as well as ACLs on those new objects.
-In many cases those standard ACLs are set for this base.group_user* group.</p>
-<p>This may result in too many rights being granted to users, since from an ACL standpoint new users receive the combined rights
-of the <em>group.group_user</em> ACLs and the ACLs of their role(s).</p>
-<p>A removal of regular users from the ‘base.group_user’ group is currently under investigation.</p>
+<p>In the current implementation of this module every user is added to the
+standard ‘base.group_user (User Types / Internal User)’ security group.
+Most Odoo modules are adding new objects as well as ACLs on those new
+objects. In many cases those standard ACLs are set for this
+base.group_user* group.</p>
+<p>This may result in too many rights being granted to users, since from an
+ACL standpoint new users receive the combined rights of the
+<em>group.group_user</em> ACLs and the ACLs of their role(s).</p>
+<p>A removal of regular users from the ‘base.group_user’ group is currently
+under investigation.</p>
 </div>
 <div class="section" id="acls">
 <h1>ACLs</h1>
-<p>The only objects that are available when creating a new user are the objects with a:</p>
+<p>The only objects that are available when creating a new user are the
+objects with a:</p>
 <ul class="simple">
-<li>global ACL (e.g. res_country group_user_all which grants read access on res.country)</li>
-<li><em>base.group_user</em> ACL (e.g. ir_ui_menu group_user which grants read access on ir.ui.menu)</li>
+<li>global ACL (e.g. res_country group_user_all which grants read access
+on res.country)</li>
+<li><em>base.group_user</em> ACL (e.g. ir_ui_menu group_user which grants read
+access on ir.ui.menu)</li>
 </ul>
-<p>When adding a user to one or more roles, this user will also get all the ACL rights defined within his role(s).</p>
+<p>When adding a user to one or more roles, this user will also get all the
+ACL rights defined within his role(s).</p>
 </div>
 <div class="section" id="multi-company-setup">
 <h1>Multi-Company Setup</h1>
-<p>Roles can be shared between companies.
-In order to do so, you should adapt the default function on the res.role, company_id field.</p>
+<p>Roles can be shared between companies. In order to do so, you should
+adapt the default function on the res.role, company_id field.</p>
 </div>
 <div class="section" id="import-export">
 <h1>Import / Export</h1>
-<p>You can change an exported policy file to update a role or create a new role.</p>
-<p>In order to remove entries, you should put ‘X’ in the column with ‘Delete Entry’ as column header.</p>
+<p>You can change an exported policy file to update a role or create a new
+role.</p>
+<p>In order to remove entries, you should put ‘X’ in the column with
+‘Delete Entry’ as column header.</p>
 <p>Any rows starting with ‘#’ will be ignored during the import.</p>
 </div>
 <div class="section" id="standard-groups-removal">
 <h1>Standard Groups Removal</h1>
-<p>The removal of the standard groups may result in unexpected behaviour since there are several modules
-that use the standard groups hardcoded in python.</p>
+<p>The removal of the standard groups may result in unexpected behaviour
+since there are several modules that use the standard groups hardcoded
+in python.</p>
 <p>Example= in the Sale module we find the following code block:</p>
-<pre class="code literal-block">
+<pre class="literal-block">
 def _compute_sales_count(self):
     r = {}
     self.sales_count = 0
     if not self.user_has_groups('sales_team.group_sale_salesman'):
         return r
 </pre>
-<p>This is not clean from a security administration standpoint, but it is the reality that companies using this module
-have to cope with.
-Only an experienced Odoo developer is able to find out and fix issues caused by this practice.</p>
-<p>It is the intention to create a set of auto-install modules, called <em>role_policy_X</em> where <em>X</em> is the name of the module
-where the methods with such a coding practice have been adapted. This way, the security officer can configure the roles
-without depending heavily on Odoo development skills.</p>
+<p>This is not clean from a security administration standpoint, but it is
+the reality that companies using this module have to cope with. Only an
+experienced Odoo developer is able to find out and fix issues caused by
+this practice.</p>
+<p>It is the intention to create a set of auto-install modules, called
+<em>role_policy_X</em> where <em>X</em> is the name of the module where the methods
+with such a coding practice have been adapted. This way, the security
+officer can configure the roles without depending heavily on Odoo
+development skills.</p>
 <p>Cf. role_policy_sale as an example.</p>
 </div>
 <div class="section" id="demo-database">
 <h1>Demo Database</h1>
-<p>You can install the <em>role_policy_demo</em> module in order to get a better feeling on how this module works.</p>
+<p>You can install the <em>role_policy_demo</em> module in order to get a better
+feeling on how this module works.</p>
 <p><strong>Table of contents</strong></p>
 <div class="contents local topic" id="contents">
 <ul class="simple">
@@ -598,7 +656,8 @@ without depending heavily on Odoo development skills.</p>
 </div>
 <div class="section" id="configuration">
 <h2><a class="toc-backref" href="#toc-entry-1">Configuration</a></h2>
-<p>You will find a demonstration about how to configure and use this module in this <a class="reference external" href="https://youtu.be/uKnCnZhX2KM">screencast</a>.</p>
+<p>You will find a demonstration about how to configure and use this module
+in this <a class="reference external" href="https://youtu.be/uKnCnZhX2KM">screencast</a>.</p>
 </div>
 <div class="section" id="known-issues-roadmap">
 <h2><a class="toc-backref" href="#toc-entry-2">Known issues / Roadmap</a></h2>
@@ -621,7 +680,7 @@ without depending heavily on Odoo development skills.</p>
 <p>Bugs are tracked on <a class="reference external" href="https://github.com/OCA/role-policy/issues">GitHub Issues</a>.
 In case of trouble, please check there if your issue has already been reported.
 If you spotted it first, help us to smash it by providing a detailed and welcomed
-<a class="reference external" href="https://github.com/OCA/role-policy/issues/new?body=module:%20role_policy%0Aversion:%2013.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**">feedback</a>.</p>
+<a class="reference external" href="https://github.com/OCA/role-policy/issues/new?body=module:%20role_policy%0Aversion:%2018.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**">feedback</a>.</p>
 <p>Do not contact contributors directly about support or help with technical issues.</p>
 </div>
 <div class="section" id="credits">
@@ -657,7 +716,7 @@ mission is to support the collaborative development of Odoo features and
 promote its widespread use.</p>
 <p>Current <a class="reference external" href="https://odoo-community.org/page/maintainer-role">maintainer</a>:</p>
 <p><a class="reference external image-reference" href="https://github.com/luc-demeyer"><img alt="luc-demeyer" src="https://github.com/luc-demeyer.png?size=40px" /></a></p>
-<p>This module is part of the <a class="reference external" href="https://github.com/OCA/role-policy/tree/13.0/role_policy">OCA/role-policy</a> project on GitHub.</p>
+<p>This module is part of the <a class="reference external" href="https://github.com/OCA/role-policy/tree/18.0/role_policy">OCA/role-policy</a> project on GitHub.</p>
 <p>You are welcome to contribute. To learn how please visit <a class="reference external" href="https://odoo-community.org/page/Contribute">https://odoo-community.org/page/Contribute</a>.</p>
 </div>
 </div>

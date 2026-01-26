@@ -7,9 +7,8 @@ import os
 import time
 from io import BytesIO
 
-from openpyxl import load_workbook
-
 from odoo import _, api, fields, models
+from openpyxl import load_workbook
 
 _logger = logging.getLogger(__name__)
 

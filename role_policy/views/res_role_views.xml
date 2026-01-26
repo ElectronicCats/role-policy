@@ -44,8 +44,7 @@
                             string="Export"
                             help="Export Role Policy to Excel"
                             icon="fa-download"
-                        >
-            </button>
+                        />
                         <button
                             class="oe_stat_button"
                             name="import_policy"
@@ -60,10 +59,7 @@
                             name="toggle_active"
                             icon="fa-archive"
                         >
-                            <field
-                                name="active"
-                                widget="boolean_toggle"
-                            />
+                            <field name="active" widget="boolean_toggle" />
                         </button>
                     </div>
                     <group name="main">
@@ -158,7 +154,7 @@
                             <p>
                 This functionality is planned for a later release.<br />
                 In the meanwhile define your record rules by using the Role Groups via Settings -> Technical -> Security -> Record Rules.<br
-                                />
+                            />
               </p>
                         </page>
                         <page string="Users">

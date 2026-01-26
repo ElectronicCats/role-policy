@@ -202,8 +202,8 @@ class ResRole(models.Model):
         return res
 
     def export_xls(self):
-        report_file = "role_policy_{}_{}".format(
-            self.code, fields.Date.to_string(fields.Date.today())
+        report_file = (
+            f"role_policy_{self.code}_{fields.Date.to_string(fields.Date.today())}"
         )
         report_name = "role_policy.export_xls"
         report = {

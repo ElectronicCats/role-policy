@@ -1,16 +1,18 @@
-from . import base
-from . import role_policy_menu_action_common
-from . import ir_actions
-from . import ir_http
-from . import ir_model_access
-from . import ir_ui_menu
-from . import ir_ui_view
-from . import model_method_execution_right
-from . import res_groups
-from . import res_role
-from . import res_role_acl
-from . import res_users
-from . import security_policy_tag
-from . import view_model_operation
-from . import view_modifier_rule
-from . import view_type_attribute
+from . import (
+    base,
+    ir_actions,
+    ir_http,
+    ir_model_access,
+    ir_ui_menu,
+    ir_ui_view,
+    model_method_execution_right,
+    res_groups,
+    res_role,
+    res_role_acl,
+    res_users,
+    role_policy_menu_action_common,
+    security_policy_tag,
+    view_model_operation,
+    view_modifier_rule,
+    view_type_attribute,
+)

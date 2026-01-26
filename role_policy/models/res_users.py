@@ -4,9 +4,8 @@
 import logging
 
 from odoo import api, fields, models
-from odoo.tools import config
-
 from odoo.addons.base.models.res_users import Users as ResUsersBase
+from odoo.tools import config
 
 from .helpers import diff_to_odoo_x2many_commands, play_odoo_x2x_commands_on_ids
 
@@ -149,8 +148,8 @@ class ResUsers(models.Model):
         arch, view = super()._get_view(view_id, view_type, **options)
         if view_type == "form" and view_id == self.env.ref("base.view_users_form").id:
             role_categ = self.env.ref("role_policy.ir_module_category_role")
-            expr = "//page[@name='access_rights']//separator[@string='{}']".format(
-                role_categ.name
+            expr = (
+                f"//page[@name='access_rights']//separator[@string='{role_categ.name}']"
             )
             role_node = arch.xpath(expr)
             if role_node:

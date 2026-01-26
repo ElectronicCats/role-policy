@@ -17,22 +17,23 @@ Role Policy HR Expenses
     :target: http://www.gnu.org/licenses/agpl-3.0-standalone.html
     :alt: License: AGPL-3
 .. |badge3| image:: https://img.shields.io/badge/github-OCA%2Frole--policy-lightgray.png?logo=github
-    :target: https://github.com/OCA/role-policy/tree/13.0/role_policy_hr_expense
+    :target: https://github.com/OCA/role-policy/tree/18.0/role_policy_hr_expense
     :alt: OCA/role-policy
 .. |badge4| image:: https://img.shields.io/badge/weblate-Translate%20me-F47D42.png
-    :target: https://translation.odoo-community.org/projects/role-policy-13-0/role-policy-13-0-role_policy_hr_expense
+    :target: https://translation.odoo-community.org/projects/role-policy-18-0/role-policy-18-0-role_policy_hr_expense
     :alt: Translate me on Weblate
 .. |badge5| image:: https://img.shields.io/badge/runboat-Try%20me-875A7B.png
-    :target: https://runboat.odoo-community.org/builds?repo=OCA/role-policy&target_branch=13.0
+    :target: https://runboat.odoo-community.org/builds?repo=OCA/role-policy&target_branch=18.0
     :alt: Try me on Runboat
 
 |badge1| |badge2| |badge3| |badge4| |badge5|
 
-This module is recommended when using the *role_policy* app in combination with the Odoo standard addons hr module.
+This module is recommended when using the *role_policy* app in
+combination with the Odoo standard addons hr module.
 
-|
-
-When this module is installed the expense notes will be available for all internal users without the need to add the menu items for expenses to his role.
+When this module is installed the expense notes will be available for
+all internal users without the need to add the menu items for expenses
+to his role.
 
 **Table of contents**
 
@@ -45,7 +46,7 @@ Bug Tracker
 Bugs are tracked on `GitHub Issues <https://github.com/OCA/role-policy/issues>`_.
 In case of trouble, please check there if your issue has already been reported.
 If you spotted it first, help us to smash it by providing a detailed and welcomed
-`feedback <https://github.com/OCA/role-policy/issues/new?body=module:%20role_policy_hr_expense%0Aversion:%2013.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
+`feedback <https://github.com/OCA/role-policy/issues/new?body=module:%20role_policy_hr_expense%0Aversion:%2018.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
 
 Do not contact contributors directly about support or help with technical issues.
 
@@ -53,17 +54,17 @@ Credits
 =======
 
 Authors
-~~~~~~~
+-------
 
 * Noviat
 
 Contributors
-~~~~~~~~~~~~
+------------
 
-* Luc De Meyer <luc.demeyer@noviat.com>
+- Luc De Meyer <luc.demeyer@noviat.com>
 
 Maintainers
-~~~~~~~~~~~
+-----------
 
 This module is maintained by the OCA.
 
@@ -83,6 +84,6 @@ Current `maintainer <https://odoo-community.org/page/maintainer-role>`__:
 
 |maintainer-luc-demeyer| 
 
-This module is part of the `OCA/role-policy <https://github.com/OCA/role-policy/tree/13.0/role_policy_hr_expense>`_ project on GitHub.
+This module is part of the `OCA/role-policy <https://github.com/OCA/role-policy/tree/18.0/role_policy_hr_expense>`_ project on GitHub.
 
 You are welcome to contribute. To learn how please visit https://odoo-community.org/page/Contribute.
