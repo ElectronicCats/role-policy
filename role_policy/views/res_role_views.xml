@@ -62,8 +62,7 @@
                         >
                             <field
                                 name="active"
-                                widget="boolean_button"
-                                options="{'terminology': 'archive'}"
+                                widget="boolean_toggle"
                             />
                         </button>
                     </div>
@@ -166,9 +165,7 @@
                             <field name="user_ids" id="user_ids" />
                         </page>
                     </notebook>
-                    <div class="oe_chatter">
-                        <field name="message_ids" widget="mail_thread" />
-                    </div>
+                    <chatter />
                 </sheet>
             </form>
         </field>
