@@ -4,20 +4,20 @@ with open('VERSION.txt', 'r') as f:
     version = f.read().strip()
 
 setuptools.setup(
-    name="odoo13-addons-oca-role-policy",
+    name="odoo18-addons-oca-role-policy",
     description="Meta package for oca-role-policy Odoo addons",
     version=version,
     install_requires=[
-        'odoo13-addon-role_policy',
-        'odoo13-addon-role_policy_account',
-        'odoo13-addon-role_policy_demo',
-        'odoo13-addon-role_policy_hr',
-        'odoo13-addon-role_policy_hr_expense',
-        'odoo13-addon-role_policy_sale',
+        'odoo18-addon-role_policy',
+        'odoo18-addon-role_policy_account',
+        'odoo18-addon-role_policy_demo',
+        'odoo18-addon-role_policy_hr',
+        'odoo18-addon-role_policy_hr_expense',
+        'odoo18-addon-role_policy_sale',
     ],
     classifiers=[
         'Programming Language :: Python',
         'Framework :: Odoo',
-        'Framework :: Odoo :: 13.0',
+        'Framework :: Odoo :: 18.0',
     ]
 )
