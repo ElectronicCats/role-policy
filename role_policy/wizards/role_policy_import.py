@@ -92,7 +92,7 @@ class RolePolicyImport(models.TransientModel):
         self = self.with_context(skip_checks=self.skip_checks)
         time_start = time.time()
         role = self.env["res.role"].browse(self.env.context["active_id"])
-        data = base64.decodestring(self.policy_data)
+        data = base64.decodebytes(self.policy_data)
         if self.file_type in ["xls", "xlsx"]:
             err_log = self._read_xls(data, role)
         else:
@@ -126,7 +126,7 @@ class RolePolicyImport(models.TransientModel):
             }
         else:
             import_time = time.time() - time_start
-            _logger.warn("Role %s import time = %.3f seconds", role.name, import_time)
+            _logger.warning("Role %s import time = %.3f seconds", role.name, import_time)
             return {"type": "ir.actions.act_window_close"}
 
     def _read_xls(self, data, role):
@@ -363,7 +363,7 @@ class RolePolicyImport(models.TransientModel):
         )
 
     def _check_view_type_attribute_vals(self, vals, line_errors):
-        """ placeholder for exra checks """
+        """placeholder for extra checks"""
 
     def _read_model_operation(self, sheet, role):
         fields_dict = {
@@ -386,7 +386,7 @@ class RolePolicyImport(models.TransientModel):
         return self._read_rule_sheet(sheet, role, "model_operation_ids", fields_dict)
 
     def _check_model_operation_vals(self, vals, line_errors):
-        """ placeholder for exra checks """
+        """placeholder for extra checks"""
 
     def _read_model_method(self, sheet, role):
         fields_dict = {
@@ -401,7 +401,7 @@ class RolePolicyImport(models.TransientModel):
         return self._read_rule_sheet(sheet, role, "model_method_ids", fields_dict)
 
     def _check_model_method_vals(self, vals, line_errors):
-        """ placeholder for exra checks """
+        """placeholder for extra checks"""
 
     def _read_rule_sheet(self, sheet, role, role_field, fields_dict):
 
