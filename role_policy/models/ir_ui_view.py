@@ -151,7 +151,7 @@ class IrUiView(models.Model):
                 if not rule_node:
                     continue
                 rule_node = rule_node[0]
-                attrs = []
+                # Remove deprecated attrs attribute (Odoo 17+)
                 rule_node.attrib.pop("attrs", None)
                 for mod in [
                     "modifier_invisible",
@@ -164,16 +164,15 @@ class IrUiView(models.Model):
                     if rule_mod in ["0", "1"]:
                         rule_node.set(modifier, rule_mod)
                     elif rule_mod:
-                        attrs.append((modifier, rule_mod))
+                        # In Odoo 18, domain expressions go directly as
+                        # modifier attribute values (attrs is deprecated)
+                        rule_node.set(modifier, rule_mod)
                     if (
                         mod == "modifier_readonly"
                         and rule_node.tag == "field"
                         and rule_mod
                     ):
                         rule_node.set("force_save", "1")
-                if attrs:
-                    attrs = ", ".join([f"'{x[0]}': {x[1]}" for x in attrs])
-                    rule_node.set("attrs", "{" + attrs + "}")
                 arch = etree.tostring(arch_node, encoding="unicode")
             archs.append((arch, view_id))
         return archs
