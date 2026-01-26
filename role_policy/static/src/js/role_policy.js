@@ -1,91 +1,133 @@
+/** @odoo-module **/
 /*
-# Copyright 2020 Noviat.
-# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-*/
+ * Copyright 2020-2024 Noviat.
+ * License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+ */
 
-odoo.define("role_policy.role_policy", function (require) {
-    "use strict";
+import {KanbanController} from "@web/views/kanban/kanban_controller";
+import {ListController} from "@web/views/list/list_controller";
+import {patch} from "@web/core/utils/patch";
+import {session} from "@web/session";
 
-    var AbstractController = require("web.AbstractController");
-    var KanbanController = require("web.KanbanController");
-    var ListController = require("web.ListController");
-    var core = require("web.core");
-    var _t = core._t;
-    var session = require("web.session");
+/**
+ * Role Policy patches for Odoo 18
+ * These patches control visibility of buttons based on role policy settings
+ */
 
-    KanbanController.include({
-        renderButtons: function () {
-            this._super.apply(this, arguments);
-            var buttons = {
-                create: "button.o-kanban-button-new",
-                import: "button.o_button_import",
-            };
-            if (!session.exclude_from_role_policy) {
-                for (var button in buttons) {
-                    var Operations = session.model_operations[button];
-                    var hideButton = false;
-                    if (this.modelName in Operations) {
-                        hideButton = Operations[this.modelName];
-                    } else if ("default" in Operations) {
-                        hideButton = Operations.default;
-                    }
-                    if (hideButton) {
-                        var toHide = this.$buttons
-                            ? this.$buttons.find(buttons[button])
-                            : false;
-                        if (toHide) {
-                            toHide.hide();
-                        }
-                    }
-                }
+// Patch KanbanController to handle create/import button visibility
+patch(KanbanController.prototype, {
+    setup() {
+        super.setup(...arguments);
+        this._applyRolePolicyRestrictions();
+    },
+
+    _applyRolePolicyRestrictions() {
+        if (session.exclude_from_role_policy) {
+            return;
+        }
+        const modelOperations = session.model_operations || {};
+
+        // Check create operation
+        if (modelOperations.create) {
+            const createOps = modelOperations.create;
+            if (this.props.resModel in createOps) {
+                this._rolePolicyHideCreate = createOps[this.props.resModel];
+            } else if ("default" in createOps) {
+                this._rolePolicyHideCreate = createOps.default;
             }
-        },
-    });
+        }
 
-    ListController.include({
-        renderSidebar: function ($node) {
-            var sidebarProm = this._super($node);
-            if (session.exclude_from_role_policy) {
-                return sidebarProm;
+        // Check import operation
+        if (modelOperations.import) {
+            const importOps = modelOperations.import;
+            if (this.props.resModel in importOps) {
+                this._rolePolicyHideImport = importOps[this.props.resModel];
+            } else if ("default" in importOps) {
+                this._rolePolicyHideImport = importOps.default;
             }
-            var exportOperations = session.model_operations.export;
-            var removeExport = false;
-            if (this.modelName in exportOperations) {
-                removeExport = exportOperations[this.modelName];
-            } else if ("default" in exportOperations) {
-                removeExport = exportOperations.default;
-            }
-            if (removeExport) {
-                var exportLabel = _t("Export");
-                var other = this.sidebar.items.other;
-                var otherNew = [];
-                for (var i = 0; i < other.length; i++) {
-                    if (other[i].label !== exportLabel) {
-                        otherNew.push(other[i]);
-                    }
-                }
-                this.sidebar.items.other = otherNew;
-            }
+        }
+    },
 
-            return sidebarProm;
-        },
-    });
+    get canCreate() {
+        if (this._rolePolicyHideCreate) {
+            return false;
+        }
+        return super.canCreate;
+    },
+});
 
-    AbstractController.include({
-        init: function (parent, model, renderer, params) {
-            this._super.apply(this, arguments);
-            if (!session.is_admin) {
-                var archiveOperations = session.model_operations.archive;
-                var removeArchive = false;
-                if (this.modelName in archiveOperations) {
-                    removeArchive = archiveOperations[this.modelName];
-                } else if ("default" in archiveOperations) {
-                    removeArchive = archiveOperations.default;
-                }
-                if (params.archiveEnabled && removeArchive) {
-                    params.archiveEnabled = false;
-                }
+// Patch ListController to handle export and other operations
+patch(ListController.prototype, {
+    setup() {
+        super.setup(...arguments);
+        this._applyRolePolicyRestrictions();
+    },
+
+    _applyRolePolicyRestrictions() {
+        if (session.exclude_from_role_policy) {
+            return;
+        }
+        const modelOperations = session.model_operations || {};
+
+        // Check export operation
+        if (modelOperations.export) {
+            const exportOps = modelOperations.export;
+            if (this.props.resModel in exportOps) {
+                this._rolePolicyHideExport = exportOps[this.props.resModel];
+            } else if ("default" in exportOps) {
+                this._rolePolicyHideExport = exportOps.default;
             }
-        },
-    });
+        }
+
+        // Check create operation
+        if (modelOperations.create) {
+            const createOps = modelOperations.create;
+            if (this.props.resModel in createOps) {
+                this._rolePolicyHideCreate = createOps[this.props.resModel];
+            } else if ("default" in createOps) {
+                this._rolePolicyHideCreate = createOps.default;
+            }
+        }
+
+        // Check import operation
+        if (modelOperations.import) {
+            const importOps = modelOperations.import;
+            if (this.props.resModel in importOps) {
+                this._rolePolicyHideImport = importOps[this.props.resModel];
+            } else if ("default" in importOps) {
+                this._rolePolicyHideImport = importOps.default;
+            }
+        }
+
+        // Check archive operation
+        if (modelOperations.archive) {
+            const archiveOps = modelOperations.archive;
+            if (this.props.resModel in archiveOps) {
+                this._rolePolicyHideArchive = archiveOps[this.props.resModel];
+            } else if ("default" in archiveOps) {
+                this._rolePolicyHideArchive = archiveOps.default;
+            }
+        }
+    },
+
+    get canCreate() {
+        if (this._rolePolicyHideCreate) {
+            return false;
+        }
+        return super.canCreate;
+    },
+
+    get isExportEnable() {
+        if (this._rolePolicyHideExport) {
+            return false;
+        }
+        return super.isExportEnable;
+    },
+
+    get archiveEnabled() {
+        if (this._rolePolicyHideArchive) {
+            return false;
+        }
+        return super.archiveEnabled;
+    },
 });
