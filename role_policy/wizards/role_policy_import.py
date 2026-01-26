@@ -5,8 +5,9 @@ import base64
 import logging
 import os
 import time
+from io import BytesIO
 
-import xlrd
+from openpyxl import load_workbook
 
 from odoo import _, api, fields, models
 
@@ -138,20 +139,31 @@ class RolePolicyImport(models.TransientModel):
             sheets = all_sheets
             start = 0
         err_log = ""
-        wb = xlrd.open_workbook(file_contents=data)
+        wb = load_workbook(filename=BytesIO(data), read_only=True, data_only=True)
         for i, sheet_name in enumerate(sheets, start=start):
-            sheet = wb.sheet_by_index(i)
+            sheet = wb.worksheets[i]
             sheet_err_log = getattr(self, "_read_{}".format(sheet_name))(sheet, role)
             if sheet_err_log:
                 if err_log:
                     err_log += "\n\n"
-                err_log += _("Errors detected while importing sheet '%s'.") % sheet.name
+                err_log += _("Errors detected while importing sheet '%s'.") % sheet.title
                 err_log += "\n\n" + sheet_err_log
+        wb.close()
         return err_log
+
+    def _get_row_values(self, sheet, row_idx):
+        """Get values from a row (1-indexed for openpyxl)."""
+        return [cell.value for cell in sheet[row_idx]]
+
+    def _get_cell_value(self, sheet, row_idx, col_idx):
+        """Get cell value (1-indexed for openpyxl)."""
+        return sheet.cell(row=row_idx, column=col_idx).value
 
     def _read_acl(self, sheet, role):
         header = ["Name", "Model", "Read", "Write", "Create", "Delete", "Active"]
-        headerline = sheet.row_values(0)
+        headerline = self._get_row_values(sheet, 1)
+        # Normalize None values to empty strings for comparison
+        headerline = [v if v is not None else "" for v in headerline]
         err_log, unlink_pos, unlink_column = self._check_sheet_header(
             sheet, header, headerline
         )
@@ -527,74 +539,76 @@ class RolePolicyImport(models.TransientModel):
 
         return unlink_flag and True or False
 
-    def _read_cell_model(self, cell, column_name, line_errors):
-        val = cell.value
-        if not val:
+    def _read_cell_model(self, cell_value, column_name, line_errors):
+        if not cell_value:
             return False
-        if cell.ctype == xlrd.XL_CELL_TEXT:
-            model_name = self.env["ir.model"]._get_id(val.strip()) or False
+        if isinstance(cell_value, str):
+            model_name = self.env["ir.model"]._get_id(cell_value.strip()) or False
         else:
             line_errors.append(
-                _("Incorrect value '%s' for field '%s'. ") % (val, column_name)
+                _("Incorrect value '%s' for field '%s'. ") % (cell_value, column_name)
             )
             model_name = False
         return model_name
 
-    def _read_cell_view(self, cell, column_name, line_errors):
-        val = cell.value
-        if not val:
+    def _read_cell_view(self, cell_value, column_name, line_errors):
+        if not cell_value:
             return False
-        if cell.ctype == xlrd.XL_CELL_TEXT:
-            view_xml_id = val.strip()
+        if isinstance(cell_value, str):
+            view_xml_id = cell_value.strip()
             view_id = (
                 view_xml_id and self._read_xml_id(view_xml_id, line_errors) or False
             )
         else:
             line_errors.append(
-                _("Incorrect value '%s' for field '%s'. ") % (val, column_name)
+                _("Incorrect value '%s' for field '%s'. ") % (cell_value, column_name)
             )
             view_id = False
         return view_id
 
-    def _read_cell_modifier(self, cell, column_name, line_errors):
-        val = cell.value
-        if cell.ctype == xlrd.XL_CELL_TEXT:
-            val = cell.value.strip()
-        elif cell.ctype == xlrd.XL_CELL_NUMBER:
-            is_int = cell.value % 1 == 0.0
+    def _read_cell_modifier(self, cell_value, column_name, line_errors):
+        if isinstance(cell_value, str):
+            val = cell_value.strip()
+        elif isinstance(cell_value, (int, float)):
+            is_int = cell_value % 1 == 0.0
             if is_int:
-                val = str(int(cell.value))
+                val = str(int(cell_value))
             else:
-                val = str(cell.value).strip()
+                val = str(cell_value).strip()
         else:
-            val = str(val)
+            val = str(cell_value) if cell_value else ""
         return val or False
 
-    def _read_cell_char(self, cell, column_name, line_errors):
-        val = cell.value
-        if not val:
+    def _read_cell_char(self, cell_value, column_name, line_errors):
+        if not cell_value:
             return False
         try:
-            val = str(val)
+            val = str(cell_value)
         except Exception:
             val = False
             line_errors.append(
-                _("Incorrect value '%s' for field '%s'. ") % (val, column_name)
+                _("Incorrect value '%s' for field '%s'. ") % (cell_value, column_name)
             )
         return val
 
-    def _read_cell_bool(self, cell, column_name, line_errors):
-        val = cell.value
-        if not val:
+    def _read_cell_bool(self, cell_value, column_name, line_errors):
+        return self._read_cell_bool_value(cell_value, column_name, line_errors)
+
+    def _read_cell_bool_value(self, cell_value, column_name, line_errors):
+        if not cell_value:
             return False
-        if cell.ctype == xlrd.XL_CELL_TEXT:
-            val = val.strip()
-        elif cell.ctype == xlrd.XL_CELL_NUMBER:
-            is_int = cell.value % 1 == 0.0
+        if isinstance(cell_value, str):
+            val = cell_value.strip()
+        elif isinstance(cell_value, (int, float)):
+            is_int = cell_value % 1 == 0.0
             if is_int:
-                val = str(int(cell.value))
+                val = str(int(cell_value))
             else:
-                val = str(cell.value)
+                val = str(cell_value)
+        elif isinstance(cell_value, bool):
+            return cell_value
+        else:
+            val = str(cell_value)
         if val not in ["0", "1"]:
             line_errors.append(
                 _(
@@ -603,31 +617,35 @@ class RolePolicyImport(models.TransientModel):
                 )
                 % (val, column_name)
             )
-        return val == "1" and True or False
+        return val == "1"
 
-    def _read_cell_int(self, cell, column_name, line_errors):
-        val = cell.value
-        if not val:
+    def _read_cell_int(self, cell_value, column_name, line_errors):
+        if not cell_value:
             return False
         err_msg = _(
             "Incorrect value '%s' for field '%s'. The value should be an Integer."
-        ) % (val, column_name)
-        if cell.ctype == xlrd.XL_CELL_TEXT:
+        ) % (cell_value, column_name)
+        if isinstance(cell_value, str):
             try:
-                val = int(val)
+                val = int(cell_value)
             except Exception:
                 val = False
                 line_errors.append(err_msg)
-        elif cell.ctype == xlrd.XL_CELL_NUMBER:
-            is_int = cell.value % 1 == 0.0
+        elif isinstance(cell_value, (int, float)):
+            is_int = cell_value % 1 == 0.0
             if is_int:
-                val = str(int(cell.value))
+                val = int(cell_value)
             else:
                 val = False
                 line_errors.append(err_msg)
+        else:
+            val = False
+            line_errors.append(err_msg)
         return val
 
     def _read_xml_id(self, val, line_errors):
+        if not val:
+            return False
         rec = self.env.ref(val, raise_if_not_found=False)
         if not rec:
             line_errors.append(_("Incorrect value for field 'External Identifier'."))
