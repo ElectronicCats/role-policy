@@ -160,20 +160,18 @@ class ViewModifierRule(models.Model):
     def _resolve_rule_element_button_name(self, name, line_errors):
         if name[:2] == "%(" and name[-2:] == ")d":
             xml_id = name[2:-2]
-            act_id = self.env["ir.model.data"].xmlid_to_res_model_res_id(
-                xml_id, raise_if_not_found=False
-            )
-            if act_id[0] not in [
+            record = self.env.ref(xml_id, raise_if_not_found=False)
+            if not record or record._name not in [
                 "ir.actions.act_window",
                 "ir.actions.server",
-                "ir.actions.report.xml",
+                "ir.actions.report",
             ]:
                 line_errors.append(
                     _("Incorrect value '%s' for button name in field 'Element'.")
                     % self.element_ui
                 )
             else:
-                name = str(act_id[1])
+                name = str(record.id)
         else:
             self._check_element_ui_button_name(name, line_errors)
         return name
