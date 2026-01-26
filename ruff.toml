@@ -1,0 +1,52 @@
+# Ruff configuration for Odoo 18 modules
+# Replaces: black, isort, flake8, autoflake, pyupgrade
+
+# Target Python 3.10+
+target-version = "py310"
+
+# Line length (applies to both linter and formatter)
+line-length = 88
+
+[lint]
+# Enable rules equivalent to flake8-bugbear, isort, pyupgrade
+select = [
+    "B",      # flake8-bugbear
+    "C4",     # flake8-comprehensions
+    "E",      # pycodestyle errors
+    "F",      # pyflakes
+    "I",      # isort
+    "UP",     # pyupgrade
+    "W",      # pycodestyle warnings
+]
+
+ignore = [
+    "B018",   # Found useless expression (false positive for Odoo manifests)
+    "B023",   # Function definition does not bind loop variable (common in Odoo filters)
+    "B904",   # raise without from (existing code pattern)
+    "C416",   # Unnecessary list comprehension (style preference)
+    "C419",   # Unnecessary list comprehension in any() (style preference)
+    "E501",   # Line too long (handled by formatter)
+    "UP031",  # Use format specifiers (existing code uses %)
+    "UP038",  # Use X | Y in isinstance (Python 3.10+ syntax, keep compatible)
+]
+
+[lint.per-file-ignores]
+"__init__.py" = ["F401"]  # Unused imports in __init__.py
+"__manifest__.py" = ["B018"]  # Useless expression in manifests
+
+[lint.isort]
+known-first-party = [
+    "role_policy",
+    "role_policy_account",
+    "role_policy_demo",
+    "role_policy_hr",
+    "role_policy_hr_expense",
+    "role_policy_sale",
+]
+section-order = ["future", "standard-library", "third-party", "first-party", "local-folder"]
+
+[format]
+# Use double quotes for strings (Odoo convention)
+quote-style = "double"
+# Indent with 4 spaces
+indent-style = "space"
