@@ -222,7 +222,6 @@ class ResRole(models.Model):
         view = self.env.ref("role_policy.role_policy_import_view_form")
         return {
             "name": _("Role Policy Import"),
-            "view_type": "form",
             "view_mode": "form",
             "res_model": "role.policy.import",
             "view_id": view.id,

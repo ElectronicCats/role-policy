@@ -102,7 +102,6 @@ class RolePolicyImport(models.TransientModel):
             return {
                 "name": _("Import File"),
                 "res_id": self.id,
-                "view_type": "form",
                 "view_mode": "form",
                 "res_model": "role.policy.import",
                 "view_id": view.id,
@@ -119,7 +118,6 @@ class RolePolicyImport(models.TransientModel):
             return {
                 "name": _("Role Policy Import result"),
                 "res_id": self.id,
-                "view_type": "form",
                 "view_mode": "form",
                 "res_model": "role.policy.import",
                 "view_id": result_view.id,
