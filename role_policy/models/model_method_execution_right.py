@@ -65,7 +65,7 @@ class ModelMethodExecutionRight(models.Model):
             return True
         user_roles = self.env.user.enabled_role_ids or self.env.user.role_ids
         model_methods = user_roles.mapped("model_method_ids").filtered(
-            lambda r: r.name == "account.move,post"
+            lambda r, n=name: r.name == n
             and r.company_id == self.env.user.company_id
             and r.active
         )
