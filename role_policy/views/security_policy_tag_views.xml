@@ -64,7 +64,7 @@
     <record id="security_policy_tag_action" model="ir.actions.act_window">
         <field name="name">Tags</field>
         <field name="res_model">security.policy.tag</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
         <field name="search_view_id" ref="security_policy_tag_view_search" />
     </record>
 </odoo>

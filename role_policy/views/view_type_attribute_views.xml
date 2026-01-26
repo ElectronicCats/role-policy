@@ -39,6 +39,6 @@
     <record id="view_type_attribute_action" model="ir.actions.act_window">
         <field name="name">View Type Attributes</field>
         <field name="res_model">view.type.attribute</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
     </record>
 </odoo>

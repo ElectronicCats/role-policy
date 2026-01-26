@@ -78,16 +78,16 @@ class ViewModelOperation(models.Model):
         and view type attribute.
         """
         return {
-            "create": {"label": _("Create"), "view_types": ("tree", "form")},
-            "edit": {"label": _("Edit"), "view_types": ("tree", "form")},
-            "delete": {"label": _("Delete"), "view_types": ("tree", "form")},
-            "duplicate": {"label": _("Duplicate"), "view_types": ("tree", "form")},
+            "create": {"label": _("Create"), "view_types": ("list", "form")},
+            "edit": {"label": _("Edit"), "view_types": ("list", "form")},
+            "delete": {"label": _("Delete"), "view_types": ("list", "form")},
+            "duplicate": {"label": _("Duplicate"), "view_types": ("list", "form")},
             "export": {
                 "label": _("Export"),
-                "view_types": ("tree", "form"),
+                "view_types": ("list", "form"),
                 "view_type_attribute": "export_xlsx",
             },
-            "import": {"label": _("Import"), "view_types": ("tree", "form")},
+            "import": {"label": _("Import"), "view_types": ("list", "form")},
             "archive": {"label": _("Archive")},
         }
 

@@ -88,7 +88,7 @@ class ViewModifierRule(models.Model):
 
     def _selection_view_type(self):
         return [
-            ("tree", "Tree"),
+            ("list", "List"),
             ("form", "Form"),
             ("graph", "Graph"),
             ("pivot", "Pivot"),
