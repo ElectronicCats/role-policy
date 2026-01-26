@@ -23,7 +23,7 @@ class RolePolicyExportXls(models.AbstractModel):
             "model_operation",
             "model_method",
         ]:
-            method = getattr(self, "_get_ws_params_{}".format(entry))
+            method = getattr(self, f"_get_ws_params_{entry}")
             method_params = method(data, role)
             method_params["wanted_list"].append("unlink")
             method_params["col_specs"].update(

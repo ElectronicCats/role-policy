@@ -127,7 +127,9 @@ class RolePolicyImport(models.TransientModel):
             }
         else:
             import_time = time.time() - time_start
-            _logger.warning("Role %s import time = %.3f seconds", role.name, import_time)
+            _logger.warning(
+                "Role %s import time = %.3f seconds", role.name, import_time
+            )
             return {"type": "ir.actions.act_window_close"}
 
     def _read_xls(self, data, role):
@@ -142,11 +144,13 @@ class RolePolicyImport(models.TransientModel):
         wb = load_workbook(filename=BytesIO(data), read_only=True, data_only=True)
         for i, sheet_name in enumerate(sheets, start=start):
             sheet = wb.worksheets[i]
-            sheet_err_log = getattr(self, "_read_{}".format(sheet_name))(sheet, role)
+            sheet_err_log = getattr(self, f"_read_{sheet_name}")(sheet, role)
             if sheet_err_log:
                 if err_log:
                     err_log += "\n\n"
-                err_log += _("Errors detected while importing sheet '%s'.") % sheet.title
+                err_log += (
+                    _("Errors detected while importing sheet '%s'.") % sheet.title
+                )
                 err_log += "\n\n" + sheet_err_log
         wb.close()
         return err_log
@@ -458,11 +462,9 @@ class RolePolicyImport(models.TransientModel):
                     line_errors.append(_("Missing value for field '%s'.") % header_fld)
                     continue
                 method = fields_dict[header_fld]["method"]
-                vals[fld] = getattr(self, method)(
-                    cell_value, header_fld, line_errors
-                )
+                vals[fld] = getattr(self, method)(cell_value, header_fld, line_errors)
 
-            check_vals_method = "_check_{}_vals".format(role_field[:-4])
+            check_vals_method = f"_check_{role_field[:-4]}_vals"
             getattr(self, check_vals_method)(vals, line_errors)
             match_key = "-".join([str(vals[f]) for f in match_fields])
             if match_key in unique_entries:

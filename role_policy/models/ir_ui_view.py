@@ -107,7 +107,7 @@ class IrUiView(models.Model):
                 else:
                     arch_node = etree.fromstring(arch)
                     try:
-                        rule_node = etree.fromstring("<{}/>".format(rule.element))
+                        rule_node = etree.fromstring(f"<{rule.element}/>")
                     except Exception:
                         raise UserError(
                             _("Incorrect element definition in rule %s of role %s.")
@@ -141,13 +141,13 @@ class IrUiView(models.Model):
                         attrib, val = parts[1].strip().split("=")
                         attrib = attrib.strip()
                         val = val.strip()[1:-1]
-                        expr = "//{}[@{}='{}']".format(tag, attrib, val)
+                        expr = f"//{tag}[@{attrib}='{val}']"
                 except Exception:
                     raise UserError(
                         _("Incorrect element definition in rule %s of role %s.")
                         % (rule, rule.role_id.code)
                     )
-                expr = "({})[1]".format(expr)
+                expr = f"({expr})[1]"
                 rule_node = arch_node.xpath(expr)
                 if not rule_node:
                     continue
@@ -173,7 +173,7 @@ class IrUiView(models.Model):
                     ):
                         rule_node.set("force_save", "1")
                 if attrs:
-                    attrs = ", ".join(["'{}': {}".format(x[0], x[1]) for x in attrs])
+                    attrs = ", ".join([f"'{x[0]}': {x[1]}" for x in attrs])
                     rule_node.set("attrs", "{" + attrs + "}")
                 arch = etree.tostring(arch_node, encoding="unicode")
             archs.append((arch, view_id))

@@ -131,7 +131,7 @@ class ResRoleAcl(models.Model):
     def _compute_group(self, model, crud, role):
         group_name = "_".join(["role_acl", model.model.replace(".", "_"), crud])
         if role.company_id:
-            group_name += "_{}".format(role.company_id.id)
+            group_name += f"_{role.company_id.id}"
         group = self.env["res.groups"].search([("name", "=", group_name)])
         if not group:
             categ = self.env.ref("role_policy.ir_module_category_role")
