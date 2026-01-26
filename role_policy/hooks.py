@@ -8,6 +8,23 @@ def post_init_hook(cr, registry):
     """
     Remove groups from menuitems, views, actions and users since the standard groups
     are replaced by role groups when installing this module.
+
+    WARNING: This hook performs DESTRUCTIVE operations on installation!
+    ==================================================================
+    It removes ALL group associations from:
+    - All menu items (ir.ui.menu)
+    - All views (ir.ui.view)
+    - All window actions (ir.actions.act_window)
+    - All server actions (ir.actions.server)
+    - All report actions (ir.actions.report)
+    - All internal users (except admin and root)
+
+    After installation, you MUST configure roles and assign them to users
+    for the system to work properly. Without roles, non-admin users will
+    have very limited access to the system.
+
+    This behavior is by design: the Role Policy module replaces Odoo's
+    standard group-based access control with a role-based approach.
     """
     env = api.Environment(
         cr, SUPERUSER_ID, {"active_test": False, "role_policy_init": True}
