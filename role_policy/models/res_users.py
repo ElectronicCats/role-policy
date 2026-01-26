@@ -147,20 +147,14 @@ class ResUsers(models.Model):
         roles = self.env.user.enabled_role_ids or self.env.user.role_ids
         return code in roles.mapped("code")
 
-    @api.model
-    def fields_view_get(
-        self, view_id=None, view_type=False, toolbar=False, submenu=False
-    ):
-        res = super().fields_view_get(
-            view_id=view_id, view_type=view_type, toolbar=toolbar, submenu=submenu
-        )
+    def _get_view(self, view_id=None, view_type='form', **options):
+        arch, view = super()._get_view(view_id, view_type, **options)
         if view_type == "form" and view_id == self.env.ref("base.view_users_form").id:
             role_categ = self.env.ref("role_policy.ir_module_category_role")
-            view = etree.XML(res["arch"])
             expr = "//page[@name='access_rights']//separator[@string='{}']".format(
                 role_categ.name
             )
-            role_node = view.xpath(expr)
+            role_node = arch.xpath(expr)
             if role_node:
                 group_el = role_node[0].getparent()
                 remove = False
@@ -175,8 +169,7 @@ class ResUsers(models.Model):
                             break
                     if remove:
                         group_el.remove(el)
-                res["arch"] = etree.tostring(view, encoding="unicode")
-        return res
+        return arch, view
 
     def _role_policy_remove_no_role_groups(self):
         keep_ids = self._get_role_policy_group_keep_ids()
