@@ -78,7 +78,7 @@ class RolePolicyImport(models.TransientModel):
         if ext not in ["xls", "xlsx"]:
             self.warning = _(
                 "<b>Incorrect file format !</b>"
-                "<br>Only files of type csv and xls(x) are supported."
+                "<br>Only files of type xls(x) are supported."
             )
             return
         else:
@@ -174,12 +174,13 @@ class RolePolicyImport(models.TransientModel):
         to_unlink = self.env["res.role.acl"]
         to_create = []
 
-        for ri in range(1, sheet.nrows):
-            ln = sheet.row_values(ri)
+        for ri in range(2, sheet.max_row + 1):
+            ln = self._get_row_values(sheet, ri)
+            ln = [v if v is not None else "" for v in ln]
             if self._empty_line(ln):
                 continue
             line_errors = []
-            model_name = ln[1].strip()
+            model_name = str(ln[1]).strip() if ln[1] else ""
             model_id = self.env["ir.model"]._get_id(model_name)
             if not model_id:
                 line_errors.append(_("Model '%s' does not exist.") % model_name)
@@ -195,7 +196,7 @@ class RolePolicyImport(models.TransientModel):
             vals = {"role_id": role.id, "model_id": model_id}
             role_acl = role.acl_ids.filtered(lambda r: r.model_id.model == model_name)
             if unlink_column and self._check_unlink(
-                role_acl, ln[unlink_pos], line_errors
+                role_acl, ln[unlink_pos] if len(ln) > unlink_pos else "", line_errors
             ):
                 to_unlink += role_acl
                 line_action = "delete"
@@ -212,13 +213,14 @@ class RolePolicyImport(models.TransientModel):
                 ],
                 start=2,
             ):
-                fld = fld[0]
+                fld_name = fld[0]
                 column_name = fld[1]
-                val = self._read_cell_bool(sheet.cell(ri, ci), column_name, line_errors)
-                vals[fld] = val
+                cell_value = ln[ci] if len(ln) > ci else None
+                val = self._read_cell_bool_value(cell_value, column_name, line_errors)
+                vals[fld_name] = val
                 if (
                     line_action not in ["create", "delete"]
-                    and getattr(role_acl, fld) != val
+                    and getattr(role_acl, fld_name) != val
                 ):
                     line_action = "write"
             if line_action == "write":
@@ -257,13 +259,14 @@ class RolePolicyImport(models.TransientModel):
         return self._read_m2m_sheet(sheet, role, header)
 
     def _read_m2m_sheet(self, sheet, role, header):
-        headerline = sheet.row_values(0)
+        headerline = self._get_row_values(sheet, 1)
+        headerline = [v if v is not None else "" for v in headerline]
         err_log, unlink_pos, unlink_column = self._check_sheet_header(
             sheet, header, headerline
         )
         if err_log:
             return err_log
-        fld = sheet.name.split(" ")[0].lower()
+        fld = sheet.title.split(" ")[0].lower()
         if fld == "menu":
             fld = fld + "_ids"
         else:
@@ -274,14 +277,17 @@ class RolePolicyImport(models.TransientModel):
         to_remove_ids = []
         to_add_ids = []
 
-        for ri in range(1, sheet.nrows):
-            ln = sheet.row_values(ri)
+        for ri in range(2, sheet.max_row + 1):
+            ln = self._get_row_values(sheet, ri)
+            ln = [v if v is not None else "" for v in ln]
             if self._empty_line(ln):
                 continue
             line_errors = []
-            fld_id = self._read_xml_id(ln[1], line_errors)
+            fld_id = self._read_xml_id(str(ln[1]) if ln[1] else "", line_errors)
             rule = rules.filtered(lambda r: r.id == fld_id)
-            if unlink_column and self._check_unlink(rule, ln[unlink_pos], line_errors):
+            if unlink_column and self._check_unlink(
+                rule, ln[unlink_pos] if len(ln) > unlink_pos else "", line_errors
+            ):
                 to_remove_ids.append(fld_id)
             if fld_id not in rules.ids:
                 to_add_ids.append(fld_id)
@@ -421,7 +427,8 @@ class RolePolicyImport(models.TransientModel):
         match_fields = [
             fields_dict[f]["field"] for f in fields_dict if fields_dict[f].get("match")
         ]
-        headerline = sheet.row_values(0)
+        headerline = self._get_row_values(sheet, 1)
+        headerline = [v if v is not None else "" for v in headerline]
         err_log, unlink_pos, unlink_column = self._check_sheet_header(
             sheet, header, headerline
         )
@@ -434,8 +441,9 @@ class RolePolicyImport(models.TransientModel):
         to_create = []
         to_update = []
 
-        for ri in range(1, sheet.nrows):
-            ln = sheet.row_values(ri)
+        for ri in range(2, sheet.max_row + 1):
+            ln = self._get_row_values(sheet, ri)
+            ln = [v if v is not None else "" for v in ln]
             if self._empty_line(ln):
                 continue
             vals = {"role_id": role.id}
@@ -445,12 +453,13 @@ class RolePolicyImport(models.TransientModel):
                 fld = fields_dict[header_fld].get("field")
                 if not fld:
                     continue
-                if fields_dict[header_fld].get("required") and not ln[ci]:
+                cell_value = ln[ci] if len(ln) > ci else None
+                if fields_dict[header_fld].get("required") and not cell_value:
                     line_errors.append(_("Missing value for field '%s'.") % header_fld)
                     continue
                 method = fields_dict[header_fld]["method"]
                 vals[fld] = getattr(self, method)(
-                    sheet.cell(ri, ci), header_fld, line_errors
+                    cell_value, header_fld, line_errors
                 )
 
             check_vals_method = "_check_{}_vals".format(role_field[:-4])
@@ -478,7 +487,8 @@ class RolePolicyImport(models.TransientModel):
 
             rule = getattr(role, role_field).filtered(rule_filter)
 
-            if unlink_column and self._check_unlink(rule, ln[unlink_pos], line_errors):
+            unlink_val = ln[unlink_pos] if len(ln) > unlink_pos else ""
+            if unlink_column and self._check_unlink(rule, unlink_val, line_errors):
                 to_unlink += rule
             elif rule:
                 upd_vals = {k: v for k, v in vals.items() if k not in match_fields}
@@ -503,7 +513,7 @@ class RolePolicyImport(models.TransientModel):
                 "Incorrect sheet header.\n"
                 "The first line of your sheet should contain the "
                 "following field names: %s"
-            ) % (sheet.name, header)
+            ) % (sheet.title, header)
         unlink_column = (
             len(headerline) > unlink_pos and headerline[unlink_pos] == "Delete Entry"
         )
@@ -517,7 +527,7 @@ class RolePolicyImport(models.TransientModel):
         )
 
     def _check_unlink(self, rule, unlink_flag, line_errors):
-        if unlink_flag not in ["X", "x", ""]:
+        if unlink_flag not in ["X", "x", "", None]:
             line_errors.append(
                 _(
                     "Incorrect value '%s' for field 'Delete Entry'. "
