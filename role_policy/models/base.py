@@ -3,7 +3,7 @@
 
 import logging
 
-from odoo import api, models
+from odoo import models
 from odoo.tools import config
 
 _logger = logging.getLogger(__name__)
