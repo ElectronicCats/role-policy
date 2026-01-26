@@ -234,4 +234,6 @@ class ResUsers(models.Model):
 
         if group_updates:
             super(ResUsersBase, self.sudo()).write({"groups_id": group_updates})
-            self.clear_caches()
+            # Invalidate caches to ensure group membership changes are reflected
+            # immediately across all cached computations (menus, access rights, etc.)
+            self.env.registry.clear_all_caches()
