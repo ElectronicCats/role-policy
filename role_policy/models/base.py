@@ -33,10 +33,10 @@ class BaseModel(models.AbstractModel):
         ] + [group_user.id]
         return keep_ids
 
-    @api.model
-    def user_has_groups(self, groups):
+    def _role_policy_check_group(self, group_ext_id):
         """
-        Disable no-role groups except for user_admin & user_root.
+        Check if a group should be considered for role policy.
+        Returns True if the group check should pass, False to delegate to standard check.
         """
         user = self.env.user
         if (
@@ -44,18 +44,17 @@ class BaseModel(models.AbstractModel):
             or user == self.env.ref("base.public_user")
             or config.get("test_enable")
         ):
-            return super().user_has_groups(groups)
+            return None  # Delegate to standard behavior
 
-        role_groups = []
-        for group_ext_id in groups.split(","):
-            xml_id = group_ext_id[0] == "!" and group_ext_id[1:] or group_ext_id
-            if xml_id in self._role_policy_untouchable_groups():
-                role_groups.append(group_ext_id)
-            else:
-                group = self.env.ref(xml_id)
-                if group.role:
-                    role_groups.append(group_ext_id)
-        if not role_groups:
-            return True
-        else:
-            return super().user_has_groups(",".join(role_groups))
+        # Handle negation prefix
+        xml_id = group_ext_id[1:] if group_ext_id.startswith("!") else group_ext_id
+
+        if xml_id in self._role_policy_untouchable_groups():
+            return None  # Delegate to standard behavior
+
+        group = self.env.ref(xml_id, raise_if_not_found=False)
+        if group and group.role:
+            return None  # Delegate to standard behavior
+
+        # For non-role groups, grant access
+        return True
