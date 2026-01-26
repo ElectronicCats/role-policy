@@ -1,21 +1,26 @@
+/** @odoo-module **/
 /*
-  Copyright 2020-2023 Noviat.
-  License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-*/
+ * Copyright 2020-2024 Noviat.
+ * License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+ */
 
-odoo.define("role_policy_hr.role_policy_hr", function (require) {
-    "use strict";
+import {FormController} from "@web/views/form/form_controller";
+import {patch} from "@web/core/utils/patch";
 
-    var FormController = require("web.FormController");
+/**
+ * Role Policy HR patch for Odoo 18
+ * Reloads the page when saving user preferences to apply role changes
+ */
 
-    FormController.include({
-        _onSave: function (ev) {
-            this._super(ev);
-            var model = this.initialState.model;
-            var ctx = this.initialState.context;
-            if (model === "res.users" && ctx && ctx.from_my_profile === true) {
-                location.reload();
-            }
-        },
-    });
+patch(FormController.prototype, {
+    async onRecordSaved(record) {
+        const result = await super.onRecordSaved(...arguments);
+
+        // Reload page when saving user profile to apply role changes
+        if (record.resModel === "res.users" && this.props.context?.from_my_profile) {
+            window.location.reload();
+        }
+
+        return result;
+    },
 });
