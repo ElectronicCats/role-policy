@@ -15,7 +15,7 @@
                         widget="html"
                         nolabel="1"
                         colspan="4"
-                        attrs="{'invisible': [('warning', '=', False)]}"
+                        invisible="not warning"
                         class="alert alert-info"
                         role="alert"
                     />
@@ -31,9 +31,9 @@
                         string="Import"
                         type="object"
                         class="oe_highlight"
-                        attrs="{'invisible': [('warning', '!=', False)]}"
+                        invisible="warning"
                     />
-                    <span attrs="{'invisible': [('warning', '!=', False)]}">or</span>
+                    <span invisible="warning">or</span>
                     <button string="Cancel" class="oe_link" special="cancel" />
                 </footer>
             </form>

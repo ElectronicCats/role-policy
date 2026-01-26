@@ -9,7 +9,7 @@
                 <page
                     name="roles"
                     string="Roles"
-                    attrs="{'invisible': [('exclude_from_role_policy', '=', True)]}"
+                    invisible="exclude_from_role_policy"
                 >
                     <group name="roles">
                         <field name="role_ids" widget="many2many_tags" />
@@ -30,13 +30,13 @@
                     name="role_ids"
                     readonly="1"
                     widget="many2many_tags"
-                    attrs="{'invisible': [('exclude_from_role_policy', '=', True)]}"
+                    invisible="exclude_from_role_policy"
                 />
                 <field
                     name="enabled_role_ids"
                     widget="many2many_tags"
                     readonly="0"
-                    attrs="{'invisible': [('exclude_from_role_policy', '=', True)]}"
+                    invisible="exclude_from_role_policy"
                 />
                 <field name="exclude_from_role_policy" invisible="1" />
             </field>
