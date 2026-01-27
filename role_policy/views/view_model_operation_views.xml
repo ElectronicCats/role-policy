@@ -19,7 +19,7 @@
         <field name="name">view.model.operation.tree</field>
         <field name="model">view.model.operation</field>
         <field name="arch" type="xml">
-            <tree string="View Model Operations" editable="bottom">
+            <list string="View Model Operations" editable="bottom">
                 <field name="sort" invisible="1" />
                 <field
                     name="role_id"
@@ -34,7 +34,7 @@
                 <field name="operation" />
                 <field name="disable" />
                 <field name="active" optional="show" />
-            </tree>
+            </list>
         </field>
     </record>
     <record id="view_model_operation_action" model="ir.actions.act_window">

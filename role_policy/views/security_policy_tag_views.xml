@@ -24,10 +24,10 @@
         <field name="name">security.policy.tag.tree</field>
         <field name="model">security.policy.tag</field>
         <field name="arch" type="xml">
-            <tree string="Tags">
+            <list string="Tags">
                 <field name="code" />
                 <field name="name" />
-            </tree>
+            </list>
         </field>
     </record>
     <record id="security_policy_tag_view_form" model="ir.ui.view">

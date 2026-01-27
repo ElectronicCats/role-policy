@@ -21,7 +21,7 @@
         <field name="name">res.role.acl.tree</field>
         <field name="model">res.role.acl</field>
         <field name="arch" type="xml">
-            <tree string="Role ACL" editable="bottom">
+            <list string="Role ACL" editable="bottom">
                 <field
                     name="role_id"
                     readonly="not context.get('base_model_name')"
@@ -42,7 +42,7 @@
                 <field name="group_id" optional="hide" force_save="1" />
                 <field name="access_id" optional="hide" force_save="1" />
                 <field name="active" optional="show" />
-            </tree>
+            </list>
         </field>
     </record>
     <record id="res_role_acl_action" model="ir.actions.act_window">

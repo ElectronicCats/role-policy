@@ -19,7 +19,7 @@
         <field name="name">view.type.attribute.tree</field>
         <field name="model">view.type.attribute</field>
         <field name="arch" type="xml">
-            <tree string="View Type Attributes" editable="bottom">
+            <list string="View Type Attributes" editable="bottom">
                 <field name="sequence" widget="handle" />
                 <field
                     name="role_id"
@@ -33,7 +33,7 @@
                 <field name="attrib" />
                 <field name="attrib_val" />
                 <field name="active" optional="show" />
-            </tree>
+            </list>
         </field>
     </record>
     <record id="view_type_attribute_action" model="ir.actions.act_window">
