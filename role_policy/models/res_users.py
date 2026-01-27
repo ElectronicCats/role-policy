@@ -38,20 +38,22 @@ class ResUsers(models.Model):
         compute="_compute_exclude_from_role_policy", store=True
     )
 
-    def __init__(self, pool, cr):
-        """Override of __init__ to add access rights.
+    @property
+    def SELF_READABLE_FIELDS(self):
+        """Override to add access rights.
         Access rights are disabled by default, but allowed on some specific
         fields defined in self.SELF_{READ/WRITE}ABLE_FIELDS.
         """
-        super().__init__(pool, cr)
-        readable_fields = ["exclude_from_role_policy", "role_ids"]
-        writable_fields = ["enabled_role_ids"]
-        type(self).SELF_READABLE_FIELDS = list(
-            set(type(self).SELF_READABLE_FIELDS + readable_fields + writable_fields)
-        )
-        type(self).SELF_WRITEABLE_FIELDS = list(
-            set(type(self).SELF_WRITEABLE_FIELDS + writable_fields)
-        )
+        return super().SELF_READABLE_FIELDS + [
+            "exclude_from_role_policy",
+            "role_ids",
+            "enabled_role_ids",
+        ]
+
+    @property
+    def SELF_WRITEABLE_FIELDS(self):
+        """Override to add writable fields for users on their own record."""
+        return super().SELF_WRITEABLE_FIELDS + ["enabled_role_ids"]
 
     def _compute_exclude_from_role_policy(self):
         for user in self:

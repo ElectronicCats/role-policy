@@ -27,7 +27,7 @@
         <field name="name">view.modifier.rule.tree</field>
         <field name="model">view.modifier.rule</field>
         <field name="arch" type="xml">
-            <tree string="View Modifiers Rule" editable="bottom">
+            <list string="View Modifiers Rule" editable="bottom">
                 <field name="sequence" widget="handle" />
                 <field
                     name="role_id"
@@ -48,7 +48,7 @@
                 <field name="active" optional="show" />
                 <field name="element" optional="hide" />
                 <field name="tag_ids" widget="many2many_tags" optional="hide" />
-            </tree>
+            </list>
         </field>
     </record>
     <record id="view_modifier_rule_action" model="ir.actions.act_window">

@@ -23,11 +23,11 @@
         <field name="name">res.role.tree</field>
         <field name="model">res.role</field>
         <field name="arch" type="xml">
-            <tree string="Roles">
+            <list string="Roles">
                 <field name="name" />
                 <field name="code" />
                 <field name="active" />
-            </tree>
+            </list>
         </field>
     </record>
     <record id="res_role_view_form" model="ir.ui.view">
@@ -80,49 +80,49 @@
                                 name="menu_ids"
                                 context="{'ir.ui.menu.full_list': True}"
                             >
-                                <tree default_order="complete_name">
+                                <list default_order="complete_name">
                                     <field name="complete_name" />
-                                </tree>
+                                </list>
                             </field>
                         </page>
                         <page string="Window Action Bindings" id="act_window_ids">
                             <field name="act_window_ids">
-                                <tree default_order="res_model, name, xml_id">
+                                <list default_order="res_model, name, xml_id">
                                     <field name="res_model" />
                                     <field name="name" />
                                     <field name="xml_id" />
-                                </tree>
+                                </list>
                             </field>
                         </page>
                         <page string="Client Action Bindings" id="act_client_ids">
                             <field name="act_client_ids">
-                                <tree
+                                <list
                                     default_order="model_name, name, xml_id"
                                     create="true"
                                     delete="true"
                                 >
                                     <field name="name" />
                                     <field name="xml_id" />
-                                </tree>
+                                </list>
                             </field>
                         </page>
                         <page string="Server Action Bindings" id="act_server_ids">
                             <field name="act_server_ids">
-                                <tree default_order="model_name, name, xml_id">
+                                <list default_order="model_name, name, xml_id">
                                     <field name="model_name" />
                                     <field name="name" />
                                     <field name="xml_id" />
-                                </tree>
+                                </list>
                             </field>
                         </page>
                         <page string="Report Action Bindings" id="act_report_ids">
                             <field name="act_report_ids">
-                                <tree default_order="model, name, report_type">
+                                <list default_order="model, name, report_type">
                                     <field name="model" />
                                     <field name="name" />
                                     <field name="report_name" />
                                     <field name="report_type" />
-                                </tree>
+                                </list>
                             </field>
                         </page>
                         <page string="View Modifier Rules" id="modifier_rule_ids">
@@ -142,12 +142,12 @@
                         </page>
                         <page string="Model Methods" id="model_method_ids">
                             <field name="model_method_ids">
-                                <tree editable="top">
+                                <list editable="top">
                                     <field name="name" />
                                     <field name="model_id" />
                                     <field name="method" />
                                     <field name="active" />
-                                </tree>
+                                </list>
                             </field>
                         </page>
                         <page string="Record Rules" id="record_rule_ids">

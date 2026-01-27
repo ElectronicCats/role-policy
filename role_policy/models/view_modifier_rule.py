@@ -23,7 +23,9 @@ class ViewModifierRule(models.Model):
     ]
 
     role_id = fields.Many2one(string="Role", comodel_name="res.role", required=True)
-    model_id = fields.Many2one(comodel_name="ir.model", string="Model")
+    model_id = fields.Many2one(
+        comodel_name="ir.model", string="Model", ondelete="cascade"
+    )
     model = fields.Char(related="model_id.model", store=True, string="model_name")
     sequence = fields.Integer(default=16, required=True)
     priority = fields.Integer(
