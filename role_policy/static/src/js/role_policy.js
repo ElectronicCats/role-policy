@@ -12,6 +12,9 @@ import {session} from "@web/session";
 /**
  * Role Policy patches for Odoo 18
  * These patches control visibility of buttons based on role policy settings
+ * 
+ * Note: In Odoo 18, many properties like isExportEnable and archiveEnabled
+ * are read-only getters. We intercept at the action menu level instead.
  */
 
 // Patch KanbanController to handle create/import button visibility
@@ -69,6 +72,12 @@ patch(ListController.prototype, {
         }
         const modelOperations = session.model_operations || {};
 
+        // Store flags for role policy restrictions
+        this._rolePolicyHideExport = false;
+        this._rolePolicyHideCreate = false;
+        this._rolePolicyHideImport = false;
+        this._rolePolicyHideArchive = false;
+
         // Check export operation
         if (modelOperations.export) {
             const exportOps = modelOperations.export;
@@ -117,17 +126,27 @@ patch(ListController.prototype, {
         return super.canCreate;
     },
 
-    get isExportEnable() {
-        if (this._rolePolicyHideExport) {
-            return false;
+    // Override getActionMenuItems to control export, archive and other actions
+    getActionMenuItems() {
+        const items = super.getActionMenuItems();
+        if (!items) {
+            return items;
         }
-        return super.isExportEnable;
-    },
 
-    get archiveEnabled() {
-        if (this._rolePolicyHideArchive) {
-            return false;
+        const result = {...items};
+
+        // Filter export action
+        if (this._rolePolicyHideExport && result.other) {
+            result.other = result.other.filter(item => item.key !== 'export');
         }
-        return super.archiveEnabled;
+
+        // Filter archive/unarchive actions
+        if (this._rolePolicyHideArchive && result.other) {
+            result.other = result.other.filter(item => 
+                item.key !== 'archive' && item.key !== 'unarchive'
+            );
+        }
+
+        return result;
     },
 });
