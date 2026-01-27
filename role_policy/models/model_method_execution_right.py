@@ -29,6 +29,7 @@ class ModelMethodExecutionRight(models.Model):
         compute="_compute_model_method",
         store=True,
         string="Model",
+        ondelete="cascade",
     )
     method = fields.Char(
         compute="_compute_model_method",

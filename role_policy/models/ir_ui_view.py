@@ -6,7 +6,8 @@ import logging
 from lxml import etree
 from odoo import _, api, models
 from odoo.exceptions import UserError
-from odoo.tools import locate_node, safe_eval
+from odoo.tools.template_inheritance import locate_node
+from odoo.tools import safe_eval
 
 _logger = logging.getLogger(__name__)
 
@@ -178,9 +179,7 @@ class IrUiView(models.Model):
         return archs
 
     @api.model
-    def apply_inheritance_specs(
-        self, source, specs_tree, inherit_id, pre_locate=lambda s: True
-    ):
+    def apply_inheritance_specs(self, source, specs_tree, pre_locate=lambda s: True):
         """
         Avoid raise for syntax errors in web modifier rules.
         Those errors are logged into the logfile,
@@ -189,7 +188,7 @@ class IrUiView(models.Model):
         """
         try:
             source = super().apply_inheritance_specs(
-                source, specs_tree, inherit_id, pre_locate=pre_locate
+                source, specs_tree, pre_locate=pre_locate
             )
         except ValueError:
             pass

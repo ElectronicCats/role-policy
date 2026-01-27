@@ -30,7 +30,9 @@ class ResRoleAcl(models.Model):
 
     name = fields.Char(readonly=True)
     role_id = fields.Many2one(comodel_name="res.role", required=True)
-    model_id = fields.Many2one(comodel_name="ir.model", required=True)
+    model_id = fields.Many2one(
+        comodel_name="ir.model", required=True, ondelete="cascade"
+    )
     group_id = fields.Many2one(comodel_name="res.groups", readonly=True)
     access_id = fields.Many2one(
         comodel_name="ir.model.access", ondelete="restrict", readonly=True
