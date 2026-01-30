@@ -121,16 +121,18 @@ class ResRole(models.Model):
                 for rec in torestore:
                     rec.update({"groups_id": [(4, role.group_id.id)]})
 
-    @api.model
-    def create(self, vals):
+    @api.model_create_multi
+    def create(self, vals_list):
         self = self.with_context(dict(self.env.context, role_policy_init=True))
-        role_group = self._create_role_group(vals)
-        vals["group_id"] = role_group.id
-        role = super().create(vals)
-        for f in ["menu_ids", "act_window_ids", "act_server_ids", "act_report_ids"]:
-            if f in vals and vals[f][0][2]:
-                getattr(role, f).write({"groups_id": [(4, role_group.id)]})
-        return role
+        for vals in vals_list:
+            role_group = self._create_role_group(vals)
+            vals["group_id"] = role_group.id
+        roles = super().create(vals_list)
+        for role, vals in zip(roles, vals_list, strict=False):
+            for f in ["menu_ids", "act_window_ids", "act_server_ids", "act_report_ids"]:
+                if f in vals and vals[f] and vals[f][0][2]:
+                    getattr(role, f).write({"groups_id": [(4, role.group_id.id)]})
+        return roles
 
     def _create_role_group(self, vals):
         categ = self.env.ref("role_policy.ir_module_category_role")
