@@ -42,13 +42,15 @@ jobs:
             makepot: "true"
     services:
       postgres:
-        image: postgres:12
+        image: postgres:12.0
         env:
           POSTGRES_USER: odoo
           POSTGRES_PASSWORD: odoo
           POSTGRES_DB: odoo
         ports:
           - 5432:5432
+    env:
+      OCA_ENABLE_CHECKLOG_ODOO: "1"
     steps:
       - uses: actions/checkout@v4
         with:
