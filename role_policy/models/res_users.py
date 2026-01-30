@@ -84,23 +84,33 @@ class ResUsers(models.Model):
             vals = self._remove_reified_groups(vals)
             gids = []
             role_gids = []
+            
+            # 1. Manejo de grupos normales
             if "groups_id" in vals:
                 for entry in vals["groups_id"]:
                     if entry[0] == 4 and entry[1] in keep_ids:
                         gids.append(entry[1])
-                    if entry[0] == 6:
+                    elif entry[0] == 6:
                         gids.extend([x for x in entry[2] if x in keep_ids])
                 if gids:
-                    vals["groups_id"] = [(6, 0, gids)]
+                    vals["groups_id"] = [(6, 0, list(set(gids)))]
+
+            # 2. Manejo de Roles (Aquí estaba el fallo)
             if "role_ids" in vals:
                 for entry in vals["role_ids"]:
-                    if entry[0] == 6:
+                    if entry[0] == 6: # Reemplazo total
                         roles = self.env["res.role"].browse(entry[2])
-                        role_gids += [x.id for x in roles.mapped("group_id")]
-                    else:
-                        raise NotImplementedError
-                vals["groups_id"] = [(6, 0, role_gids + gids)]
+                        role_gids += roles.mapped("group_id").ids
+                    elif entry[0] == 4: # Adición simple (Común en Odoo 18)
+                        role = self.env["res.role"].browse(entry[1])
+                        role_gids.append(role.group_id.id)
+                    # Eliminamos el raise NotImplementedError para que no rompa
+                
+                # Combinamos grupos de roles + grupos mantenidos
+                vals["groups_id"] = [(6, 0, list(set(role_gids + gids)))]
+            
             vals_list[i] = vals
+
         users = super().create(vals_list)
         users._role_policy_remove_no_role_groups()
         return users
@@ -112,6 +122,7 @@ class ResUsers(models.Model):
         if config.get("test_enable"):
             return super().write(vals)
 
+        print("\n DEBUG VALS --->", vals)
         vals = self._remove_reified_groups(vals)
         if not any(
             [vals.get(x) for x in ("groups_id", "role_ids", "enabled_role_ids")]

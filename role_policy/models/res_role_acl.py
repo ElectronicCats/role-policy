@@ -48,10 +48,14 @@ class ResRoleAcl(models.Model):
 
     @api.model_create_multi
     def create(self, vals_list):
+        # Iteramos sobre la lista de diccionarios que manda Odoo 18
         for vals in vals_list:
             if vals.get("active", True):
+                # Llamamos a la lógica de creación de ACL para cada uno
                 self._create_role_acl(vals)
-        return super().create(vals_list)
+                
+        # Llamamos al super con la lista completa
+        return super(ResRoleAcl, self).create(vals_list)
 
     def unlink(self):
         self._unlink_role_acl()
