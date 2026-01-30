@@ -8,7 +8,8 @@ on:
     branches:
       - "18.0"
       - "18.0-ocabot-*"
-
+      - "migration_v18"
+      
 jobs:
   unreleased-deps:
     runs-on: ubuntu-latest
