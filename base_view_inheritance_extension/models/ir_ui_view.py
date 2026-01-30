@@ -7,7 +7,6 @@ import ast
 import re
 
 from lxml import etree
-
 from odoo import api, models
 from odoo.osv import expression
 

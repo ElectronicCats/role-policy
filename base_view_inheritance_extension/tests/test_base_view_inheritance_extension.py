@@ -4,7 +4,6 @@
 # License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl.html).
 
 from lxml import etree
-
 from odoo.tests.common import TransactionCase
 
 

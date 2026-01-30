@@ -1,2 +1,1 @@
-from . import report_abstract_xlsx
-from . import report_partner_xlsx
+from . import report_abstract_xlsx, report_partner_xlsx

@@ -6,8 +6,8 @@ import logging
 from lxml import etree
 from odoo import _, api, models
 from odoo.exceptions import UserError
-from odoo.tools.template_inheritance import locate_node
 from odoo.tools import safe_eval
+from odoo.tools.template_inheritance import locate_node
 
 _logger = logging.getLogger(__name__)
 

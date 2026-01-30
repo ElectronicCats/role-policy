@@ -9,7 +9,7 @@
     "license": "LGPL-3",
     "category": "Hidden/Dependency",
     "summary": "Adds more operators for view inheritance",
-    "website": "https://github.com/OCA/server-tools",
+    "website": "https://github.com/OCA/role-policy",
     "depends": ["base"],
     "demo": ["demo/ir_ui_view.xml"],
 }

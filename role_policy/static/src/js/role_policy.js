@@ -12,7 +12,7 @@ import {session} from "@web/session";
 /**
  * Role Policy patches for Odoo 18
  * These patches control visibility of buttons based on role policy settings
- * 
+ *
  * Note: In Odoo 18, many properties like isExportEnable and archiveEnabled
  * are read-only getters. We intercept at the action menu level instead.
  */
@@ -137,13 +137,13 @@ patch(ListController.prototype, {
 
         // Filter export action
         if (this._rolePolicyHideExport && result.other) {
-            result.other = result.other.filter(item => item.key !== 'export');
+            result.other = result.other.filter((item) => item.key !== "export");
         }
 
         // Filter archive/unarchive actions
         if (this._rolePolicyHideArchive && result.other) {
-            result.other = result.other.filter(item => 
-                item.key !== 'archive' && item.key !== 'unarchive'
+            result.other = result.other.filter(
+                (item) => item.key !== "archive" && item.key !== "unarchive"
             );
         }
 
