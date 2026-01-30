@@ -9,7 +9,7 @@
     "website": "https://github.com/OCA/role-policy",
     "category": "Tools",
     "depends": ["hr_expense", "role_policy_hr"],
-    "data": ["views/menu.xml"],
+    "data": ["security/ir.model.access.csv", "views/menu.xml"],
     "maintainers": ["luc-demeyer"],
     "installable": True,
     "auto_install": True,

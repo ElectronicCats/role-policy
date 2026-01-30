@@ -9,7 +9,7 @@
     "website": "https://github.com/OCA/role-policy",
     "category": "Tools",
     "depends": ["hr", "role_policy"],
-    "data": [],
+    "data": ["security/ir.model.access.csv"],
     "assets": {
         "web.assets_backend": [
             "role_policy_hr/static/src/js/**/*",
