@@ -35,8 +35,9 @@ class IrActionsActions(models.Model):
             for k in res:
                 res_roles[k] = []
                 for v in res[k]:
-                    if v["type"] == "ir.actions.client":
-                        if set(v["role_ids"]) & user_role_ids:
+                    # Safe access to 'type' key - it may not always be present
+                    if v.get("type") == "ir.actions.client":
+                        if v.get("role_ids") and set(v["role_ids"]) & user_role_ids:
                             res_roles[k].append(v)
                     elif v.get("groups_id"):
                         for group_id in v["groups_id"]:

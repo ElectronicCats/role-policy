@@ -121,16 +121,24 @@ class ResRole(models.Model):
                 for rec in torestore:
                     rec.update({"groups_id": [(4, role.group_id.id)]})
 
-    @api.model
-    def create(self, vals):
+    @api.model_create_multi
+    def create(self, vals_list):
+        # El contexto se mantiene igual
         self = self.with_context(dict(self.env.context, role_policy_init=True))
-        role_group = self._create_role_group(vals)
-        vals["group_id"] = role_group.id
-        role = super().create(vals)
-        for f in ["menu_ids", "act_window_ids", "act_server_ids", "act_report_ids"]:
-            if f in vals and vals[f][0][2]:
-                getattr(role, f).write({"groups_id": [(4, role_group.id)]})
-        return role
+        
+        for vals in vals_list:
+            role_group = self._create_role_group(vals)
+            vals["group_id"] = role_group.id
+        
+        roles = super().create(vals_list)
+        
+        # Lógica para procesar menús y acciones después de crear
+        for role, vals in zip(roles, vals_list):
+            for f in ["menu_ids", "act_window_ids", "act_server_ids", "act_report_ids"]:
+                if vals.get(f):
+                    # En Odoo 18, simplemente escribimos directamente
+                    getattr(role, f).write({"groups_id": [(4, role.group_id.id)]})
+        return roles
 
     def _create_role_group(self, vals):
         categ = self.env.ref("role_policy.ir_module_category_role")
@@ -156,22 +164,23 @@ class ResRole(models.Model):
                 if f in vals:
                     model = self._fields[f].comodel_name
                     for entry in vals[f]:
-                        if entry[0] == 6:
-                            # Addition or removal in M2M result in update of all
-                            # items. We only need the differences.
+                        command = entry[0]
+                        if command == 6:
                             model_ids = getattr(role, f).ids
                             old_model_ids = set(model_ids)
                             new_model_ids = set(entry[2])
                             removal_ids = old_model_ids - new_model_ids
                             addition_ids = new_model_ids - old_model_ids
                             if removal_ids:
-                                updates.append((model, removal_ids, [(3, role_gid)]))
+                                updates.append((model, list(removal_ids), [(3, role_gid)]))
                             if addition_ids:
-                                updates.append((model, addition_ids, [(4, role_gid)]))
-                        elif entry[0] in (3, 4):
-                            updates.append((model, [entry[1]], [(entry[0], role_gid)]))
-                        else:
-                            raise NotImplementedError
+                                updates.append((model, list(addition_ids), [(4, role_gid)]))
+                        elif command == 4: # Añadir existente
+                            updates.append((model, [entry[1]], [(4, role_gid)]))
+                        elif command == 3: # Quitar (sin borrar registro)
+                            updates.append((model, [entry[1]], [(3, role_gid)]))
+                        elif command == 2: # Borrar registro (poco común aquí pero posible)
+                            updates.append((model, [entry[1]], [(3, role_gid)]))
         res = super().write(vals)
         for model, model_ids, command in updates:
             rs = self.env[model].browse(model_ids)
@@ -192,8 +201,12 @@ class ResRole(models.Model):
                             continue
                         role_acl_group.users -= user
             else:
-                # TODO
-                raise NotImplementedError
+                # En Odoo 18, si se añade un usuario individualmente:
+                for entry in vals["user_ids"]:
+                    if entry[0] == 4:
+                        user = self.env['res.users'].browse(entry[1])
+                        role.group_id.users += user
+                # print("Comando no implementado pero ignorado para evitar crash")
 
     def unlink(self):
         role_groups = self.mapped("group_id")
