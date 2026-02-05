@@ -218,6 +218,25 @@ class ViewModifierRule(models.Model):
                     )
 
     @api.constrains(
+        "role_id", "element_ui", "model_id", "view_id", "view_type", "company_id"
+    )
+    def _check_element_unique(self):
+        for rule in self:
+            if not rule.role_id or not rule.element_ui:
+                continue
+            dom = [
+                ("id", "!=", rule.id),
+                ("role_id", "=", rule.role_id.id),
+                ("element_ui", "=", rule.element_ui),
+                ("model_id", "=", rule.model_id.id or False),
+                ("view_id", "=", rule.view_id.id or False),
+                ("view_type", "=", rule.view_type),
+                ("company_id", "=", rule.company_id.id or False),
+            ]
+            if self.search_count(dom):
+                raise UserError(_("The Element must be unique"))
+
+    @api.constrains(
         "remove", "modifier_invisible", "modifier_readonly", "modifier_required"
     )
     def _check_modifier(self):

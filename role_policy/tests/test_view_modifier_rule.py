@@ -3,6 +3,7 @@
 
 from odoo.exceptions import UserError
 from odoo.tests.common import tagged
+from odoo.tools.misc import mute_logger
 
 from .common import RolePolicyTestCommon
 
@@ -114,16 +115,17 @@ class TestViewModifierRule(RolePolicyTestCommon):
                 "modifier_readonly": "1",
             }
         )
-        with self.assertRaises(Exception):  # noqa: B017
-            self.env["view.modifier.rule"].create(
-                {
-                    "role_id": self.role.id,
-                    "model_id": self.partner_model.id,
-                    "view_type": "form",
-                    "element_ui": 'field name="email"',
-                    "modifier_invisible": "1",
-                }
-            )
+        with mute_logger("odoo.sql_db"):
+            with self.assertRaises(Exception):  # noqa: B017
+                self.env["view.modifier.rule"].create(
+                    {
+                        "role_id": self.role.id,
+                        "model_id": self.partner_model.id,
+                        "view_type": "form",
+                        "element_ui": 'field name="email"',
+                        "modifier_invisible": "1",
+                    }
+                )
 
     def test_rule_onchange_view_id(self):
         """Verify that onchange sets view_type from view_id."""

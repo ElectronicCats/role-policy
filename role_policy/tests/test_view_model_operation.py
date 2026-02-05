@@ -3,6 +3,7 @@
 
 from odoo.exceptions import UserError
 from odoo.tests.common import tagged
+from odoo.tools.misc import mute_logger
 
 from .common import RolePolicyTestCommon
 
@@ -122,15 +123,16 @@ class TestViewModelOperation(RolePolicyTestCommon):
                 "disable": True,
             }
         )
-        with self.assertRaises(Exception):  # noqa: B017
-            self.env["view.model.operation"].create(
-                {
-                    "role_id": self.role.id,
-                    "model": "res.partner",
-                    "operation": "create",
-                    "disable": False,
-                }
-            )
+        with mute_logger("odoo.sql_db"):
+            with self.assertRaises(Exception):  # noqa: B017
+                self.env["view.model.operation"].create(
+                    {
+                        "role_id": self.role.id,
+                        "model": "res.partner",
+                        "operation": "create",
+                        "disable": False,
+                    }
+                )
 
     def test_operation_priority_default(self):
         """Verify default priority value."""

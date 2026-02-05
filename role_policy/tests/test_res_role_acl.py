@@ -2,6 +2,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 from odoo.tests.common import tagged
+from odoo.tools.misc import mute_logger
 
 from .common import RolePolicyTestCommon
 
@@ -145,17 +146,18 @@ class TestResRoleAcl(RolePolicyTestCommon):
 
     def test_acl_crud_not_null_constraint(self):
         """Verify constraint that at least one permission must be set."""
-        with self.assertRaises(Exception):  # noqa: B017
-            self.env["res.role.acl"].create(
-                {
-                    "role_id": self.role.id,
-                    "model_id": self.partner_model.id,
-                    "perm_create": False,
-                    "perm_read": False,
-                    "perm_write": False,
-                    "perm_unlink": False,
-                }
-            )
+        with mute_logger("odoo.sql_db"):
+            with self.assertRaises(Exception):  # noqa: B017
+                self.env["res.role.acl"].create(
+                    {
+                        "role_id": self.role.id,
+                        "model_id": self.partner_model.id,
+                        "perm_create": False,
+                        "perm_read": False,
+                        "perm_write": False,
+                        "perm_unlink": False,
+                    }
+                )
 
     def test_acl_model_role_unique_constraint(self):
         """Verify unique constraint on model/role combination."""
@@ -166,14 +168,15 @@ class TestResRoleAcl(RolePolicyTestCommon):
                 "perm_read": True,
             }
         )
-        with self.assertRaises(Exception):  # noqa: B017
-            self.env["res.role.acl"].create(
-                {
-                    "role_id": self.role.id,
-                    "model_id": self.partner_model.id,
-                    "perm_write": True,
-                }
-            )
+        with mute_logger("odoo.sql_db"):
+            with self.assertRaises(Exception):  # noqa: B017
+                self.env["res.role.acl"].create(
+                    {
+                        "role_id": self.role.id,
+                        "model_id": self.partner_model.id,
+                        "perm_write": True,
+                    }
+                )
 
     def test_acl_access_permissions(self):
         """Verify that access record has correct permissions."""

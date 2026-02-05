@@ -2,6 +2,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 from odoo.tests.common import tagged
+from odoo.tools.misc import mute_logger
 
 from .common import RolePolicyTestCommon
 
@@ -57,15 +58,16 @@ class TestViewTypeAttribute(RolePolicyTestCommon):
                 "attrib_val": "0",
             }
         )
-        with self.assertRaises(Exception):  # noqa: B017
-            self.env["view.type.attribute"].create(
-                {
-                    "role_id": self.role.id,
-                    "view_id": self.partner_form_view.id,
-                    "attrib": "delete",
-                    "attrib_val": "1",
-                }
-            )
+        with mute_logger("odoo.sql_db"):
+            with self.assertRaises(Exception):  # noqa: B017
+                self.env["view.type.attribute"].create(
+                    {
+                        "role_id": self.role.id,
+                        "view_id": self.partner_form_view.id,
+                        "attrib": "delete",
+                        "attrib_val": "1",
+                    }
+                )
 
     def test_attribute_priority_default(self):
         """Verify default priority value."""

@@ -148,7 +148,7 @@ class ResUsers(models.Model):
 
     def has_role(self, code):
         self.ensure_one()
-        roles = self.enabled_role_ids or self.role_ids
+        roles = self.sudo().enabled_role_ids or self.sudo().role_ids
         return code in roles.mapped("code")
 
     def _get_view(self, view_id=None, view_type="form", **options):

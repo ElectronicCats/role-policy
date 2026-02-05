@@ -2,6 +2,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 from odoo.tests.common import tagged
+from odoo.tools.misc import mute_logger
 
 from .common import RolePolicyTestCommon
 
@@ -50,13 +51,14 @@ class TestModelMethodExecutionRight(RolePolicyTestCommon):
                 "name": selection[0][0],
             }
         )
-        with self.assertRaises(Exception):  # noqa: B017
-            Right.create(
-                {
-                    "role_id": self.role.id,
-                    "name": selection[0][0],
-                }
-            )
+        with mute_logger("odoo.sql_db"):
+            with self.assertRaises(Exception):  # noqa: B017
+                Right.create(
+                    {
+                        "role_id": self.role.id,
+                        "name": selection[0][0],
+                    }
+                )
 
     def test_active_field(self):
         """Verify active field default."""

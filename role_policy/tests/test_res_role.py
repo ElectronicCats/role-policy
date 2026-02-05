@@ -3,6 +3,7 @@
 
 from odoo.exceptions import UserError
 from odoo.tests.common import tagged
+from odoo.tools.misc import mute_logger
 
 from .common import RolePolicyTestCommon
 
@@ -169,13 +170,14 @@ class TestResRole(RolePolicyTestCommon):
 
     def test_role_code_unique_constraint(self):
         """Verify unique constraint on code per company."""
-        with self.assertRaises(Exception):  # noqa: B017 IntegrityError wrapped
-            self.env["res.role"].create(
-                {
-                    "name": "Duplicate Code",
-                    "code": "TEST",  # Same as self.role
-                }
-            )
+        with mute_logger("odoo.sql_db"):
+            with self.assertRaises(Exception):  # noqa: B017 IntegrityError wrapped
+                self.env["res.role"].create(
+                    {
+                        "name": "Duplicate Code",
+                        "code": "TEST",  # Same as self.role
+                    }
+                )
 
     def test_role_different_company(self):
         """Verify that roles can be created in different companies."""
