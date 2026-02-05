@@ -1,6 +1,5 @@
 from . import (
     base,
-    role_policy_menu_action_common,
     ir_actions,
     ir_http,
     ir_model_access,
@@ -11,6 +10,7 @@ from . import (
     res_role,
     res_role_acl,
     res_users,
+    role_policy_menu_action_common,
     security_policy_tag,
     view_model_operation,
     view_modifier_rule,

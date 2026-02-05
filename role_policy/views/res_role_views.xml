@@ -97,11 +97,7 @@
                         </page>
                         <page string="Client Action Bindings" id="act_client_ids">
                             <field name="act_client_ids">
-                                <list
-                                    default_order="name"
-                                    create="true"
-                                    delete="true"
-                                >
+                                <list default_order="name" create="true" delete="true">
                                     <field name="name" />
                                     <field name="xml_id" />
                                 </list>

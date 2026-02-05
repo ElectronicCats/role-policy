@@ -53,9 +53,9 @@ class ResRoleAcl(models.Model):
             if vals.get("active", True):
                 # Llamamos a la lógica de creación de ACL para cada uno
                 self._create_role_acl(vals)
-                
+
         # Llamamos al super con la lista completa
-        return super(ResRoleAcl, self).create(vals_list)
+        return super().create(vals_list)
 
     def unlink(self):
         self._unlink_role_acl()

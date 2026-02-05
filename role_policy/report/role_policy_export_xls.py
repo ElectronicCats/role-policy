@@ -9,8 +9,6 @@ class RolePolicyExportXls(models.AbstractModel):
     _inherit = "report.report_xlsx.abstract"
     _description = "Role Policy XLSX Export"
 
-
-
     def _get_ws_params(self, wb, data, role):
         ws_params = []
         for entry in [

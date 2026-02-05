@@ -166,14 +166,20 @@ class ResRole(models.Model):
                             removal_ids = old_model_ids - new_model_ids
                             addition_ids = new_model_ids - old_model_ids
                             if removal_ids:
-                                updates.append((model, list(removal_ids), [(3, role_gid)]))
+                                updates.append(
+                                    (model, list(removal_ids), [(3, role_gid)])
+                                )
                             if addition_ids:
-                                updates.append((model, list(addition_ids), [(4, role_gid)]))
-                        elif command == 4: # Añadir existente
+                                updates.append(
+                                    (model, list(addition_ids), [(4, role_gid)])
+                                )
+                        elif command == 4:  # Añadir existente
                             updates.append((model, [entry[1]], [(4, role_gid)]))
-                        elif command == 3: # Quitar (sin borrar registro)
+                        elif command == 3:  # Quitar (sin borrar registro)
                             updates.append((model, [entry[1]], [(3, role_gid)]))
-                        elif command == 2: # Borrar registro (poco común aquí pero posible)
+                        elif (
+                            command == 2
+                        ):  # Borrar registro (poco común aquí pero posible)
                             updates.append((model, [entry[1]], [(3, role_gid)]))
         res = super().write(vals)
         for model, model_ids, command in updates:
@@ -198,7 +204,7 @@ class ResRole(models.Model):
                 # En Odoo 18, si se añade un usuario individualmente:
                 for entry in vals["user_ids"]:
                     if entry[0] == 4:
-                        user = self.env['res.users'].browse(entry[1])
+                        user = self.env["res.users"].browse(entry[1])
                         role.group_id.users += user
                 # print("Comando no implementado pero ignorado para evitar crash")
 
