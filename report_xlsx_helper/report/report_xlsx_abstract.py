@@ -5,9 +5,10 @@ import re
 from datetime import date, datetime
 from types import CodeType
 
+from xlsxwriter.utility import xl_rowcol_to_cell
+
 from odoo import _, fields, models
 from odoo.exceptions import UserError
-from xlsxwriter.utility import xl_rowcol_to_cell
 
 from .report_xlsx_format import FORMATS, XLS_HEADERS
 

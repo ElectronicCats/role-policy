@@ -5,7 +5,8 @@
 import json
 import logging
 
-from odoo.addons.web.controllers.report import ReportController
+from werkzeug.urls import url_decode
+
 from odoo.http import (
     content_disposition,
     request,
@@ -16,7 +17,8 @@ from odoo.http import (
 )
 from odoo.tools import html_escape
 from odoo.tools.safe_eval import safe_eval, time
-from werkzeug.urls import url_decode
+
+from odoo.addons.web.controllers.report import ReportController
 
 _logger = logging.getLogger(__name__)
 

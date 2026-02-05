@@ -9,6 +9,8 @@ class RolePolicyExportXls(models.AbstractModel):
     _inherit = "report.report_xlsx.abstract"
     _description = "Role Policy XLSX Export"
 
+
+
     def _get_ws_params(self, wb, data, role):
         ws_params = []
         for entry in [
@@ -88,8 +90,8 @@ class RolePolicyExportXls(models.AbstractModel):
     def _export_acl(self, workbook, ws, ws_params, data, role):
         ws.set_portrait()
         ws.fit_to_pages(1, 0)
-        ws.set_header(self.xls_headers["standard"])
-        ws.set_footer(self.xls_footers["standard"])
+        # ws.set_header(self.xls_headers["standard"])
+        # ws.set_footer(self.xls_footers["standard"])
 
         self._set_column_width(ws, ws_params)
 
@@ -99,7 +101,6 @@ class RolePolicyExportXls(models.AbstractModel):
             row_pos,
             ws_params,
             col_specs_section="header",
-            default_format=self.format_theader_yellow_left,
         )
         ws.freeze_panes(row_pos, 0)
 
@@ -110,7 +111,6 @@ class RolePolicyExportXls(models.AbstractModel):
                 ws_params,
                 col_specs_section="data",
                 render_space={"role_acl": role_acl},
-                default_format=self.format_tcell_left,
             )
 
     def _get_ws_params_menu(self, data, role):
@@ -140,8 +140,8 @@ class RolePolicyExportXls(models.AbstractModel):
     def _export_menu(self, workbook, ws, ws_params, data, role):
         ws.set_portrait()
         ws.fit_to_pages(1, 0)
-        ws.set_header(self.xls_headers["standard"])
-        ws.set_footer(self.xls_footers["standard"])
+        # ws.set_header(self.xls_headers["standard"])
+        # ws.set_footer(self.xls_footers["standard"])
 
         self._set_column_width(ws, ws_params)
 
@@ -151,7 +151,6 @@ class RolePolicyExportXls(models.AbstractModel):
             row_pos,
             ws_params,
             col_specs_section="header",
-            default_format=self.format_theader_yellow_left,
         )
         ws.freeze_panes(row_pos, 0)
 
@@ -163,7 +162,6 @@ class RolePolicyExportXls(models.AbstractModel):
                 ws_params,
                 col_specs_section="data",
                 render_space={"menu": rec, "xml_id": xml_id},
-                default_format=self.format_tcell_left,
             )
 
     def _get_ws_params_act_window(self, data, role):
@@ -193,8 +191,8 @@ class RolePolicyExportXls(models.AbstractModel):
     def _export_act_window(self, workbook, ws, ws_params, data, role):
         ws.set_portrait()
         ws.fit_to_pages(1, 0)
-        ws.set_header(self.xls_headers["standard"])
-        ws.set_footer(self.xls_footers["standard"])
+        # ws.set_header(self.xls_headers["standard"])
+        # ws.set_footer(self.xls_footers["standard"])
 
         self._set_column_width(ws, ws_params)
 
@@ -204,7 +202,6 @@ class RolePolicyExportXls(models.AbstractModel):
             row_pos,
             ws_params,
             col_specs_section="header",
-            default_format=self.format_theader_yellow_left,
         )
         ws.freeze_panes(row_pos, 0)
 
@@ -216,7 +213,6 @@ class RolePolicyExportXls(models.AbstractModel):
                 ws_params,
                 col_specs_section="data",
                 render_space={"act_window": rec, "xml_id": xml_id},
-                default_format=self.format_tcell_left,
             )
 
     def _get_ws_params_act_client(self, data, role):
@@ -246,8 +242,8 @@ class RolePolicyExportXls(models.AbstractModel):
     def _export_act_client(self, workbook, ws, ws_params, data, role):
         ws.set_portrait()
         ws.fit_to_pages(1, 0)
-        ws.set_header(self.xls_headers["standard"])
-        ws.set_footer(self.xls_footers["standard"])
+        # ws.set_header(self.xls_headers["standard"])
+        # ws.set_footer(self.xls_footers["standard"])
 
         self._set_column_width(ws, ws_params)
 
@@ -257,7 +253,6 @@ class RolePolicyExportXls(models.AbstractModel):
             row_pos,
             ws_params,
             col_specs_section="header",
-            default_format=self.format_theader_yellow_left,
         )
         ws.freeze_panes(row_pos, 0)
 
@@ -269,7 +264,6 @@ class RolePolicyExportXls(models.AbstractModel):
                 ws_params,
                 col_specs_section="data",
                 render_space={"act_client": rec, "xml_id": xml_id},
-                default_format=self.format_tcell_left,
             )
 
     def _get_ws_params_act_server(self, data, role):
@@ -299,8 +293,8 @@ class RolePolicyExportXls(models.AbstractModel):
     def _export_act_server(self, workbook, ws, ws_params, data, role):
         ws.set_portrait()
         ws.fit_to_pages(1, 0)
-        ws.set_header(self.xls_headers["standard"])
-        ws.set_footer(self.xls_footers["standard"])
+        # ws.set_header(self.xls_headers["standard"])
+        # ws.set_footer(self.xls_footers["standard"])
 
         self._set_column_width(ws, ws_params)
 
@@ -310,7 +304,6 @@ class RolePolicyExportXls(models.AbstractModel):
             row_pos,
             ws_params,
             col_specs_section="header",
-            default_format=self.format_theader_yellow_left,
         )
         ws.freeze_panes(row_pos, 0)
 
@@ -322,7 +315,6 @@ class RolePolicyExportXls(models.AbstractModel):
                 ws_params,
                 col_specs_section="data",
                 render_space={"act_server": rec, "xml_id": xml_id},
-                default_format=self.format_tcell_left,
             )
 
     def _get_ws_params_act_report(self, data, role):
@@ -352,8 +344,8 @@ class RolePolicyExportXls(models.AbstractModel):
     def _export_act_report(self, workbook, ws, ws_params, data, role):
         ws.set_portrait()
         ws.fit_to_pages(1, 0)
-        ws.set_header(self.xls_headers["standard"])
-        ws.set_footer(self.xls_footers["standard"])
+        # ws.set_header(self.xls_headers["standard"])
+        # ws.set_footer(self.xls_footers["standard"])
 
         self._set_column_width(ws, ws_params)
 
@@ -363,7 +355,6 @@ class RolePolicyExportXls(models.AbstractModel):
             row_pos,
             ws_params,
             col_specs_section="header",
-            default_format=self.format_theader_yellow_left,
         )
         ws.freeze_panes(row_pos, 0)
 
@@ -375,7 +366,6 @@ class RolePolicyExportXls(models.AbstractModel):
                 ws_params,
                 col_specs_section="data",
                 render_space={"act_report": rec, "xml_id": xml_id},
-                default_format=self.format_tcell_left,
             )
 
     def _get_ws_params_modifier_rule(self, data, role):
@@ -455,8 +445,8 @@ class RolePolicyExportXls(models.AbstractModel):
     def _export_modifier_rule(self, workbook, ws, ws_params, data, role):
         ws.set_portrait()
         ws.fit_to_pages(1, 0)
-        ws.set_header(self.xls_headers["standard"])
-        ws.set_footer(self.xls_footers["standard"])
+        # ws.set_header(self.xls_headers["standard"])
+        # ws.set_footer(self.xls_footers["standard"])
 
         self._set_column_width(ws, ws_params)
 
@@ -466,7 +456,6 @@ class RolePolicyExportXls(models.AbstractModel):
             row_pos,
             ws_params,
             col_specs_section="header",
-            default_format=self.format_theader_yellow_left,
         )
         ws.freeze_panes(row_pos, 0)
 
@@ -477,7 +466,6 @@ class RolePolicyExportXls(models.AbstractModel):
                 ws_params,
                 col_specs_section="data",
                 render_space={"rule": rule},
-                default_format=self.format_tcell_left,
             )
 
     def _get_ws_params_view_type_attribute(self, data, role):
@@ -537,8 +525,8 @@ class RolePolicyExportXls(models.AbstractModel):
     def _export_view_type_attribute(self, workbook, ws, ws_params, data, role):
         ws.set_portrait()
         ws.fit_to_pages(1, 0)
-        ws.set_header(self.xls_headers["standard"])
-        ws.set_footer(self.xls_footers["standard"])
+        # ws.set_header(self.xls_headers["standard"])
+        # ws.set_footer(self.xls_footers["standard"])
 
         self._set_column_width(ws, ws_params)
 
@@ -548,7 +536,6 @@ class RolePolicyExportXls(models.AbstractModel):
             row_pos,
             ws_params,
             col_specs_section="header",
-            default_format=self.format_theader_yellow_left,
         )
         ws.freeze_panes(row_pos, 0)
 
@@ -559,7 +546,6 @@ class RolePolicyExportXls(models.AbstractModel):
                 ws_params,
                 col_specs_section="data",
                 render_space={"rule": rule},
-                default_format=self.format_tcell_left,
             )
 
     def _get_ws_params_model_operation(self, data, role):
@@ -604,8 +590,8 @@ class RolePolicyExportXls(models.AbstractModel):
     def _export_model_operation(self, workbook, ws, ws_params, data, role):
         ws.set_portrait()
         ws.fit_to_pages(1, 0)
-        ws.set_header(self.xls_headers["standard"])
-        ws.set_footer(self.xls_footers["standard"])
+        # ws.set_header(self.xls_headers["standard"])
+        # ws.set_footer(self.xls_footers["standard"])
 
         self._set_column_width(ws, ws_params)
 
@@ -615,7 +601,6 @@ class RolePolicyExportXls(models.AbstractModel):
             row_pos,
             ws_params,
             col_specs_section="header",
-            default_format=self.format_theader_yellow_left,
         )
         ws.freeze_panes(row_pos, 0)
 
@@ -626,7 +611,6 @@ class RolePolicyExportXls(models.AbstractModel):
                 ws_params,
                 col_specs_section="data",
                 render_space={"rule": rule},
-                default_format=self.format_tcell_left,
             )
 
     def _get_ws_params_model_method(self, data, role):
@@ -656,8 +640,8 @@ class RolePolicyExportXls(models.AbstractModel):
     def _export_model_method(self, workbook, ws, ws_params, data, role):
         ws.set_portrait()
         ws.fit_to_pages(1, 0)
-        ws.set_header(self.xls_headers["standard"])
-        ws.set_footer(self.xls_footers["standard"])
+        # ws.set_header(self.xls_headers["standard"])
+        # ws.set_footer(self.xls_footers["standard"])
 
         self._set_column_width(ws, ws_params)
 
@@ -667,7 +651,6 @@ class RolePolicyExportXls(models.AbstractModel):
             row_pos,
             ws_params,
             col_specs_section="header",
-            default_format=self.format_theader_yellow_left,
         )
         ws.freeze_panes(row_pos, 0)
 
@@ -678,5 +661,4 @@ class RolePolicyExportXls(models.AbstractModel):
                 ws_params,
                 col_specs_section="data",
                 render_space={"entry": entry},
-                default_format=self.format_tcell_left,
             )

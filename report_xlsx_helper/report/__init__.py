@@ -1,1 +1,3 @@
-from . import report_xlsx_abstract, report_xlsx_format, test_partner_report_xlsx
+from . import report_xlsx_format
+from . import report_xlsx_abstract
+from . import test_partner_report_xlsx
