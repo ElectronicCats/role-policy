@@ -150,8 +150,14 @@ class TestIrUiView(RolePolicyTestCommon):
                 }
             )
         )
-        # Write without context should remove groups from update
-        view.write({"groups_id": [(6, 0, [])]})
+        # Verify groups were set initially
+        self.assertTrue(view.groups_id)
+        # Get fresh recordset WITHOUT role_policy_init context
+        view_no_ctx = self.env["ir.ui.view"].browse(view.id)
+        # Write without context should ignore groups_id update
+        view_no_ctx.write({"groups_id": [(6, 0, [])]})
+        # Re-read the view to check groups_id
+        view.invalidate_recordset()
         # groups_id shouldn't change because the update was ignored
         self.assertTrue(view.groups_id)
 
