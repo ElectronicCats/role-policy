@@ -33,6 +33,7 @@ ignore = [
 [lint.per-file-ignores]
 "__init__.py" = ["F401"]  # Unused imports in __init__.py
 "__manifest__.py" = ["B018"]  # Useless expression in manifests
+"role_policy/models/__init__.py" = ["I001"]  # Keep explicit import order for model loading
 
 [lint.isort]
 known-first-party = [
