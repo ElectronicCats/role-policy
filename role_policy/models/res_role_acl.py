@@ -43,7 +43,11 @@ class ResRoleAcl(models.Model):
     perm_unlink = fields.Boolean(string="Delete Access")
     active = fields.Boolean(default=True)
     company_id = fields.Many2one(
-        comodel_name="res.company", related="role_id.company_id", store=True
+        comodel_name="res.company",
+        related="role_id.company_id",
+        store=True,
+        readonly=True,
+        precompute=True,
     )
 
     @api.model_create_multi

@@ -40,7 +40,11 @@ class ViewTypeAttribute(models.Model):
     attrib_val = fields.Char(string="Attribute Value", required=True)
     active = fields.Boolean(default=True)
     company_id = fields.Many2one(
-        comodel_name="res.company", related="role_id.company_id", store=True
+        comodel_name="res.company",
+        related="role_id.company_id",
+        store=True,
+        readonly=True,
+        precompute=True,
     )
 
     @api.constrains("view_id", "attrib", "attrib_val")

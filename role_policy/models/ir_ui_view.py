@@ -24,7 +24,10 @@ class IrUiView(models.Model):
 
     def write(self, vals):
         if not self.env.context.get("role_policy_init") and "groups_id" in vals:
+            vals = dict(vals)
             del vals["groups_id"]
+            if not vals:
+                return True
         return super().write(vals)
 
     def read_combined(self, fields=None):

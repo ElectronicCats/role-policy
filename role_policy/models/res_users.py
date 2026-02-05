@@ -76,9 +76,6 @@ class ResUsers(models.Model):
         """
         Remove no role groups.
         """
-        if config.get("test_enable"):
-            return super().create(vals_list)
-
         keep_ids = self._get_role_policy_group_keep_ids()
         for i, vals in enumerate(vals_list):
             vals = self._remove_reified_groups(vals)
@@ -119,9 +116,6 @@ class ResUsers(models.Model):
         if self.env.context.get("role_policy_bypass_write"):
             return super(ResUsersBase, self).write(vals)
 
-        if config.get("test_enable"):
-            return super().write(vals)
-
         vals = self._remove_reified_groups(vals)
         if not any(
             [vals.get(x) for x in ("groups_id", "role_ids", "enabled_role_ids")]
@@ -153,7 +147,8 @@ class ResUsers(models.Model):
             return True
 
     def has_role(self, code):
-        roles = self.env.user.enabled_role_ids or self.env.user.role_ids
+        self.ensure_one()
+        roles = self.enabled_role_ids or self.role_ids
         return code in roles.mapped("code")
 
     def _get_view(self, view_id=None, view_type="form", **options):

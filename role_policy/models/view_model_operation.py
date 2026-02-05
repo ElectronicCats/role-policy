@@ -39,7 +39,11 @@ class ViewModelOperation(models.Model):
     disable = fields.Boolean(help="Disable this operation", default=True)
     active = fields.Boolean(default=True)
     company_id = fields.Many2one(
-        comodel_name="res.company", related="role_id.company_id", store=True
+        comodel_name="res.company",
+        related="role_id.company_id",
+        store=True,
+        readonly=True,
+        precompute=True,
     )
 
     @api.model

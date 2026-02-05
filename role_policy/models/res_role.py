@@ -114,7 +114,13 @@ class ResRole(models.Model):
             dict(self.env.context, role_policy_init=True, active_test=False)
         ).search([])
         for role in roles:
-            for f in ["menu_ids", "act_window_ids", "act_server_ids", "act_report_ids"]:
+            for f in [
+                "menu_ids",
+                "act_window_ids",
+                "act_client_ids",
+                "act_server_ids",
+                "act_report_ids",
+            ]:
                 torestore = [
                     x for x in getattr(role, f) if role.group_id not in x.groups_id
                 ]
@@ -129,16 +135,35 @@ class ResRole(models.Model):
             vals["group_id"] = role_group.id
         roles = super().create(vals_list)
         for role, vals in zip(roles, vals_list, strict=False):
-            for f in ["menu_ids", "act_window_ids", "act_server_ids", "act_report_ids"]:
+            for f in [
+                "menu_ids",
+                "act_window_ids",
+                "act_client_ids",
+                "act_server_ids",
+                "act_report_ids",
+            ]:
                 if f in vals and vals[f] and vals[f][0][2]:
                     getattr(role, f).write({"groups_id": [(4, role.group_id.id)]})
         return roles
 
     def _create_role_group(self, vals):
         categ = self.env.ref("role_policy.ir_module_category_role")
+        code = vals["code"]
+        company_id = vals.get("company_id") or self.env.user.company_id.id
+        group_name = code
+        if self.env["res.groups"].search(
+            [("category_id", "=", categ.id), ("name", "=", group_name)], limit=1
+        ):
+            group_name = f"{code}_{company_id}"
+            suffix = 2
+            while self.env["res.groups"].search(
+                [("category_id", "=", categ.id), ("name", "=", group_name)], limit=1
+            ):
+                group_name = f"{code}_{company_id}_{suffix}"
+                suffix += 1
         group_vals = {
             "role": True,
-            "name": vals["code"],
+            "name": group_name,
             "category_id": categ.id,
             "users": vals.get("user_ids"),
         }
@@ -146,45 +171,44 @@ class ResRole(models.Model):
 
     def write(self, vals):
         self = self.with_context(dict(self.env.context, role_policy_init=True))
+        tracked_fields = [
+            "menu_ids",
+            "act_window_ids",
+            "act_client_ids",
+            "act_server_ids",
+            "act_report_ids",
+        ]
+        old_relations = {}
+        if any(f in vals for f in tracked_fields):
+            for role in self:
+                old_relations[role.id] = {
+                    f: set(getattr(role, f).ids) for f in tracked_fields
+                }
         for role in self:
             if vals.get("code"):
                 if role.code != vals["code"] and role.acl_ids:
                     raise UserError(_("You are not allowed to update the code."))
             if "user_ids" in vals:
                 self._update_role_groups(role, vals)
-            updates = []
-            role_gid = role.group_id.id
-            for f in ["menu_ids", "act_window_ids", "act_server_ids", "act_report_ids"]:
-                if f in vals:
-                    model = self._fields[f].comodel_name
-                    for entry in vals[f]:
-                        command = entry[0]
-                        if command == 6:
-                            model_ids = getattr(role, f).ids
-                            old_model_ids = set(model_ids)
-                            new_model_ids = set(entry[2])
-                            removal_ids = old_model_ids - new_model_ids
-                            addition_ids = new_model_ids - old_model_ids
-                            if removal_ids:
-                                updates.append(
-                                    (model, list(removal_ids), [(3, role_gid)])
-                                )
-                            if addition_ids:
-                                updates.append(
-                                    (model, list(addition_ids), [(4, role_gid)])
-                                )
-                        elif command == 4:  # Añadir existente
-                            updates.append((model, [entry[1]], [(4, role_gid)]))
-                        elif command == 3:  # Quitar (sin borrar registro)
-                            updates.append((model, [entry[1]], [(3, role_gid)]))
-                        elif (
-                            command == 2
-                        ):  # Borrar registro (poco común aquí pero posible)
-                            updates.append((model, [entry[1]], [(3, role_gid)]))
         res = super().write(vals)
-        for model, model_ids, command in updates:
-            rs = self.env[model].browse(model_ids)
-            rs.write({"groups_id": command})
+        if old_relations:
+            for role in self:
+                role_gid = role.group_id.id
+                for f in tracked_fields:
+                    old_ids = old_relations[role.id][f]
+                    new_ids = set(getattr(role, f).ids)
+                    additions = new_ids - old_ids
+                    removals = old_ids - new_ids
+                    if additions:
+                        rs = self.env[self._fields[f].comodel_name].browse(
+                            list(additions)
+                        )
+                        rs.write({"groups_id": [(4, role_gid)]})
+                    if removals:
+                        rs = self.env[self._fields[f].comodel_name].browse(
+                            list(removals)
+                        )
+                        rs.write({"groups_id": [(3, role_gid)]})
         return res
 
     def _update_role_groups(self, role, vals):
