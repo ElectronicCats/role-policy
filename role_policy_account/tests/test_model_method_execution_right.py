@@ -1,9 +1,8 @@
 # Copyright 2024 Electronic Cats
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from odoo.tests.common import tagged
-
 from odoo.addons.role_policy.tests.common import RolePolicyTestCommon
+from odoo.tests.common import tagged
 
 
 @tagged("post_install", "-at_install")

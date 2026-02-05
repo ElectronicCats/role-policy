@@ -3,10 +3,9 @@
 
 import unittest.mock
 
+from odoo.addons.role_policy.tests.common import RolePolicyTestCommon
 from odoo.exceptions import UserError
 from odoo.tests.common import tagged
-
-from odoo.addons.role_policy.tests.common import RolePolicyTestCommon
 
 
 @tagged("post_install", "-at_install")
@@ -62,9 +61,7 @@ class TestAccountMove(RolePolicyTestCommon):
 
     def test_action_post_raises_without_right(self):
         """Verify that action_post raises UserError when user has no execution right."""
-        journal = self.env["account.journal"].search(
-            [("type", "=", "sale")], limit=1
-        )
+        journal = self.env["account.journal"].search([("type", "=", "sale")], limit=1)
         if not journal:
             self.skipTest("No sale journal found; account demo data required.")
         move = self.env["account.move"].create(
