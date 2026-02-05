@@ -135,22 +135,23 @@ class TestViewTypeAttribute(RolePolicyTestCommon):
             ],
             limit=1,
         )
-        if list_view:
-            attr1 = self.env["view.type.attribute"].create(
-                {
-                    "role_id": self.role.id,
-                    "view_id": self.partner_form_view.id,
-                    "attrib": "test_attr",
-                    "attrib_val": "form_value",
-                }
-            )
-            attr2 = self.env["view.type.attribute"].create(
-                {
-                    "role_id": self.role.id,
-                    "view_id": list_view.id,
-                    "attrib": "test_attr",
-                    "attrib_val": "list_value",
-                }
-            )
-            self.assertNotEqual(attr1.view_id, attr2.view_id)
-            self.assertEqual(attr1.attrib, attr2.attrib)
+        if not list_view:
+            self.skipTest("No list view for res.partner in this environment.")
+        attr1 = self.env["view.type.attribute"].create(
+            {
+                "role_id": self.role.id,
+                "view_id": self.partner_form_view.id,
+                "attrib": "test_attr",
+                "attrib_val": "form_value",
+            }
+        )
+        attr2 = self.env["view.type.attribute"].create(
+            {
+                "role_id": self.role.id,
+                "view_id": list_view.id,
+                "attrib": "test_attr",
+                "attrib_val": "list_value",
+            }
+        )
+        self.assertNotEqual(attr1.view_id, attr2.view_id)
+        self.assertEqual(attr1.attrib, attr2.attrib)

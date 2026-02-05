@@ -1,11 +1,13 @@
 # Copyright 2024 Electronic Cats
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from odoo.tests.common import TransactionCase, tagged
+from odoo.tests.common import tagged
+
+from odoo.addons.role_policy.tests.common import RolePolicyTestCommon
 
 
 @tagged("post_install", "-at_install")
-class TestModelMethodExecutionRightAccount(TransactionCase):
+class TestModelMethodExecutionRightAccount(RolePolicyTestCommon):
     """Tests for model.method.execution.right extension in role_policy_account."""
 
     def test_selection_name_includes_action_post(self):

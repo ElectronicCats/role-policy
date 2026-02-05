@@ -42,8 +42,10 @@ class TestModelMethodExecutionRight(RolePolicyTestCommon):
         Right = self.env["model.method.execution.right"]
         selection = Right._selection_name()
         if not selection:
-            # Selection is empty in base module, can't test constraint
-            return
+            self.skipTest(
+                "Base module has no model.method.execution.right selection; "
+                "test covered in role_policy_account."
+            )
 
         Right.create(
             {
@@ -65,8 +67,10 @@ class TestModelMethodExecutionRight(RolePolicyTestCommon):
         Right = self.env["model.method.execution.right"]
         selection = Right._selection_name()
         if not selection:
-            # Selection is empty in base module
-            return
+            self.skipTest(
+                "Base module has no model.method.execution.right selection; "
+                "test covered in role_policy_account."
+            )
 
         right = Right.create(
             {
@@ -81,8 +85,10 @@ class TestModelMethodExecutionRight(RolePolicyTestCommon):
         Right = self.env["model.method.execution.right"]
         selection = Right._selection_name()
         if not selection:
-            # Selection is empty in base module
-            return
+            self.skipTest(
+                "Base module has no model.method.execution.right selection; "
+                "test covered in role_policy_account."
+            )
 
         right = Right.create(
             {
