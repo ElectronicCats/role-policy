@@ -53,7 +53,7 @@ class ViewTypeAttribute(models.Model):
 
     def _get_rules(self, view_id):
         rules = self.browse()
-        if config.get("test_enable"):
+        if config.get("test_enable") and not self.env.context.get("force_role_policy"):
             return rules
         signature_fields = self._rule_signature_fields()
         user_roles = self.env.user.enabled_role_ids or self.env.user.role_ids
