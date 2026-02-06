@@ -207,7 +207,7 @@ class TestIrUiView(RolePolicyTestCommon):
         
         # Apply rules
         archs = [(view.arch, view.id)]
-        result_archs = view.with_context(force_role_policy=True)._apply_view_modifier_rules("res.partner", archs)
+        result_archs = view.with_user(self.test_user).with_context(force_role_policy=True)._apply_view_modifier_rules("res.partner", archs)
         
         arch_node = etree.fromstring(result_archs[0][0])
         field_node = arch_node.xpath('//field[@name="name"]')[0]
