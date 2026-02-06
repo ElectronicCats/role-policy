@@ -172,3 +172,39 @@ class TestIrUiView(RolePolicyTestCommon):
         # Should not raise, returns source unchanged
         result = view.apply_inheritance_specs(source, specs)
         self.assertIsNotNone(result)
+
+    def test_apply_view_modifier_rules_column_invisible(self):
+        """Verify that invisible modifier is mapped to column_invisible for list views."""
+        # Create a list view
+        view = self.env["ir.ui.view"].create(
+            {
+                "name": "Test List View",
+                "model": "res.partner",
+                "type": "list",
+                "arch": '<list><field name="name"/></list>',
+            }
+        )
+        # Create a modifier rule for the test user's role
+        role = self.env.user.role_ids[0]
+        rule = self.env["view.modifier.rule"].create(
+            {
+                "role_id": role.id,
+                "model_id": self.env["ir.model"]._get_id("res.partner"),
+                "view_id": view.id,
+                "view_type": "list",
+                "element_ui": 'field name="name"',
+                "modifier_invisible": "1",
+            }
+        )
+        
+        # Apply rules
+        archs = [(view.arch, view.id)]
+        result_archs = view._apply_view_modifier_rules("res.partner", archs)
+        
+        arch_node = etree.fromstring(result_archs[0][0])
+        field_node = arch_node.xpath('//field[@name="name"]')[0]
+        
+        # In Odoo 18, invisible on list view field should become column_invisible
+        self.assertEqual(field_node.attrib.get("column_invisible"), "True")
+        self.assertNotIn("invisible", field_node.attrib)
+
