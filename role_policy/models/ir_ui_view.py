@@ -147,6 +147,16 @@ class IrUiView(models.Model):
                         parent.remove(to_remove)
         return arch_node
 
+    def _apply_view_modifier_remove_rules(self, model, archs):
+        """Compatibility wrapper for _apply_view_modifier_remove_rules_node."""
+        res = []
+        for arch_str, v_id in archs:
+            node = etree.fromstring(arch_str)
+            new_node = self._apply_view_modifier_remove_rules_node(node, model, v_id)
+            if new_node is not None:
+                res.append((etree.tostring(new_node, encoding="unicode"), v_id))
+        return res
+
     def _apply_view_modifier_rules_node(self, arch_node, model, view_id, view_type=None):
         if not model or model not in self.env:
             return
@@ -207,6 +217,15 @@ class IrUiView(models.Model):
                         node.set("force_save", "1")
             except Exception:
                 continue
+
+    def _apply_view_modifier_rules(self, model, archs):
+        """Compatibility wrapper for _apply_view_modifier_rules_node."""
+        res = []
+        for arch_str, v_id in archs:
+            node = etree.fromstring(arch_str)
+            self._apply_view_modifier_rules_node(node, model, v_id)
+            res.append((etree.tostring(node, encoding="unicode"), v_id))
+        return res
 
     def _remove_security_groups(self, arch_node):
         untouchable_groups = self._role_policy_untouchable_groups()
