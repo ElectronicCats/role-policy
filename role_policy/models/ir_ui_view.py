@@ -83,7 +83,7 @@ class IrUiView(models.Model):
                 source, specs_tree, pre_locate=pre_locate
             )
         except (ValueError, TypeError):
-            _logger.warning(
+            _logger.info(
                 "Role Policy: Inheritance application failed (probably element not found). "
                 "Returning source unchanged to prevent crash."
             )

@@ -2,7 +2,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 from lxml import etree
-from odoo.tests.common import tagged
+from odoo.tests.common import tagged, mute_logger
 
 from .common import RolePolicyTestCommon
 
@@ -169,6 +169,7 @@ class TestIrUiView(RolePolicyTestCommon):
         # groups_id shouldn't change because the update was ignored
         self.assertTrue(view.groups_id)
 
+    @mute_logger("odoo.addons.role_policy.models.ir_ui_view")
     def test_apply_inheritance_specs_handles_errors(self):
         """Verify that apply_inheritance_specs handles ValueError gracefully."""
         view = self.env["ir.ui.view"]
