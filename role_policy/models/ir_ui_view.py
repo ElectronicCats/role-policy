@@ -73,6 +73,23 @@ class IrUiView(models.Model):
         return res
 
     @api.model
+    def apply_inheritance_specs(self, source, specs_tree, pre_locate=lambda s: True):
+        """
+        No Mercy inheritance: if inheritance fails, we log it and continue
+        instead of crashing the whole view.
+        """
+        try:
+            return super().apply_inheritance_specs(
+                source, specs_tree, pre_locate=pre_locate
+            )
+        except (ValueError, TypeError):
+            _logger.warning(
+                "Role Policy: Inheritance application failed (probably element not found). "
+                "Returning source unchanged to prevent crash."
+            )
+            return source
+
+    @api.model
     def get_inheriting_views_arch(self, view_id, model):
         archs = super().get_inheriting_views_arch(view_id, model)
         if self.env.user.exclude_from_role_policy:

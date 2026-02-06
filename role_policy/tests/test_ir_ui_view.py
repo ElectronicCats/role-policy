@@ -193,7 +193,7 @@ class TestIrUiView(RolePolicyTestCommon):
             }
         )
         # Create a modifier rule for the test user's role
-        role = self.env.user.role_ids[0]
+        role = self.test_user.role_ids[0]
         rule = self.env["view.modifier.rule"].create(
             {
                 "role_id": role.id,
