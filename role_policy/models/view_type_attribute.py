@@ -58,7 +58,7 @@ class ViewTypeAttribute(models.Model):
         signature_fields = self._rule_signature_fields()
         user_roles = self.env.user.enabled_role_ids or self.env.user.role_ids
         dom = [("view_id", "=", view_id), ("role_id", "in", user_roles.ids)]
-        all_rules = self.search(dom)
+        all_rules = self.sudo().search(dom)
         rules_dict = {}
         for rule in all_rules:
             key = "-".join([str(getattr(rule, f)) for f in signature_fields])

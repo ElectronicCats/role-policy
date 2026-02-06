@@ -305,7 +305,7 @@ class ViewModifierRule(models.Model):
             dom += ["|", ("view_id", "=", view_id), ("view_id", "=", False)]
         if view_type:
             dom += ["|", ("view_type", "=", view_type), ("view_type", "=", False)]
-        all_rules = self.search(dom)
+        all_rules = self.sudo().search(dom)
         rules_dict = {}
         for rule in all_rules:
             key = "-".join([str(getattr(rule, f)) for f in signature_fields])

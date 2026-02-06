@@ -106,7 +106,7 @@ class ViewModelOperation(models.Model):
         dom = [("role_id", "in", user_roles.ids)]
         if model:
             dom.append(("model", "in", (model, "default")))
-        all_rules = self.search(dom)
+        all_rules = self.sudo().search(dom)
         rules_dict = {}
         for rule in all_rules:
             key = "-".join([str(getattr(rule, f)) for f in signature_fields])
