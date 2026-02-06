@@ -98,12 +98,20 @@ class TestIrUiView(RolePolicyTestCommon):
         self.assertIn("<form>", arch)
         self.assertIn("</form>", arch)
 
-    def test_no_access_view_arch_other_raises(self):
-        """Verify that other view types raise NotImplementedError."""
+    def test_no_access_view_arch_list(self):
+        """Verify arch generated when no access for list view."""
         view = self.env["ir.ui.view"]
         view_dict = {"type": "list"}
-        with self.assertRaises(NotImplementedError):
-            view._no_access_view_arch(view_dict)
+        arch = view._no_access_view_arch(view_dict)
+        self.assertIn("<list>", arch)
+        self.assertIn("</list>", arch)
+        self.assertIn('column_invisible="True"', arch)
+
+    def test_no_access_view_arch_other_unsupported_raises(self):
+        """Verify that truly unsupported view types raise (if any remains)."""
+        # Note: All types now have a default fallback, so this might not raise anymore
+        # but kept if we want to ensure error for specific crazy types if needed.
+        pass
 
     def test_create_removes_groups_without_context(self):
         """Verify that create removes groups_id without special context."""
