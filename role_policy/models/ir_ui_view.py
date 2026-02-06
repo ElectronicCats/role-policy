@@ -25,138 +25,170 @@ class IrUiView(models.Model):
     def write(self, vals):
         if not self.env.context.get("role_policy_init") and "groups_id" in vals:
             vals = dict(vals)
-            del vals["groups_id"]
+            vals.pop("groups_id", None)
             if not vals:
                 return True
         return super().write(vals)
+
+    def _get_view(self, view_id=None, view_type="form", **options):
+        arch, view = super()._get_view(view_id=view_id, view_type=view_type, **options)
+        if self.env.user.exclude_from_role_policy:
+            return arch, view
+
+        # Use passed parameters or view dict for robustness
+        v_id = view.get("id") if isinstance(view, dict) else view.id
+        model = view.get("model") if isinstance(view, dict) else (view.model if hasattr(view, 'model') else self._name)
+
+        if not model or model not in self.env:
+            return arch, view
+
+        self._apply_view_type_attribute_rules_node(arch, v_id, view_type, model)
+        modified_arch = self._apply_view_modifier_remove_rules_node(arch, model, v_id)
+        if modified_arch is not None:
+            self._apply_view_modifier_rules_node(modified_arch, model, v_id, view_type=view_type)
+            self._remove_security_groups(modified_arch)
+            self._handle_roles(modified_arch)
+            self._clean_arch_from_broken_fields(modified_arch, model)
+            return modified_arch, view
+        else:
+            arch_str = self._no_access_view_arch({"type": view_type})
+            return etree.fromstring(arch_str), view
 
     def read_combined(self, fields=None):
         res = super().read_combined(fields=fields)
         if self.env.user.exclude_from_role_policy:
             return res
-        res["arch"] = self._remove_xml_comments(res["arch"])
-        res["arch"] = self._apply_view_type_attribute_rules(res["arch"])
-        archs = [(res["arch"], self.id)]
-        archs = self._apply_view_modifier_remove_rules(self.model, archs)
-        archs = self._apply_view_modifier_rules(self.model, archs)
-        if archs:
-            arch_node = etree.fromstring(archs[0][0])
+        arch_node = etree.fromstring(res["arch"])
+        model = self.model or self._name
+        self._apply_view_type_attribute_rules_node(arch_node, self.id, self.type, model)
+        arch_node = self._apply_view_modifier_remove_rules_node(arch_node, model, self.id)
+        if arch_node is not None:
+            self._apply_view_modifier_rules_node(arch_node, model, self.id, view_type=self.type)
             self._remove_security_groups(arch_node)
             self._handle_roles(arch_node)
-            arch = etree.tostring(arch_node, encoding="unicode")
+            self._clean_arch_from_broken_fields(arch_node, model)
+            res["arch"] = etree.tostring(arch_node, encoding="unicode")
         else:
-            arch = self._no_access_view_arch(res)
-        res["arch"] = arch
+            res["arch"] = self._no_access_view_arch(res)
         return res
+
+    @api.model
+    def apply_inheritance_specs(self, source, specs_tree, pre_locate=lambda s: True):
+        """
+        No Mercy inheritance: if inheritance fails, we log it and continue
+        instead of crashing the whole view.
+        """
+        try:
+            return super().apply_inheritance_specs(
+                source, specs_tree, pre_locate=pre_locate
+            )
+        except (ValueError, TypeError):
+            _logger.info(
+                "Role Policy: Inheritance application failed (probably element not found). "
+                "Returning source unchanged to prevent crash."
+            )
+            return source
 
     @api.model
     def get_inheriting_views_arch(self, view_id, model):
         archs = super().get_inheriting_views_arch(view_id, model)
         if self.env.user.exclude_from_role_policy:
             return archs
-        archs = self._apply_view_modifier_remove_rules(model, archs)
-        archs = self._apply_view_modifier_rules(model, archs)
         return archs
 
     def _remove_xml_comments(self, arch):
         if "<!--" in arch:
-            s0, s1 = arch.split("<!--", 1)
-            s2 = s1.split("-->", 1)[1]
-            return s0 + s2
+            try:
+                s0, s1 = arch.split("<!--", 1)
+                s2 = s1.split("-->", 1)[1]
+                return s0 + s2
+            except Exception:
+                return arch
         else:
             return arch
 
-    def _apply_view_type_attribute_rules(self, arch):
-        vta_rules = self.env["view.type.attribute"]._get_rules(self.id)
-        arch_node = etree.fromstring(arch)
+    def _apply_view_type_attribute_rules_node(self, arch_node, view_id, view_type, model):
+        vta_rules = self.env["view.type.attribute"]._get_rules(view_id)
         if vta_rules:
             [arch_node.set(r.attrib, r.attrib_val) for r in vta_rules]
 
         if not self.env.is_admin():
             operations = self.env["view.model.operation"]._operations_dict()
-            vmo_rules = self.env["view.model.operation"]._get_rules(model=self.model)
-            rules = vmo_rules.filtered(
-                lambda r: r.operation not in vta_rules.mapped("attrib")
-            )
-            for rule in rules:
+            vmo_rules = self.env["view.model.operation"]._get_rules(model=model)
+            vta_attribs = vta_rules.mapped("attrib")
+            for rule in vmo_rules:
+                if rule.operation in vta_attribs:
+                    continue
                 for k, v in operations.items():
-                    if self.type in v.get("view_types", []) and k == rule.operation:
+                    if k != rule.operation:
+                        continue
+                    view_types = v.get("view_types", [])
+                    if view_type in view_types or view_type in ("tree", "list"):
                         arch_node.set(
                             v.get("view_type_attribute") or k,
-                            rule.disable and "false" or "true",
+                            "0" if rule.disable else "1",
                         )
-        arch = etree.tostring(arch_node, encoding="unicode")
-        return arch
 
-    def _apply_view_modifier_remove_rules(self, model, archs_in):
-        archs = archs_in[:]
-        removal_indexes = []
-        for i, (arch, view_id) in enumerate(archs_in):
-            rules = self.env["view.modifier.rule"]._get_rules(
-                model, view_id, remove=True
-            )
-            for rule in rules:
-                if not rule.element:
-                    if not rule.view_id:
-                        raise UserError(
-                            _(
-                                "Syntax error in rule %s of role %s. "
-                                "A rule without an element is only allowed "
-                                "for complete view removals."
-                            )
-                            % (rule, rule.role_id.code)
-                        )
-                    removal_indexes.append(i)
-                else:
-                    arch_node = etree.fromstring(arch)
-                    try:
-                        rule_node = etree.fromstring(f"<{rule.element}/>")
-                    except Exception:
-                        raise UserError(
-                            _("Incorrect element definition in rule %s of role %s.")
-                            % (rule, rule.role_id.code)
-                        )
-                    to_remove = locate_node(arch_node, rule_node)
-                    if to_remove is not None:
-                        to_remove.getparent().remove(to_remove)
-                        arch = etree.tostring(arch_node, encoding="unicode")
-                    archs[i] = (arch, view_id)
-        for i in sorted(removal_indexes, reverse=True):
-            del archs[i]
-        return archs
-
-    def _apply_view_modifier_rules(self, model, archs_in):
-        archs = []
-        for arch, view_id in archs_in:
-            view = self.browse(view_id)
-            rules = self.env["view.modifier.rule"]._get_rules(
-                model, view_id, view_type=view.type
-            )
-            for rule in rules:
-                arch_node = etree.fromstring(arch)
-                el = rule.element
+    def _apply_view_modifier_remove_rules_node(self, arch_node, model, view_id):
+        rules = self.env["view.modifier.rule"]._get_rules(model, view_id, remove=True)
+        for rule in rules:
+            if not rule.element:
+                if rule.view_id:
+                    return None  # Total removal
+            else:
                 try:
-                    if el[:5] == "xpath":
-                        expr = safe_eval(el.split("expr=")[1])
-                    else:
-                        parts = el.split(" ")
-                        tag = parts[0].strip()
-                        attrib, val = parts[1].strip().split("=")
-                        attrib = attrib.strip()
-                        val = val.strip()[1:-1]
-                        expr = f"//{tag}[@{attrib}='{val}']"
+                    rule_node = etree.fromstring(f"<{rule.element}/>")
                 except Exception:
-                    raise UserError(
-                        _("Incorrect element definition in rule %s of role %s.")
-                        % (rule, rule.role_id.code)
-                    )
-                expr = f"({expr})[1]"
-                rule_node = arch_node.xpath(expr)
-                if not rule_node:
                     continue
-                rule_node = rule_node[0]
-                # Remove deprecated attrs attribute (Odoo 17+)
-                rule_node.attrib.pop("attrs", None)
+                to_remove = locate_node(arch_node, rule_node)
+                if to_remove is not None:
+                    parent = to_remove.getparent()
+                    if parent is not None:
+                        parent.remove(to_remove)
+        return arch_node
+
+    def _apply_view_modifier_remove_rules(self, model, archs):
+        """Compatibility wrapper for _apply_view_modifier_remove_rules_node."""
+        res = []
+        for arch_str, v_id in archs:
+            node = etree.fromstring(arch_str)
+            new_node = self._apply_view_modifier_remove_rules_node(node, model, v_id)
+            if new_node is not None:
+                res.append((etree.tostring(new_node, encoding="unicode"), v_id))
+        return res
+
+    def _apply_view_modifier_rules_node(self, arch_node, model, view_id, view_type=None):
+        if not model or model not in self.env:
+            return
+        rules = self.env["view.modifier.rule"]._get_rules(
+            model, view_id, view_type=view_type or getattr(self, "type", "form")
+        )
+        model_obj = self.env[model]
+        for rule in rules:
+            el = rule.element
+            try:
+                if el[:5] == "xpath":
+                    expr = safe_eval(el.split("expr=")[1])
+                else:
+                    parts = el.split(" ")
+                    tag = parts[0].strip()
+                    attrib, val = parts[1].strip().split("=")
+                    attrib = attrib.strip()
+                    val = val.strip()[1:-1]
+                    expr = f"//{tag}[@{attrib}='{val}']"
+                expr = f"({expr})[1]"
+                nodes = arch_node.xpath(expr)
+                if not nodes:
+                    continue
+                node = nodes[0]
+                
+                # Odoo 18 Paranoia: Verify that if it's a field, it exists in the model
+                if node.tag == "field":
+                    name = node.get("name")
+                    if name and name not in model_obj._fields:
+                        continue
+
+                node.attrib.pop("attrs", None)
                 for mod in [
                     "modifier_invisible",
                     "modifier_readonly",
@@ -164,65 +196,109 @@ class IrUiView(models.Model):
                 ]:
                     rule_mod = getattr(rule, mod)
                     modifier = mod[9:]
-                    rule_node.attrib.pop(modifier, None)
+                    node_view_type = view_type or getattr(self, "type", "form")
+                    if (
+                        modifier == "invisible"
+                        and node_view_type in ("list", "tree")
+                        and node.tag == "field"
+                    ):
+                        modifier = "column_invisible"
+
+                    node.attrib.pop(modifier, None)
                     if rule_mod in ["0", "1"]:
-                        rule_node.set(modifier, rule_mod)
+                        node.set(modifier, "True" if rule_mod == "1" else "False")
                     elif rule_mod:
-                        # In Odoo 18, domain expressions go directly as
-                        # modifier attribute values (attrs is deprecated)
-                        rule_node.set(modifier, rule_mod)
+                        node.set(modifier, rule_mod)
                     if (
                         mod == "modifier_readonly"
-                        and rule_node.tag == "field"
+                        and node.tag == "field"
                         and rule_mod
                     ):
-                        rule_node.set("force_save", "1")
-                arch = etree.tostring(arch_node, encoding="unicode")
-            archs.append((arch, view_id))
-        return archs
+                        node.set("force_save", "1")
+            except Exception:
+                continue
 
-    @api.model
-    def apply_inheritance_specs(self, source, specs_tree, pre_locate=lambda s: True):
-        """
-        Avoid raise for syntax errors in web modifier rules.
-        Those errors are logged into the logfile,
-        cf. base/models/ir.ui.view.py, method raise_view_error:
-                _logger.info(message)
-        """
-        try:
-            source = super().apply_inheritance_specs(
-                source, specs_tree, pre_locate=pre_locate
-            )
-        except ValueError:
-            pass
-        return source
+    def _apply_view_modifier_rules(self, model, archs):
+        """Compatibility wrapper for _apply_view_modifier_rules_node."""
+        res = []
+        for arch_str, v_id in archs:
+            node = etree.fromstring(arch_str)
+            self._apply_view_modifier_rules_node(node, model, v_id)
+            res.append((etree.tostring(node, encoding="unicode"), v_id))
+        return res
 
     def _remove_security_groups(self, arch_node):
         untouchable_groups = self._role_policy_untouchable_groups()
         for node in arch_node.xpath("//*[@groups]"):
-            groups = node.attrib.pop("groups")
-            groups = groups.split(",")
-            untouchables = [x for x in groups if x in untouchable_groups]
+            groups_attr = node.attrib.get("groups")
+            if not groups_attr:
+                continue
+            groups = groups_attr.split(",")
+            untouchables = [x for x in groups if x.strip() in untouchable_groups]
             if untouchables:
                 node.set("groups", ",".join(untouchables))
+            else:
+                node.attrib.pop("groups", None)
 
     def _handle_roles(self, arch_node):
-        """
-        Remove roles attribute when user belongs to one of the roles
-        or view element when this is not the case.
-        """
         for node in arch_node.xpath("//*[@roles]"):
             roles = node.attrib.pop("roles")
             roles = roles.split(",")
             roles = [x.strip() for x in roles]
             if not any([self.env.user.has_role(r) for r in roles]):
-                parent = node.find("..")
-                parent.remove(node)
+                parent = node.getparent()
+                if parent is not None:
+                    parent.remove(node)
+
+    def _clean_arch_from_broken_fields(self, arch, model):
+        """
+        Remove fields from arch that are not in the model registry.
+        This prevents OwlError in the frontend.
+        """
+        if not model or model not in self.env:
+            return
+        
+        def _recursive_clean(node, current_model):
+            if not current_model or current_model not in self.env:
+                return
+            
+            model_obj = self.env[current_model]
+            fields = model_obj._fields
+            for child in list(node):
+                if child.tag == "field":
+                    name = child.get("name")
+                    if not name:
+                        _logger.warning("Role Policy: Removing field node without 'name' attribute in model '%s'", current_model)
+                        node.remove(child)
+                        continue
+                    
+                    if name in fields:
+                        # Recurse for relational fields
+                        field = fields[name]
+                        rel_model = getattr(field, "comodel_name", None)
+                        if rel_model:
+                             _recursive_clean(child, rel_model)
+                    else:
+                        # Broken technical field or legacy name
+                        _logger.warning("Role Policy: Removing broken field '%s' from model '%s' (Not in server registry).", name, current_model)
+                        node.remove(child)
+                else:
+                    _recursive_clean(child, current_model)
+
+        _recursive_clean(arch, model)
 
     def _no_access_view_arch(self, view_dict):
-        if view_dict["type"] == "form":
-            message = _("Your are not allowed to view this information.")
-            arch = "<form>%s</form>" % message
+        tag = view_dict.get("type") or "form"
+        if tag == "tree":
+            tag = "list"
+        message = _("Your are not allowed to view this information.")
+        if tag == "list":
+            return f'<list><field name="id" column_invisible="True"/><button string="{message}" name="dummy" type="object"/></list>'
+        elif tag == "calendar":
+             return f'<calendar date_start="id"><field name="id" invisible="True"/><p>{message}</p></calendar>'
+        elif tag == "kanban":
+             return f'<kanban><templates><t t-name="card"><div class="oe_kanban_global_click"><p>{message}</p><field name="id" invisible="True"/></div></t></templates></kanban>'
+        elif tag == "form":
+            return f'<form><sheet><group><p>{message}</p></group></sheet></form>'
         else:
-            raise NotImplementedError
-        return arch
+            return f"<{tag}><p>{message}</p></{tag}>"

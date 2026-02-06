@@ -2,7 +2,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 from lxml import etree
-from odoo.tests.common import tagged
+from odoo.tests.common import tagged, mute_logger
 
 from .common import RolePolicyTestCommon
 
@@ -98,12 +98,20 @@ class TestIrUiView(RolePolicyTestCommon):
         self.assertIn("<form>", arch)
         self.assertIn("</form>", arch)
 
-    def test_no_access_view_arch_other_raises(self):
-        """Verify that other view types raise NotImplementedError."""
+    def test_no_access_view_arch_list(self):
+        """Verify arch generated when no access for list view."""
         view = self.env["ir.ui.view"]
         view_dict = {"type": "list"}
-        with self.assertRaises(NotImplementedError):
-            view._no_access_view_arch(view_dict)
+        arch = view._no_access_view_arch(view_dict)
+        self.assertIn("<list>", arch)
+        self.assertIn("</list>", arch)
+        self.assertIn('column_invisible="True"', arch)
+
+    def test_no_access_view_arch_other_unsupported_raises(self):
+        """Verify that truly unsupported view types raise (if any remains)."""
+        # Note: All types now have a default fallback, so this might not raise anymore
+        # but kept if we want to ensure error for specific crazy types if needed.
+        pass
 
     def test_create_removes_groups_without_context(self):
         """Verify that create removes groups_id without special context."""
@@ -161,6 +169,7 @@ class TestIrUiView(RolePolicyTestCommon):
         # groups_id shouldn't change because the update was ignored
         self.assertTrue(view.groups_id)
 
+    @mute_logger("odoo.addons.role_policy.models.ir_ui_view")
     def test_apply_inheritance_specs_handles_errors(self):
         """Verify that apply_inheritance_specs handles ValueError gracefully."""
         view = self.env["ir.ui.view"]
@@ -172,3 +181,39 @@ class TestIrUiView(RolePolicyTestCommon):
         # Should not raise, returns source unchanged
         result = view.apply_inheritance_specs(source, specs)
         self.assertIsNotNone(result)
+
+    def test_apply_view_modifier_rules_column_invisible(self):
+        """Verify that invisible modifier is mapped to column_invisible for list views."""
+        # Create a list view
+        view = self.env["ir.ui.view"].create(
+            {
+                "name": "Test List View",
+                "model": "res.partner",
+                "type": "list",
+                "arch": '<list><field name="name"/></list>',
+            }
+        )
+        # Create a modifier rule for the test user's role
+        role = self.test_user.role_ids[0]
+        rule = self.env["view.modifier.rule"].create(
+            {
+                "role_id": role.id,
+                "model_id": self.env["ir.model"]._get_id("res.partner"),
+                "view_id": view.id,
+                "view_type": "list",
+                "element_ui": 'field name="name"',
+                "modifier_invisible": "1",
+            }
+        )
+        
+        # Apply rules
+        archs = [(view.arch, view.id)]
+        result_archs = view.with_user(self.test_user).with_context(force_role_policy=True)._apply_view_modifier_rules("res.partner", archs)
+        
+        arch_node = etree.fromstring(result_archs[0][0])
+        field_node = arch_node.xpath('//field[@name="name"]')[0]
+        
+        # In Odoo 18, invisible on list view field should become column_invisible
+        self.assertEqual(field_node.attrib.get("column_invisible"), "True")
+        self.assertNotIn("invisible", field_node.attrib)
+

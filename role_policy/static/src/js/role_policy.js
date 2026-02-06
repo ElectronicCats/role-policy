@@ -136,16 +136,17 @@ patch(ListController.prototype, {
         const result = {...items};
 
         // Filter export action
-        if (this._rolePolicyHideExport && result.other) {
-            result.other = result.other.filter((item) => item.key !== "export");
+        if (this._rolePolicyHideExport && result && result.other) {
+            result.other = result.other.filter((item) => item && item.key !== "export");
         }
 
         // Filter archive/unarchive actions
-        if (this._rolePolicyHideArchive && result.other) {
+        if (this._rolePolicyHideArchive && result && result.other) {
             result.other = result.other.filter(
-                (item) => item.key !== "archive" && item.key !== "unarchive"
+                (item) => item && item.key !== "archive" && item.key !== "unarchive"
             );
         }
+
 
         return result;
     },
