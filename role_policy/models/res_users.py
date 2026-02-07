@@ -82,7 +82,6 @@ class ResUsers(models.Model):
             gids = []
             role_gids = []
 
-            # 1. Manejo de grupos normales
             if "groups_id" in vals:
                 for entry in vals["groups_id"]:
                     if entry[0] == 4 and entry[1] in keep_ids:
@@ -92,18 +91,21 @@ class ResUsers(models.Model):
                 if gids:
                     vals["groups_id"] = [(6, 0, list(set(gids)))]
 
-            # 2. Manejo de Roles (Aquí estaba el fallo)
             if "role_ids" in vals:
                 for entry in vals["role_ids"]:
-                    if entry[0] == 6:  # Reemplazo total
+                    if entry[0] == 6:
                         roles = self.env["res.role"].browse(entry[2])
                         role_gids += roles.mapped("group_id").ids
-                    elif entry[0] == 4:  # Adición simple (Común en Odoo 18)
+                    elif entry[0] == 4:
                         role = self.env["res.role"].browse(entry[1])
                         role_gids.append(role.group_id.id)
-                    # Eliminamos el raise NotImplementedError para que no rompa
 
-                # Combinamos grupos de roles + grupos mantenidos
+                # Always include base.group_user for internal users;
+                # without it the user cannot even log in.
+                group_user_id = self.env.ref("base.group_user").id
+                if group_user_id not in gids:
+                    gids.append(group_user_id)
+
                 vals["groups_id"] = [(6, 0, list(set(role_gids + gids)))]
 
             vals_list[i] = vals
