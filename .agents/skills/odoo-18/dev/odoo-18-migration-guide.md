@@ -1,7 +1,8 @@
 ---
 name: odoo-18-migration
-description: Comprehensive guide for upgrading modules and data to Odoo 18,
-  including migration scripts, upgrade hooks, deprecations, and best practices.
+description:
+  Comprehensive guide for upgrading modules and data to Odoo 18, including migration
+  scripts, upgrade hooks, deprecations, and best practices.
 globs: "**/migrations/**/*.py"
 topics:
   - Migration script structure (pre/post/end)
@@ -18,7 +19,8 @@ when_to_use:
 
 # Odoo 18 Migration Guide
 
-Comprehensive guide for migrating modules and data to Odoo 18, covering migration scripts, upgrade hooks, deprecations, and best practices.
+Comprehensive guide for migrating modules and data to Odoo 18, covering migration
+scripts, upgrade hooks, deprecations, and best practices.
 
 ## Table of Contents
 
@@ -84,6 +86,7 @@ def migrate(cr, version):
 ```
 
 **Valid Parameter Signatures:**
+
 - `(cr, version)` - Recommended
 - `(cr, _version)` - If version is unused
 - `(_cr, version)` - If cr is unused (rare)
@@ -128,6 +131,7 @@ The migration system supports these version formats:
 ### pre_init_hook
 
 Runs **before** the module is installed. Use for:
+
 - Checking prerequisites
 - Preparing data structures
 - Validating system requirements
@@ -153,6 +157,7 @@ def pre_init_function(env):
 ### post_init_hook
 
 Runs **after** the module is installed. Use for:
+
 - Creating initial data
 - Setting up configurations
 - Initializing default values
@@ -173,6 +178,7 @@ def post_init_function(env):
 ### uninstall_hook
 
 Runs **before** the module is uninstalled. Use for:
+
 - Cleaning up custom tables
 - Removing generated files
 - Reverting system changes
@@ -213,6 +219,7 @@ Module Upgrade Process:
 ### Pre-Stage (`pre-*.py`)
 
 Runs **before** module initialization:
+
 - Tables may not exist yet
 - Models are not loaded
 - Use raw SQL for data manipulation
@@ -239,6 +246,7 @@ def migrate(cr, version):
 ### Post-Stage (`post-*.py`)
 
 Runs **after** module initialization:
+
 - Tables and models are loaded
 - Can use ORM (`api.Environment`)
 - Best for data migrations
@@ -265,7 +273,8 @@ def migrate(cr, version):
 
 ### End-Stage (`end-*.py`)
 
-Runs **after ALL modules have been updated:
+Runs \*\*after ALL modules have been updated:
+
 - Can reference models from other modules
 - Use for cross-module data consistency
 
@@ -375,6 +384,7 @@ __manifest__.py
 ```
 
 **Warning:**
+
 ```python
 DeprecationWarning: __openerp__.py manifests are deprecated since 17.0,
 rename to __manifest__.py
@@ -765,16 +775,16 @@ def migrate(cr, version):
 
 ### Key Files Reference
 
-| File Path | Purpose |
-|-----------|---------|
-| `/odoo/modules/migration.py` | Core migration system |
-| `/odoo/modules/loading.py` | Module loading & upgrade orchestration |
-| `/odoo/modules/module.py` | Module discovery & version management |
-| `/odoo/modules/registry.py` | Model registry management |
-| `/odoo/cli/upgrade_code.py` | Source code upgrade tool |
-| `/odoo/tools/parse_version.py` | Version parsing utilities |
-| `/addons/base/models/ir_module.py` | Module model & operations |
-| `/odoo/upgrade_code/` | Automated upgrade scripts |
+| File Path                          | Purpose                                |
+| ---------------------------------- | -------------------------------------- |
+| `/odoo/modules/migration.py`       | Core migration system                  |
+| `/odoo/modules/loading.py`         | Module loading & upgrade orchestration |
+| `/odoo/modules/module.py`          | Module discovery & version management  |
+| `/odoo/modules/registry.py`        | Model registry management              |
+| `/odoo/cli/upgrade_code.py`        | Source code upgrade tool               |
+| `/odoo/tools/parse_version.py`     | Version parsing utilities              |
+| `/addons/base/models/ir_module.py` | Module model & operations              |
+| `/odoo/upgrade_code/`              | Automated upgrade scripts              |
 
 ### Testing Migrations
 

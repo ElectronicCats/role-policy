@@ -1,6 +1,9 @@
 ---
 name: odoo-18-security
-description: Complete reference for Odoo 18 security covering access rights (ACL), record rules, field-level access, security pitfalls, SQL injection prevention, XSS prevention, and safe coding practices.
+description:
+  Complete reference for Odoo 18 security covering access rights (ACL), record rules,
+  field-level access, security pitfalls, SQL injection prevention, XSS prevention, and
+  safe coding practices.
 globs: "**/*.{py,xml,csv}"
 topics:
   - Access rights (ir.model.access.csv)
@@ -21,7 +24,8 @@ when_to_use:
 
 # Odoo 18 Security Guide
 
-Complete reference for Odoo 18 security: access rights, record rules, field access, and preventing security pitfalls.
+Complete reference for Odoo 18 security: access rights, record rules, field access, and
+preventing security pitfalls.
 
 ## Table of Contents
 
@@ -40,12 +44,13 @@ Complete reference for Odoo 18 security: access rights, record rules, field acce
 
 Odoo provides two main data-driven security mechanisms:
 
-| Layer | Mechanism | Purpose |
-|-------|-----------|---------|
-| 1 | Access Rights (ACL) | Grants access to an entire model for operations |
-| 2 | Record Rules | Restricts which specific records can be accessed |
+| Layer | Mechanism           | Purpose                                          |
+| ----- | ------------------- | ------------------------------------------------ |
+| 1     | Access Rights (ACL) | Grants access to an entire model for operations  |
+| 2     | Record Rules        | Restricts which specific records can be accessed |
 
-Both are linked to users through **groups**. A user belongs to multiple groups, and security mechanisms apply to all groups cumulatively.
+Both are linked to users through **groups**. A user belongs to multiple groups, and
+security mechanisms apply to all groups cumulatively.
 
 ### Access Control Flow
 
@@ -83,20 +88,20 @@ Groups are the foundation of Odoo security.
 
 ### Group Fields
 
-| Field | Description |
-|-------|-------------|
-| `name` | User-readable name of the group |
+| Field         | Description                          |
+| ------------- | ------------------------------------ |
+| `name`        | User-readable name of the group      |
 | `category_id` | Module category (for grouping in UI) |
-| `implied_ids` | Other groups automatically applied |
-| `comment` | Additional notes |
+| `implied_ids` | Other groups automatically applied   |
+| `comment`     | Additional notes                     |
 
 ### Group Inheritance
 
 ```xml
 <!-- Manager group includes Employee group -->
 <record id="group_manager" model="res.groups">
-    <field name="name">Manager</field>
-    <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+  <field name="name">Manager</field>
+  <field name="implied_ids" eval="[(4, ref('base.group_user'))]" />
 </record>
 ```
 
@@ -140,16 +145,16 @@ access_trip_all,trip.all,model_business_trip,,1,0,0,0
 
 ### CSV Fields
 
-| Field | Description |
-|-------|-------------|
-| `id` | Unique external ID for this access record |
-| `name` | Human-readable name |
+| Field         | Description                                  |
+| ------------- | -------------------------------------------- |
+| `id`          | Unique external ID for this access record    |
+| `name`        | Human-readable name                          |
 | `model_id:id` | Model this ACL controls (must match `_name`) |
-| `group_id:id` | Group granted access (empty = all users) |
-| `perm_read` | Can read records |
-| `perm_write` | Can update records |
-| `perm_create` | Can create records |
-| `perm_unlink` | Can delete records |
+| `group_id:id` | Group granted access (empty = all users)     |
+| `perm_read`   | Can read records                             |
+| `perm_write`  | Can update records                           |
+| `perm_create` | Can create records                           |
+| `perm_unlink` | Can delete records                           |
 
 ### Access Rules
 
@@ -201,42 +206,42 @@ Record rules restrict which specific records a user can access based on domain f
 
 ```xml
 <record id="trip_personal_rule" model="ir.rule">
-    <field name="name">Personal Trips</field>
-    <field name="model_id" ref="model_business_trip"/>
-    <field name="domain_force">[('user_id', '=', user.id)]</field>
-    <field name="groups" eval="[(4, ref('base.group_user'))]"/>
-    <field name="perm_read" eval="True"/>
-    <field name="perm_write" eval="True"/>
-    <field name="perm_create" eval="True"/>
-    <field name="perm_unlink" eval="True"/>
+  <field name="name">Personal Trips</field>
+  <field name="model_id" ref="model_business_trip" />
+  <field name="domain_force">[('user_id', '=', user.id)]</field>
+  <field name="groups" eval="[(4, ref('base.group_user'))]" />
+  <field name="perm_read" eval="True" />
+  <field name="perm_write" eval="True" />
+  <field name="perm_create" eval="True" />
+  <field name="perm_unlink" eval="True" />
 </record>
 ```
 
 ### Record Rule Fields
 
-| Field | Description |
-|-------|-------------|
-| `name` | Description of the rule |
-| `model_id` | Model this rule applies to |
-| `groups` | Groups this rule applies to (empty = global rule) |
-| `domain_force` | Domain expression to filter records |
-| `perm_read` | Rule applies to read operations |
-| `perm_write` | Rule applies to write operations |
-| `perm_create` | Rule applies to create operations |
-| `perm_unlink` | Rule applies to delete operations |
+| Field          | Description                                       |
+| -------------- | ------------------------------------------------- |
+| `name`         | Description of the rule                           |
+| `model_id`     | Model this rule applies to                        |
+| `groups`       | Groups this rule applies to (empty = global rule) |
+| `domain_force` | Domain expression to filter records               |
+| `perm_read`    | Rule applies to read operations                   |
+| `perm_write`   | Rule applies to write operations                  |
+| `perm_create`  | Rule applies to create operations                 |
+| `perm_unlink`  | Rule applies to delete operations                 |
 
 ### Domain Force Variables
 
 Available variables in `domain_force`:
 
-| Variable | Type | Description |
-|----------|------|-------------|
-| `user` | Recordset | Current user (singleton) |
-| `user.id` | Int | Current user ID |
-| `user.company_id` | Int | Current user's main company ID |
+| Variable           | Type      | Description                        |
+| ------------------ | --------- | ---------------------------------- |
+| `user`             | Recordset | Current user (singleton)           |
+| `user.id`          | Int       | Current user ID                    |
+| `user.company_id`  | Int       | Current user's main company ID     |
 | `user.company_ids` | List[Int] | All company IDs user has access to |
-| `time` | Module | Python `time` module |
-| `datetime` | Module | Python `datetime` module |
+| `time`             | Module    | Python `time` module               |
+| `datetime`         | Module    | Python `datetime` module           |
 
 ### Rule Evaluation Context
 
@@ -262,11 +267,11 @@ domain_force = [
 
 **Critical Difference:**
 
-| Rule Type | Behavior |
-|-----------|----------|
+| Rule Type              | Behavior                                        |
+| ---------------------- | ----------------------------------------------- |
 | **Global** (no groups) | All global rules **intersect** - ALL must match |
-| **Group** (has groups) | Group rules **unify** - ANY can match |
-| Combined | Global + Group = **intersect** |
+| **Group** (has groups) | Group rules **unify** - ANY can match           |
+| Combined               | Global + Group = **intersect**                  |
 
 ```xml
 <!-- Global Rule 1: Must be active -->
@@ -310,7 +315,8 @@ domain_force = [
 
 ### Danger: Multiple Global Rules
 
-**Warning**: Creating multiple global rules is risky as it can create non-overlapping rulesets:
+**Warning**: Creating multiple global rules is risky as it can create non-overlapping
+rulesets:
 
 ```xml
 <!-- DANGEROUS: Two restrictive global rules -->
@@ -333,10 +339,10 @@ domain_force = [
 
 ```xml
 <record id="personal_trip_rule" model="ir.rule">
-    <field name="name">Personal Trips</field>
-    <field name="model_id" ref="model_business_trip"/>
-    <field name="domain_force">[('user_id', '=', user.id)]</field>
-    <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+  <field name="name">Personal Trips</field>
+  <field name="model_id" ref="model_business_trip" />
+  <field name="domain_force">[('user_id', '=', user.id)]</field>
+  <field name="groups" eval="[(4, ref('base.group_user'))]" />
 </record>
 ```
 
@@ -344,14 +350,14 @@ domain_force = [
 
 ```xml
 <record id="company_rule" model="ir.rule">
-    <field name="name">Multi-company Trips</field>
-    <field name="model_id" ref="model_business_trip"/>
-    <field name="domain_force">
+  <field name="name">Multi-company Trips</field>
+  <field name="model_id" ref="model_business_trip" />
+  <field name="domain_force">
         ['|',
         ('company_id', '=', False),
         ('company_id', 'in', user.company_ids)]
     </field>
-    <field name="global" eval="True"/>
+  <field name="global" eval="True" />
 </record>
 ```
 
@@ -385,11 +391,11 @@ domain_force = [
 ```xml
 <!-- Portal users see their own data -->
 <record id="trip_portal_rule" model="ir.rule">
-    <field name="name">Trips: Portal Own</field>
-    <field name="model_id" ref="model_business_trip"/>
-    <field name="domain_force">[('partner_id', '=', user.partner_id.id)]</field>
-    <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
-    <field name="perm_read" eval="True"/>
+  <field name="name">Trips: Portal Own</field>
+  <field name="model_id" ref="model_business_trip" />
+  <field name="domain_force">[('partner_id', '=', user.partner_id.id)]</field>
+  <field name="groups" eval="[(4, ref('base.group_portal'))]" />
+  <field name="perm_read" eval="True" />
 </record>
 ```
 
@@ -427,6 +433,7 @@ class BusinessTrip(models.Model):
 ### Field Access Effects
 
 When a user lacks access to a field:
+
 1. Field automatically removed from views
 2. Field removed from `fields_get()` response
 3. Explicit read/write raises `AccessError`
@@ -656,18 +663,18 @@ def _check_state(self):
 
 ### Security Checklist
 
-| ☐ | Task |
-|---|------|
-| ☐ | Define user groups |
-| ☐ | Create ir.model.access.csv |
-| ☐ | Add ACL for each model |
-| ☐ | Create record rules for multi-company |
-| ☐ | Create record rules for own/all access |
-| ☐ | Test with different user roles |
-| ☐ | Test with portal/public users |
-| ☐ | Review public methods for security |
-| ☐ | Check for SQL injection risks |
-| ☐ | Check for XSS vulnerabilities |
+| ☐   | Task                                   |
+| --- | -------------------------------------- |
+| ☐   | Define user groups                     |
+| ☐   | Create ir.model.access.csv             |
+| ☐   | Add ACL for each model                 |
+| ☐   | Create record rules for multi-company  |
+| ☐   | Create record rules for own/all access |
+| ☐   | Test with different user roles         |
+| ☐   | Test with portal/public users          |
+| ☐   | Review public methods for security     |
+| ☐   | Check for SQL injection risks          |
+| ☐   | Check for XSS vulnerabilities          |
 
 ### Common Security Patterns
 
@@ -693,8 +700,8 @@ access_model_user,model_my_model,base.group_user,1,0,0,0
 
 ```xml
 <record id="model_all_rule" model="ir.rule">
-    <field name="domain_force">[(1, '=', 1)]</field>
-    <field name="groups" eval="[(4, ref('module.group_manager'))]"/>
+  <field name="domain_force">[(1, '=', 1)]</field>
+  <field name="groups" eval="[(4, ref('module.group_manager'))]" />
 </record>
 ```
 
@@ -708,10 +715,10 @@ company_id = fields.Many2one('res.company', default=lambda s: s.env.company)
 ```xml
 <!-- Global rule -->
 <record id="model_company_rule" model="ir.rule">
-    <field name="domain_force">
+  <field name="domain_force">
         ['|', ('company_id', '=', False), ('company_id', 'in', user.company_ids)]
     </field>
-    <field name="global" eval="True"/>
+  <field name="global" eval="True" />
 </record>
 ```
 

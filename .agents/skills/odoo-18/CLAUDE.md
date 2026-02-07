@@ -1,12 +1,14 @@
 # Odoo 18 Development Guide
 
-This file provides guidance to AI agents when working with Odoo 18 code in this repository.
+This file provides guidance to AI agents when working with Odoo 18 code in this
+repository.
 
 > **For setup instructions with different AI IDEs, see [AGENTS.md](./AGENTS.md)**
 
 ## Documentation Structure
 
-The `agent-skills/skills/odoo/18.0/dev/` directory contains modular guides for Odoo 18 development:
+The `agent-skills/skills/odoo/18.0/dev/` directory contains modular guides for Odoo 18
+development:
 
 ```
 agent-skills/skills/odoo/18.0/
@@ -36,49 +38,49 @@ agent-skills/skills/odoo/18.0/
 
 ## Which Guide to Use
 
-| Task | Guide |
-|------|-------|
-| Creating actions, menus, cron jobs | `dev/odoo-18-actions-guide.md` |
-| Creating a new module | `dev/odoo-18-development-guide.md` |
-| Configuring __manifest__.py | `dev/odoo-18-manifest-guide.md` |
-| Creating XML/CSV data files | `dev/odoo-18-data-guide.md` |
-| Writing ORM queries/search | `dev/odoo-18-model-guide.md` |
-| Defining model fields | `dev/odoo-18-field-guide.md` |
-| Using @api decorators | `dev/odoo-18-decorator-guide.md` |
-| Writing XML views | `dev/odoo-18-view-guide.md` |
-| Fixing slow code/N+1 queries | `dev/odoo-18-performance-guide.md` |
-| Handling database errors | `dev/odoo-18-transaction-guide.md` |
-| Creating HTTP endpoints | `dev/odoo-18-controller-guide.md` |
-| Building OWL components | `dev/odoo-18-owl-guide.md` |
-| Upgrading modules/migrating data | `dev/odoo-18-migration-guide.md` |
-| Using mail.thread, activities, mixins | `dev/odoo-18-mixins-guide.md` |
-| Creating QWeb reports | `dev/odoo-18-reports-guide.md` |
-| Configuring security (ACL, rules) | `dev/odoo-18-security-guide.md` |
-| Writing tests | `dev/odoo-18-testing-guide.md` |
-| Adding translations/localization | `dev/odoo-18-translation-guide.md` |
+| Task                                  | Guide                              |
+| ------------------------------------- | ---------------------------------- |
+| Creating actions, menus, cron jobs    | `dev/odoo-18-actions-guide.md`     |
+| Creating a new module                 | `dev/odoo-18-development-guide.md` |
+| Configuring **manifest**.py           | `dev/odoo-18-manifest-guide.md`    |
+| Creating XML/CSV data files           | `dev/odoo-18-data-guide.md`        |
+| Writing ORM queries/search            | `dev/odoo-18-model-guide.md`       |
+| Defining model fields                 | `dev/odoo-18-field-guide.md`       |
+| Using @api decorators                 | `dev/odoo-18-decorator-guide.md`   |
+| Writing XML views                     | `dev/odoo-18-view-guide.md`        |
+| Fixing slow code/N+1 queries          | `dev/odoo-18-performance-guide.md` |
+| Handling database errors              | `dev/odoo-18-transaction-guide.md` |
+| Creating HTTP endpoints               | `dev/odoo-18-controller-guide.md`  |
+| Building OWL components               | `dev/odoo-18-owl-guide.md`         |
+| Upgrading modules/migrating data      | `dev/odoo-18-migration-guide.md`   |
+| Using mail.thread, activities, mixins | `dev/odoo-18-mixins-guide.md`      |
+| Creating QWeb reports                 | `dev/odoo-18-reports-guide.md`     |
+| Configuring security (ACL, rules)     | `dev/odoo-18-security-guide.md`    |
+| Writing tests                         | `dev/odoo-18-testing-guide.md`     |
+| Adding translations/localization      | `dev/odoo-18-translation-guide.md` |
 
 ## Key Odoo 18 Changes
 
-| Change | Old (Odoo 17-) | New (Odoo 18) |
-|--------|----------------|---------------|
-| List view tag | `<tree>` | `<list>` |
-| Dynamic attributes | `attrs="{'invisible': [...]}"` | `invisible="..."` (direct) |
-| Delete validation | Override `unlink()` | `@api.ondelete(at_uninstall=False)` |
-| Field aggregation | `group_operator=` | `aggregator=` |
-| SQL queries | `cr.execute()` | `SQL` class with `execute_query_dict()` |
-| Batch create | Single dict | List of dicts (`create([{...}, {...}])`) |
+| Change             | Old (Odoo 17-)                 | New (Odoo 18)                            |
+| ------------------ | ------------------------------ | ---------------------------------------- |
+| List view tag      | `<tree>`                       | `<list>`                                 |
+| Dynamic attributes | `attrs="{'invisible': [...]}"` | `invisible="..."` (direct)               |
+| Delete validation  | Override `unlink()`            | `@api.ondelete(at_uninstall=False)`      |
+| Field aggregation  | `group_operator=`              | `aggregator=`                            |
+| SQL queries        | `cr.execute()`                 | `SQL` class with `execute_query_dict()`  |
+| Batch create       | Single dict                    | List of dicts (`create([{...}, {...}])`) |
 
 ## Critical Anti-Patterns
 
-| Anti-Pattern | Why Bad | Correct Approach |
-|--------------|---------|------------------|
-| `attrs="{'invisible': [...]}"` | Deprecated in Odoo 18 | Use `invisible="..."` direct attribute |
-| `@api.depends('partner_id')` then accessing `partner_id.email` | N queries per record | Add `@api.depends('partner_id.email')` |
-| `search()` inside loop | N+1 queries | Use `search()` with `IN` domain or `read_group()` |
-| Using `_read_group()` instead of `read_group()` | Returns raw tuples, no lazy grouping, no metadata | Use `read_group()` for normal aggregation |
-| `create()` in loop | N INSERT statements | Batch: `create([{...}, {...}])` |
-| Overriding `unlink()` for validation | Breaks module uninstall | Use `@api.ondelete(at_uninstall=False)` |
-| Using `<tree>` in Odoo 18 | Deprecated tag | Use `<list>` instead |
+| Anti-Pattern                                                   | Why Bad                                           | Correct Approach                                  |
+| -------------------------------------------------------------- | ------------------------------------------------- | ------------------------------------------------- |
+| `attrs="{'invisible': [...]}"`                                 | Deprecated in Odoo 18                             | Use `invisible="..."` direct attribute            |
+| `@api.depends('partner_id')` then accessing `partner_id.email` | N queries per record                              | Add `@api.depends('partner_id.email')`            |
+| `search()` inside loop                                         | N+1 queries                                       | Use `search()` with `IN` domain or `read_group()` |
+| Using `_read_group()` instead of `read_group()`                | Returns raw tuples, no lazy grouping, no metadata | Use `read_group()` for normal aggregation         |
+| `create()` in loop                                             | N INSERT statements                               | Batch: `create([{...}, {...}])`                   |
+| Overriding `unlink()` for validation                           | Breaks module uninstall                           | Use `@api.ondelete(at_uninstall=False)`           |
+| Using `<tree>` in Odoo 18                                      | Deprecated tag                                    | Use `<list>` instead                              |
 
 ## @api Decorator Decision Tree
 
@@ -114,8 +116,8 @@ payments = self.env['payment'].search_read([('order_id', 'in', orders.ids)])
 
 ```xml
 <list string="Records" editable="bottom" multi_edit="1">
-    <field name="state" decoration-success="state == 'done'"/>
-    <field name="phone" optional="show"/>
+  <field name="state" decoration-success="state == 'done'" />
+  <field name="phone" optional="show" />
 </list>
 ```
 
@@ -168,7 +170,9 @@ my_module/
 
 ## Base Code Reference
 
-The guides are based on Odoo 18 source code. Reference these files in your Odoo installation:
+The guides are based on Odoo 18 source code. Reference these files in your Odoo
+installation:
+
 - `odoo/models.py` - ORM implementation
 - `odoo/fields.py` - Field types
 - `odoo/api.py` - Decorators

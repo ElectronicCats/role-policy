@@ -1,6 +1,8 @@
 ---
 name: odoo-development
-description: Expert guidance for Odoo ERP development including Python ORM, XML views, and module architecture
+description:
+  Expert guidance for Odoo ERP development including Python ORM, XML views, and module
+  architecture
 ---
 
 # Odoo Development
@@ -134,20 +136,20 @@ class CustomModel(models.Model):
 
 ```xml
 <record id="custom_model_form" model="ir.ui.view">
-    <field name="name">custom.model.form</field>
-    <field name="model">custom.model</field>
-    <field name="arch" type="xml">
-        <form>
-            <header>
-                <field name="state" widget="statusbar"/>
-            </header>
-            <sheet>
-                <group>
-                    <field name="name"/>
-                    <field name="active"/>
-                </group>
-            </sheet>
-        </form>
-    </field>
+  <field name="name">custom.model.form</field>
+  <field name="model">custom.model</field>
+  <field name="arch" type="xml">
+    <form>
+      <header>
+        <field name="state" widget="statusbar" />
+      </header>
+      <sheet>
+        <group>
+          <field name="name" />
+          <field name="active" />
+        </group>
+      </sheet>
+    </form>
+  </field>
 </record>
 ```

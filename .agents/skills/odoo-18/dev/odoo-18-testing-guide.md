@@ -1,7 +1,8 @@
 ---
 name: odoo-18-testing
-description: Comprehensive guide for testing Odoo 18 modules, including
-  TransactionCase, HttpCase, browser testing, and best practices.
+description:
+  Comprehensive guide for testing Odoo 18 modules, including TransactionCase, HttpCase,
+  browser testing, and best practices.
 globs: "**/tests/**/*.py"
 topics:
   - Test case types (TransactionCase, SavepointCase, HttpCase)
@@ -18,7 +19,8 @@ when_to_use:
 
 # Odoo 18 Testing Guide
 
-Comprehensive guide for testing Odoo 18 modules, covering test classes, decorators, mocking, form testing, browser testing, and best practices.
+Comprehensive guide for testing Odoo 18 modules, covering test classes, decorators,
+mocking, form testing, browser testing, and best practices.
 
 ## Table of Contents
 
@@ -59,9 +61,11 @@ BaseCase (abstract)
 
 ### TransactionCase
 
-**Purpose**: Each test method runs in a sub-transaction using savepoints. The main transaction is never committed.
+**Purpose**: Each test method runs in a sub-transaction using savepoints. The main
+transaction is never committed.
 
 **Key Features**:
+
 - Each test method gets its own savepoint
 - Data created in `setUpClass()` persists across all test methods
 - Each test method rolls back to its savepoint after completion
@@ -100,6 +104,7 @@ class TestMyModel(TransactionCase):
 **Purpose**: All test methods run in a single transaction that rolls back at the end.
 
 **Key Features**:
+
 - No savepoints between test methods
 - Data persists across all test methods
 - Faster than TransactionCase (no savepoint overhead)
@@ -132,6 +137,7 @@ class TestFast(SingleTransactionCase):
 **Purpose**: For HTTP/browser-based testing with headless Chrome support.
 
 **Key Features**:
+
 - Extends TransactionCase
 - Provides `url_open()` for HTTP requests
 - Provides `browser_js()` for JavaScript testing
@@ -199,6 +205,7 @@ class TestExternalAPI(TransactionCase):
 ```
 
 **Built-in Tags**:
+
 - `standard` - Default tag for regular tests
 - `at_install` - Run during module installation (default)
 - `post_install` - Run after installation
@@ -510,6 +517,7 @@ def test_js_code(self):
 ```
 
 **Parameters**:
+
 - `url_path` - URL to load
 - `code` - JavaScript to execute
 - `ready` - JavaScript to wait for before executing code
@@ -1007,14 +1015,14 @@ def test_onchange(self):
 
 ### Key Files Reference
 
-| File Path | Purpose |
-|-----------|---------|
-| `/odoo/tests/common.py` | Base test classes and utilities |
-| `/odoo/tests/form.py` | Form testing utility |
-| `/odoo/tests/case.py` | Core TestCase implementation |
-| `/odoo/tests/loader.py` | Test loading and discovery |
-| `/odoo/tests/tag_selector.py` | Tag-based test filtering |
-| `/addons/base/tests/common.py` | Base module test helpers |
+| File Path                      | Purpose                         |
+| ------------------------------ | ------------------------------- |
+| `/odoo/tests/common.py`        | Base test classes and utilities |
+| `/odoo/tests/form.py`          | Form testing utility            |
+| `/odoo/tests/case.py`          | Core TestCase implementation    |
+| `/odoo/tests/loader.py`        | Test loading and discovery      |
+| `/odoo/tests/tag_selector.py`  | Tag-based test filtering        |
+| `/addons/base/tests/common.py` | Base module test helpers        |
 
 ### Quick Test Template
 

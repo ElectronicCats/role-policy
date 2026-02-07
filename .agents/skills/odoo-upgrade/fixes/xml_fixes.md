@@ -3,6 +3,7 @@
 ## Automated XML Fixes for Odoo 19
 
 ### 1. Tree to List Conversion
+
 ```python
 # Fix pattern
 old_string = '<tree'
@@ -13,6 +14,7 @@ new_string = '</list>'
 ```
 
 ### 2. Search View Group Removal
+
 ```python
 import re
 
@@ -24,6 +26,7 @@ def fix_search_views(xml_content):
 ```
 
 ### 3. Active ID Replacement
+
 ```python
 def fix_active_id(xml_content):
     # Replace active_id with id in contexts
@@ -33,6 +36,7 @@ def fix_active_id(xml_content):
 ```
 
 ### 4. Kanban Template Fix
+
 ```python
 def fix_kanban_templates(xml_content):
     # Fix template names
@@ -47,6 +51,7 @@ def fix_kanban_templates(xml_content):
 ```
 
 ### 5. Cron Job Fix
+
 ```python
 def fix_cron_jobs(xml_content):
     # Remove numbercall field
@@ -61,6 +66,7 @@ def fix_cron_jobs(xml_content):
 ```
 
 ### 6. T-if Expression Fix
+
 ```python
 def fix_t_if_expressions(xml_content):
     # Fix not operator usage
@@ -70,6 +76,7 @@ def fix_t_if_expressions(xml_content):
 ```
 
 ### 7. Complete XML Processor
+
 ```python
 def process_xml_file(file_path):
     """Apply all XML fixes to a file"""
@@ -97,6 +104,7 @@ def process_xml_file(file_path):
 ```
 
 ## Batch Processing Script
+
 ```python
 import os
 import glob
@@ -127,6 +135,7 @@ def fix_all_xml_files(project_path):
 ## View-Specific Fixes
 
 ### Form Views
+
 ```xml
 <!-- Before -->
 <form string="Title" edit="1">
@@ -140,6 +149,7 @@ def fix_all_xml_files(project_path):
 ```
 
 ### List Views
+
 ```xml
 <!-- Before -->
 <tree string="Items" edit="1" editable="top">
@@ -153,6 +163,7 @@ def fix_all_xml_files(project_path):
 ```
 
 ### Kanban Views
+
 ```xml
 <!-- Before -->
 <kanban js_class="custom_kanban">
@@ -178,6 +189,7 @@ def fix_all_xml_files(project_path):
 ```
 
 ### Search Views
+
 ```xml
 <!-- Before -->
 <search>
@@ -201,6 +213,7 @@ def fix_all_xml_files(project_path):
 ## Validation
 
 After applying fixes, validate XML:
+
 ```python
 from lxml import etree
 

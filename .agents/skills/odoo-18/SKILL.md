@@ -1,6 +1,9 @@
 ---
 name: odoo-18
-description: Master index for Odoo 18 guides. This file provides a quick reference to find the appropriate detailed guide for each topic. Use this as an index to locate specific guides when working with Odoo 18 code.
+description:
+  Master index for Odoo 18 guides. This file provides a quick reference to find the
+  appropriate detailed guide for each topic. Use this as an index to locate specific
+  guides when working with Odoo 18 code.
 globs: "**/*.{py,xml}"
 license: MIT
 author: UncleCat
@@ -9,39 +12,42 @@ version: 1.0.0
 
 # Odoo 18 Skill - Master Index
 
-Master index for all Odoo 18 guides. Use this to quickly find the appropriate guide for your task.
+Master index for all Odoo 18 guides. Use this to quickly find the appropriate guide for
+your task.
 
 ## Quick Reference
 
-| Topic | File | When to Use |
-|-------|------|-------------|
-| [Actions](#actions-guide) | `odoo-18-actions-guide.md` | Creating actions, menus, scheduled jobs, server actions |
-| [API Decorators](#decorator-guide) | `odoo-18-decorator-guide.md` | Using @api decorators, compute fields, validation |
-| [Data Files](#data-guide) | `odoo-18-data-guide.md` | XML/CSV data files, records, shortcuts |
-| [Development](#development-guide) | `odoo-18-development-guide.md` | Creating modules, manifest, reports, security, wizards |
-| [Field Types](#field-guide) | `odoo-18-field-guide.md` | Defining model fields, choosing field types |
-| [Manifest](#manifest-guide) | `odoo-18-manifest-guide.md` | __manifest__.py configuration, dependencies, hooks |
-| [Mixins](#mixins-guide) | `odoo-18-mixins-guide.md` | mail.thread, activities, email aliases, tracking |
-| [Model Methods](#model-guide) | `odoo-18-model-guide.md` | Writing ORM queries, CRUD operations, domain filters |
-| [Performance](#performance-guide) | `odoo-18-performance-guide.md` | Optimizing queries, fixing slow code, preventing N+1 |
-| [Reports](#reports-guide) | `odoo-18-reports-guide.md` | QWeb reports, PDF/HTML, templates, paper formats |
-| [Security](#security-guide) | `odoo-18-security-guide.md` | Access rights, record rules, field permissions |
-| [Testing](#testing-guide) | `odoo-18-testing-guide.md` | Writing tests, mocking, assertions, browser testing |
-| [Translation](#translation-guide) | `odoo-18-translation-guide.md` | Adding translations, localization, i18n |
-| [Transactions](#transaction-guide) | `odoo-18-transaction-guide.md` | Handling database errors, savepoints, UniqueViolation |
-| [Controllers](#controller-guide) | `odoo-18-controller-guide.md` | Writing HTTP endpoints, routes, web controllers |
-| [Views & XML](#view-guide) | `odoo-18-view-guide.md` | Writing XML views, actions, menus, QWeb templates |
-| [OWL Components](#owl-guide) | `odoo-18-owl-guide.md` | Building OWL UI components, hooks, services |
-| [Migration](#migration-guide) | `odoo-18-migration-guide.md` | Upgrading modules, data migration, version changes |
+| Topic                              | File                           | When to Use                                             |
+| ---------------------------------- | ------------------------------ | ------------------------------------------------------- |
+| [Actions](#actions-guide)          | `odoo-18-actions-guide.md`     | Creating actions, menus, scheduled jobs, server actions |
+| [API Decorators](#decorator-guide) | `odoo-18-decorator-guide.md`   | Using @api decorators, compute fields, validation       |
+| [Data Files](#data-guide)          | `odoo-18-data-guide.md`        | XML/CSV data files, records, shortcuts                  |
+| [Development](#development-guide)  | `odoo-18-development-guide.md` | Creating modules, manifest, reports, security, wizards  |
+| [Field Types](#field-guide)        | `odoo-18-field-guide.md`       | Defining model fields, choosing field types             |
+| [Manifest](#manifest-guide)        | `odoo-18-manifest-guide.md`    | **manifest**.py configuration, dependencies, hooks      |
+| [Mixins](#mixins-guide)            | `odoo-18-mixins-guide.md`      | mail.thread, activities, email aliases, tracking        |
+| [Model Methods](#model-guide)      | `odoo-18-model-guide.md`       | Writing ORM queries, CRUD operations, domain filters    |
+| [Performance](#performance-guide)  | `odoo-18-performance-guide.md` | Optimizing queries, fixing slow code, preventing N+1    |
+| [Reports](#reports-guide)          | `odoo-18-reports-guide.md`     | QWeb reports, PDF/HTML, templates, paper formats        |
+| [Security](#security-guide)        | `odoo-18-security-guide.md`    | Access rights, record rules, field permissions          |
+| [Testing](#testing-guide)          | `odoo-18-testing-guide.md`     | Writing tests, mocking, assertions, browser testing     |
+| [Translation](#translation-guide)  | `odoo-18-translation-guide.md` | Adding translations, localization, i18n                 |
+| [Transactions](#transaction-guide) | `odoo-18-transaction-guide.md` | Handling database errors, savepoints, UniqueViolation   |
+| [Controllers](#controller-guide)   | `odoo-18-controller-guide.md`  | Writing HTTP endpoints, routes, web controllers         |
+| [Views & XML](#view-guide)         | `odoo-18-view-guide.md`        | Writing XML views, actions, menus, QWeb templates       |
+| [OWL Components](#owl-guide)       | `odoo-18-owl-guide.md`         | Building OWL UI components, hooks, services             |
+| [Migration](#migration-guide)      | `odoo-18-migration-guide.md`   | Upgrading modules, data migration, version changes      |
 
 ---
 
 ## Guide Index
 
 ### Actions Guide
+
 **File**: `odoo-18-actions-guide.md`
 
 **When to read**:
+
 - Creating window actions, URL actions, server actions
 - Setting up scheduled/cron jobs
 - Configuring report actions
@@ -51,9 +57,11 @@ Master index for all Odoo 18 guides. Use this to quickly find the appropriate gu
 ---
 
 ### Controller Guide
+
 **File**: `odoo-18-controller-guide.md`
 
 **When to read**:
+
 - Creating HTTP endpoints
 - Writing web controllers
 - Setting up routes
@@ -63,9 +71,11 @@ Master index for all Odoo 18 guides. Use this to quickly find the appropriate gu
 ---
 
 ### Data Files Guide
+
 **File**: `odoo-18-data-guide.md`
 
 **When to read**:
+
 - Creating XML data files
 - Understanding record, field, delete, function tags
 - Using CSV data files
@@ -75,9 +85,11 @@ Master index for all Odoo 18 guides. Use this to quickly find the appropriate gu
 ---
 
 ### Decorator Guide
+
 **File**: `odoo-18-decorator-guide.md`
 
 **When to read**:
+
 - Using `@api.depends` for computed fields
 - Using `@api.constrains` for validation
 - Using `@api.ondelete` (Odoo 18) for delete validation
@@ -87,9 +99,11 @@ Master index for all Odoo 18 guides. Use this to quickly find the appropriate gu
 ---
 
 ### Development Guide
+
 **File**: `odoo-18-development-guide.md`
 
 **When to read**:
+
 - Creating new modules
 - Writing `__manifest__.py`
 - Setting up module structure
@@ -101,9 +115,11 @@ Master index for all Odoo 18 guides. Use this to quickly find the appropriate gu
 ---
 
 ### Field Guide
+
 **File**: `odoo-18-field-guide.md`
 
 **When to read**:
+
 - Defining new model fields
 - Choosing appropriate field types (Char, Text, Monetary, etc.)
 - Setting field parameters (required, default, index, etc.)
@@ -113,9 +129,11 @@ Master index for all Odoo 18 guides. Use this to quickly find the appropriate gu
 ---
 
 ### Manifest Guide
+
 **File**: `odoo-18-manifest-guide.md`
 
 **When to read**:
+
 - Configuring `__manifest__.py`
 - Setting up module dependencies
 - Defining asset bundles
@@ -126,9 +144,11 @@ Master index for all Odoo 18 guides. Use this to quickly find the appropriate gu
 ---
 
 ### Migration Guide
+
 **File**: `odoo-18-migration-guide.md`
 
 **When to read**:
+
 - Upgrading modules from earlier versions
 - Writing migration scripts (pre, post, end)
 - Handling data migration
@@ -138,9 +158,11 @@ Master index for all Odoo 18 guides. Use this to quickly find the appropriate gu
 ---
 
 ### Mixins Guide
+
 **File**: `odoo-18-mixins-guide.md`
 
 **When to read**:
+
 - Using mail.thread (messaging, chatter, field tracking)
 - Setting up mail.alias.mixin (email aliases)
 - Adding mail.activity.mixin (activities)
@@ -152,9 +174,11 @@ Master index for all Odoo 18 guides. Use this to quickly find the appropriate gu
 ---
 
 ### Model Guide
+
 **File**: `odoo-18-model-guide.md`
 
 **When to read**:
+
 - Writing model methods
 - Using ORM queries (`search`, `read`, `create`, `write`, `unlink`)
 - Working with domain filters
@@ -164,9 +188,11 @@ Master index for all Odoo 18 guides. Use this to quickly find the appropriate gu
 ---
 
 ### OWL Guide
+
 **File**: `odoo-18-owl-guide.md`
 
 **When to read**:
+
 - Building OWL components
 - Using hooks (useState, onWillStart, onMounted, etc.)
 - Using services (orm, rpc, action, dialog, notification)
@@ -176,9 +202,11 @@ Master index for all Odoo 18 guides. Use this to quickly find the appropriate gu
 ---
 
 ### Performance Guide
+
 **File**: `odoo-18-performance-guide.md`
 
 **When to read**:
+
 - Fixing N+1 query problems
 - Optimizing slow code
 - Reducing database queries
@@ -188,13 +216,15 @@ Master index for all Odoo 18 guides. Use this to quickly find the appropriate gu
 ---
 
 ### Reports Guide
+
 **File**: `odoo-18-reports-guide.md`
 
 **When to read**:
+
 - Creating QWeb reports (PDF/HTML)
 - Writing report templates
 - Configuring paper formats
-- Creating custom reports with _get_report_values
+- Creating custom reports with \_get_report_values
 - Adding barcodes to reports
 - Using custom fonts
 - Creating translatable reports
@@ -202,9 +232,11 @@ Master index for all Odoo 18 guides. Use this to quickly find the appropriate gu
 ---
 
 ### Security Guide
+
 **File**: `odoo-18-security-guide.md`
 
 **When to read**:
+
 - Configuring access rights (ACL)
 - Creating record rules
 - Understanding field-level access
@@ -215,9 +247,11 @@ Master index for all Odoo 18 guides. Use this to quickly find the appropriate gu
 ---
 
 ### Testing Guide
+
 **File**: `odoo-18-testing-guide.md`
 
 **When to read**:
+
 - Writing unit tests (TransactionCase)
 - Writing browser tests (HttpCase)
 - Using test decorators (@tagged, @users, @warmup)
@@ -228,9 +262,11 @@ Master index for all Odoo 18 guides. Use this to quickly find the appropriate gu
 ---
 
 ### Translation Guide
+
 **File**: `odoo-18-translation-guide.md`
 
 **When to read**:
+
 - Adding translatable strings in Python (`_()`, `_lt()`)
 - Adding translatable strings in JavaScript (`_t()`)
 - Creating translatable QWeb templates
@@ -242,9 +278,11 @@ Master index for all Odoo 18 guides. Use this to quickly find the appropriate gu
 ---
 
 ### Transaction Guide
+
 **File**: `odoo-18-transaction-guide.md`
 
 **When to read**:
+
 - Handling database errors (UniqueViolation, NotNullViolation)
 - Using savepoints for error isolation
 - Understanding transaction states
@@ -254,9 +292,11 @@ Master index for all Odoo 18 guides. Use this to quickly find the appropriate gu
 ---
 
 ### View Guide
+
 **File**: `odoo-18-view-guide.md`
 
 **When to read**:
+
 - Writing list views (use `<list>` not `<tree>` in Odoo 18)
 - Writing form views
 - Writing search views
@@ -299,6 +339,7 @@ agent-skills/skills/odoo/18.0/
 ## Base Code Reference (Odoo 18)
 
 All guides are based on analysis of Odoo 18 source code:
+
 - `odoo/models.py` - ORM implementation
 - `odoo/fields.py` - Field types
 - `odoo/api.py` - Decorators

@@ -5,9 +5,11 @@ This document shows practical examples of using the Odoo Module Upgrade skill.
 ## Example 1: Simple Single-Version Upgrade
 
 ### Scenario
+
 Upgrade a custom inventory module from Odoo 17 to Odoo 18.
 
 ### User Request
+
 ```
 "Upgrade custom_inventory module from odoo17 to odoo18"
 ```
@@ -15,6 +17,7 @@ Upgrade a custom inventory module from Odoo 17 to Odoo 18.
 ### Skill Workflow
 
 **1. Information Gathering**
+
 ```
 Module Name: custom_inventory
 Project: warehouse_management
@@ -24,6 +27,7 @@ Source Path: C:\odoo\odoo17\projects\warehouse_management\custom_inventory
 ```
 
 **2. Analysis Results**
+
 ```
 Files Found:
 - 5 Python files (models)
@@ -39,6 +43,7 @@ Patterns Detected:
 ```
 
 **3. Changes Applied**
+
 ```
 Python:
 ✅ No name_get overrides (v17 migration already done)
@@ -54,6 +59,7 @@ JavaScript:
 ```
 
 **4. Testing**
+
 ```
 ✅ Module installed successfully
 ✅ All views loaded correctly
@@ -61,6 +67,7 @@ JavaScript:
 ```
 
 **5. Output**
+
 ```
 📁 Upgraded: C:\odoo\odoo18\projects\warehouse_management\custom_inventory
 💾 Backup: custom_inventory.backup_from_v17
@@ -72,9 +79,11 @@ JavaScript:
 ## Example 2: Multi-Version Jump
 
 ### Scenario
+
 Upgrade a legacy theme from Odoo 14 to Odoo 19.
 
 ### User Request
+
 ```
 "Migrate theme_retail from version 14 to version 19"
 ```
@@ -82,6 +91,7 @@ Upgrade a legacy theme from Odoo 14 to Odoo 19.
 ### Skill Workflow
 
 **1. Upgrade Path Calculated**
+
 ```
 14 → 15 → 16 → 17 → 18 → 19
 
@@ -96,6 +106,7 @@ Changes per version:
 **2. Major Transformations**
 
 **Python (16→17)**:
+
 ```python
 # Before
 def name_get(self):
@@ -112,6 +123,7 @@ def _compute_display_name(self):
 ```
 
 **XML (16→17)**:
+
 ```xml
 <!-- Before -->
 <field name="color" attrs="{'invisible': [('state','=','done')]}"/>
@@ -121,6 +133,7 @@ def _compute_display_name(self):
 ```
 
 **XML (17→18)**:
+
 ```xml
 <!-- Before -->
 <tree string="Products" editable="1">
@@ -130,17 +143,27 @@ def _compute_display_name(self):
 ```
 
 **Bootstrap (15→16)**:
+
 ```scss
 // Before
-.ml-3 { margin-left: 1rem; }
-.text-left { text-align: left; }
+.ml-3 {
+  margin-left: 1rem;
+}
+.text-left {
+  text-align: left;
+}
 
 // After
-.ms-3 { margin-start: 1rem; }
-.text-start { text-align: start; }
+.ms-3 {
+  margin-start: 1rem;
+}
+.text-start {
+  text-align: start;
+}
 ```
 
 **3. Testing Results**
+
 ```
 ✅ Installation: SUCCESS
 ⚠️  Warnings: 2 deprecation notices
@@ -150,6 +173,7 @@ def _compute_display_name(self):
 ```
 
 **4. Manual Steps Required**
+
 ```
 1. Custom jQuery code in cart.js needs OWL conversion
 2. Verify color palette matches design system
@@ -161,9 +185,11 @@ def _compute_display_name(self):
 ## Example 3: Module with Enterprise Dependencies
 
 ### Scenario
+
 Upgrade a custom accounting extension that uses Enterprise features.
 
 ### User Request
+
 ```
 "Upgrade custom_accounting from odoo16 to odoo18"
 ```
@@ -171,6 +197,7 @@ Upgrade a custom accounting extension that uses Enterprise features.
 ### Skill Notes
 
 **Dependency Check**:
+
 ```
 ✅ account - Available in v18
 ✅ account_accountant (Enterprise) - Available in v18
@@ -178,6 +205,7 @@ Upgrade a custom accounting extension that uses Enterprise features.
 ```
 
 **Manual Steps**:
+
 ```
 1. Update manifest dependency:
    'custom_reports' → 'custom_accounting_reports'
@@ -192,9 +220,11 @@ Upgrade a custom accounting extension that uses Enterprise features.
 ## Example 4: Theme with publicWidget
 
 ### Scenario
+
 Upgrade a website theme with custom JavaScript widgets.
 
 ### User Request
+
 ```
 "Upgrade theme_ecommerce from odoo16 to odoo19"
 ```
@@ -202,41 +232,43 @@ Upgrade a website theme with custom JavaScript widgets.
 ### JavaScript Transformation
 
 **Before (v16 - Legacy Widget)**:
+
 ```javascript
-odoo.define('theme_ecommerce.product_carousel', function (require) {
-    'use strict';
+odoo.define("theme_ecommerce.product_carousel", function (require) {
+  "use strict";
 
-    var Widget = require('web.Widget');
+  var Widget = require("web.Widget");
 
-    var ProductCarousel = Widget.extend({
-        template: 'ProductCarousel',
-        events: {
-            'click .arrow': '_onArrowClick'
-        },
-        _onArrowClick: function(ev) {
-            // Logic
-        }
-    });
+  var ProductCarousel = Widget.extend({
+    template: "ProductCarousel",
+    events: {
+      "click .arrow": "_onArrowClick",
+    },
+    _onArrowClick: function (ev) {
+      // Logic
+    },
+  });
 
-    return ProductCarousel;
+  return ProductCarousel;
 });
 ```
 
 **After (v17+ - publicWidget)**:
+
 ```javascript
 /** @odoo-module **/
 
 import publicWidget from "@web/legacy/js/public/public_widget";
 
 publicWidget.registry.ProductCarousel = publicWidget.Widget.extend({
-    selector: '.product-carousel',
-    events: {
-        'click .arrow': '_onArrowClick',
-    },
+  selector: ".product-carousel",
+  events: {
+    "click .arrow": "_onArrowClick",
+  },
 
-    _onArrowClick: function(ev) {
-        // Logic
-    },
+  _onArrowClick: function (ev) {
+    // Logic
+  },
 });
 ```
 
@@ -245,14 +277,17 @@ publicWidget.registry.ProductCarousel = publicWidget.Widget.extend({
 ## Example 5: Handling Errors
 
 ### Scenario
+
 Upgrade fails due to missing fields.
 
 ### User Request
+
 ```
 "Upgrade custom_crm from odoo15 to odoo17"
 ```
 
 ### Error Encountered
+
 ```
 ERROR: Field 'stage_probability' not found on model 'crm.lead'
 Location: models/crm_lead.py:45
@@ -261,24 +296,30 @@ Location: models/crm_lead.py:45
 ### Skill Response
 
 **Report Generated**:
+
 ```markdown
 ## Critical Issues
 
 ### Field Not Found: stage_probability
+
 - **Location**: models/crm_lead.py:45
 - **Reason**: Field removed in Odoo 16
 - **Solution**: Replace with 'probability' field
 - **Action**: Manual code update required
 
 ### Recommended Fix:
+
 # Before
+
 stage_probability = fields.Float(related='stage_id.probability')
 
 # After
+
 probability = fields.Float(string='Success Rate')
 ```
 
 **Recovery Instructions**:
+
 ```bash
 # Restore from backup
 cd C:\odoo\odoo17\projects\crm_custom
@@ -297,14 +338,17 @@ cp -r custom_crm.backup_from_v15 custom_crm
 ## Example 6: Batch Upgrade (Future Feature)
 
 ### Scenario
+
 Upgrade multiple modules in a project.
 
 ### User Request
+
 ```
 "Upgrade all modules in TAQAT project from odoo17 to odoo18"
 ```
 
 ### Expected Workflow (Planned)
+
 ```
 Modules Found: 12
 
@@ -328,6 +372,7 @@ Reports generated in: odoo18/projects/TAQAT/_UPGRADE_REPORTS/
 ## Tips for Successful Upgrades
 
 ### Before Upgrading
+
 1. ✅ Backup your database
 2. ✅ Test in staging environment
 3. ✅ Review Odoo release notes
@@ -335,12 +380,14 @@ Reports generated in: odoo18/projects/TAQAT/_UPGRADE_REPORTS/
 5. ✅ Update documentation
 
 ### During Upgrade
+
 1. ✅ Review generated report carefully
 2. ✅ Address critical issues first
 3. ✅ Test each module incrementally
 4. ✅ Keep backup accessible
 
 ### After Upgrade
+
 1. ✅ Run full test suite
 2. ✅ Perform UAT (User Acceptance Testing)
 3. ✅ Monitor logs for warnings
@@ -352,6 +399,7 @@ Reports generated in: odoo18/projects/TAQAT/_UPGRADE_REPORTS/
 ## Common Patterns
 
 ### attrs Conversion
+
 ```xml
 <!-- Pattern 1: Simple condition -->
 attrs="{'invisible': [('x','=','y')]}" → invisible="x == 'y'"
@@ -367,6 +415,7 @@ attrs="{'readonly': [('state','in',['done','cancel'])]}" → readonly="state in 
 ```
 
 ### tree to list
+
 ```xml
 <!-- Actions -->
 view_mode="tree,form" → view_mode="list,form"
@@ -377,6 +426,7 @@ view_mode="tree,form" → view_mode="list,form"
 ```
 
 ### editable
+
 ```xml
 <!-- Add new line at bottom -->
 editable="1" → editable="bottom"

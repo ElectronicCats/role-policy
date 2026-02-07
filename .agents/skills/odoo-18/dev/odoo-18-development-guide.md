@@ -1,6 +1,8 @@
 ---
 name: odoo-18-development
-description: Complete guide for Odoo 18 module development covering manifest structure, security, reports, wizards, data files, hooks, and exception handling.
+description:
+  Complete guide for Odoo 18 module development covering manifest structure, security,
+  reports, wizards, data files, hooks, and exception handling.
 globs: "**/*.{py,xml,csv}"
 topics:
   - Module structure (folders and files)
@@ -24,12 +26,13 @@ when_to_use:
 
 # Odoo 18 Development Guide
 
-Complete guide for Odoo 18 module development: manifest structure, reports, security, wizards, and advanced patterns.
+Complete guide for Odoo 18 module development: manifest structure, reports, security,
+wizards, and advanced patterns.
 
 ## Table of Contents
 
 1. [Module Structure](#module-structure)
-2. [__manifest__.py](#manifestpy)
+2. [**manifest**.py](#manifestpy)
 3. [Security](#security)
 4. [Reports](#reports)
 5. [Wizards & Transient Models](#wizards--transient-models)
@@ -90,7 +93,7 @@ my_module/
 
 ---
 
-## __manifest__.py
+## **manifest**.py
 
 ### Basic Manifest
 
@@ -145,30 +148,30 @@ Detailed description of what the module does.
 
 ### Manifest Fields Reference
 
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `name` | str | Yes | Module name |
-| `version` | str | Yes | Version (e.g., `18.0.1.0.0`) |
-| `summary` | str | No | Short description (one line) |
-| `description` | str | No | Long description (can be multi-line) |
-| `category` | str | No | Module category |
-| `author` | str | No | Author name(s) |
-| `website` | str | No | Module URL |
-| `license` | str | No | License (default: LGPL-3) |
-| `depends` | list | Yes | Required module dependencies |
-| `data` | list | No | Data files to load |
-| `demo` | list | No | Demo data files |
-| `assets` | dict | No | Web assets (CSS/JS) |
-| `installable` | bool | Yes | Whether module can be installed |
-| `application` | bool | No | Whether it's an app (shows in Apps menu) |
-| `auto_install` | bool | No | Auto-install when dependencies installed |
-| `post_init_hook` | str | No | Function to call after install |
-| `pre_init_hook` | str | No | Function to call before install |
-| `uninstall_hook` | str | No | Function to call after uninstall |
-| `external_dependencies` | dict | No | Python/ binary dependencies |
-| `sequence` | int | No | Installation order in Apps |
-| `images` | list | No | Module screenshot URLs |
-| `html` | bool | No | Whether description is HTML |
+| Field                   | Type | Required | Description                              |
+| ----------------------- | ---- | -------- | ---------------------------------------- |
+| `name`                  | str  | Yes      | Module name                              |
+| `version`               | str  | Yes      | Version (e.g., `18.0.1.0.0`)             |
+| `summary`               | str  | No       | Short description (one line)             |
+| `description`           | str  | No       | Long description (can be multi-line)     |
+| `category`              | str  | No       | Module category                          |
+| `author`                | str  | No       | Author name(s)                           |
+| `website`               | str  | No       | Module URL                               |
+| `license`               | str  | No       | License (default: LGPL-3)                |
+| `depends`               | list | Yes      | Required module dependencies             |
+| `data`                  | list | No       | Data files to load                       |
+| `demo`                  | list | No       | Demo data files                          |
+| `assets`                | dict | No       | Web assets (CSS/JS)                      |
+| `installable`           | bool | Yes      | Whether module can be installed          |
+| `application`           | bool | No       | Whether it's an app (shows in Apps menu) |
+| `auto_install`          | bool | No       | Auto-install when dependencies installed |
+| `post_init_hook`        | str  | No       | Function to call after install           |
+| `pre_init_hook`         | str  | No       | Function to call before install          |
+| `uninstall_hook`        | str  | No       | Function to call after uninstall         |
+| `external_dependencies` | dict | No       | Python/ binary dependencies              |
+| `sequence`              | int  | No       | Installation order in Apps               |
+| `images`                | list | No       | Module screenshot URLs                   |
+| `html`                  | bool | No       | Whether description is HTML              |
 
 ### Assets Declaration (Odoo 18)
 
@@ -236,6 +239,7 @@ access_my_model_manager,my.model.manager,model_my_model,group_my_module_manager,
 ```
 
 **Columns**:
+
 - `id`: Unique XML ID for the access right
 - `name`: Human-readable name
 - `model_id:id`: Model (reference to `ir.model`)
@@ -269,103 +273,99 @@ access_my_model_portal,my.model.portal,model_my_model,base.group_portal,1,0,0,0
 **Location**: `security/my_module_security.xml`
 
 ```xml
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo noupdate="1">
+  <!-- Multi-company rule -->
+  <record id="my_model_comp_rule" model="ir.rule">
+    <field name="name">My Model multi-company</field>
+    <field name="model_id" ref="model_my_model" />
+    <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    <field name="global" eval="True" />
+  </record>
 
-    <!-- Multi-company rule -->
-    <record id="my_model_comp_rule" model="ir.rule">
-        <field name="name">My Model multi-company</field>
-        <field name="model_id" ref="model_my_model"/>
-        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
-        <field name="global" eval="True"/>
-    </record>
+  <!-- User can only see their own records -->
+  <record id="my_model_personal_rule" model="ir.rule">
+    <field name="name">Personal My Records</field>
+    <field name="model_id" ref="model_my_model" />
+    <field name="domain_force">[('user_id', '=', user.id)]</field>
+    <field name="groups" eval="[(4, ref('base.group_user'))]" />
+  </record>
 
-    <!-- User can only see their own records -->
-    <record id="my_model_personal_rule" model="ir.rule">
-        <field name="name">Personal My Records</field>
-        <field name="model_id" ref="model_my_model"/>
-        <field name="domain_force">[('user_id', '=', user.id)]</field>
-        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
-    </record>
+  <!-- Managers can see all records -->
+  <record id="my_model_manager_rule" model="ir.rule">
+    <field name="name">My Model: All Records</field>
+    <field name="model_id" ref="model_my_model" />
+    <field name="domain_force">[(1, '=', 1)]</field>
+    <field name="groups" eval="[(4, ref('group_my_module_manager'))]" />
+    <field name="perm_read" eval="True" />
+    <field name="perm_write" eval="True" />
+    <field name="perm_create" eval="True" />
+    <field name="perm_unlink" eval="True" />
+  </record>
 
-    <!-- Managers can see all records -->
-    <record id="my_model_manager_rule" model="ir.rule">
-        <field name="name">My Model: All Records</field>
-        <field name="model_id" ref="model_my_model"/>
-        <field name="domain_force">[(1, '=', 1)]</field>
-        <field name="groups" eval="[(4, ref('group_my_module_manager'))]"/>
-        <field name="perm_read" eval="True"/>
-        <field name="perm_write" eval="True"/>
-        <field name="perm_create" eval="True"/>
-        <field name="perm_unlink" eval="True"/>
-    </record>
-
-    <!-- Portal access -->
-    <record id="my_model_portal_rule" model="ir.rule">
-        <field name="name">My Model: Portal Access</field>
-        <field name="model_id" ref="model_my_model"/>
-        <field name="domain_force">
+  <!-- Portal access -->
+  <record id="my_model_portal_rule" model="ir.rule">
+    <field name="name">My Model: Portal Access</field>
+    <field name="model_id" ref="model_my_model" />
+    <field name="domain_force">
             [('partner_id', 'in', user.commercial_partner_id.child_ids.ids)]
         </field>
-        <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
-        <field name="perm_unlink" eval="False"/>
-    </record>
-
+    <field name="groups" eval="[(4, ref('base.group_portal'))]" />
+    <field name="perm_unlink" eval="False" />
+  </record>
 </odoo>
 ```
 
 ### ir.rule Fields Reference
 
-| Field | Description |
-|-------|-------------|
-| `name` | Rule description |
-| `model_id` | Model (reference to `ir.model`) |
-| `domain_force` | Domain expression for filtering |
-| `groups` | Groups rule applies to (empty = all) |
-| `perm_read` | Override read permission |
-| `perm_write` | Override write permission |
-| `perm_create` | Override create permission |
-| `perm_unlink` | Override unlink permission |
-| `global` | Apply to all users (ignores groups) |
+| Field          | Description                          |
+| -------------- | ------------------------------------ |
+| `name`         | Rule description                     |
+| `model_id`     | Model (reference to `ir.model`)      |
+| `domain_force` | Domain expression for filtering      |
+| `groups`       | Groups rule applies to (empty = all) |
+| `perm_read`    | Override read permission             |
+| `perm_write`   | Override write permission            |
+| `perm_create`  | Override create permission           |
+| `perm_unlink`  | Override unlink permission           |
+| `global`       | Apply to all users (ignores groups)  |
 
 ### Rule Domain Variables
 
-| Variable | Description |
-|----------|-------------|
-| `user` | Current user record |
-| `uid` | Current user ID |
+| Variable      | Description                        |
+| ------------- | ---------------------------------- |
+| `user`        | Current user record                |
+| `uid`         | Current user ID                    |
 | `company_ids` | Allowed companies for current user |
-| `company_id` | Current company |
-| `context` | Current context |
+| `company_id`  | Current company                    |
+| `context`     | Current context                    |
 
 ### Groups Definition
 
 ```xml
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
+  <!-- Category for module groups -->
+  <record id="module_category_my_module" model="ir.module.category">
+    <field name="name">My Module</field>
+    <field name="description">Helps you manage your records</field>
+    <field name="sequence">20</field>
+  </record>
 
-    <!-- Category for module groups -->
-    <record id="module_category_my_module" model="ir.module.category">
-        <field name="name">My Module</field>
-        <field name="description">Helps you manage your records</field>
-        <field name="sequence">20</field>
-    </record>
+  <!-- Manager group -->
+  <record id="group_my_module_manager" model="res.groups">
+    <field name="name">Manager</field>
+    <field name="category_id" ref="module_category_my_module" />
+    <field name="implied_ids" eval="[(4, ref('group_my_module_user'))]" />
+    <field name="comment">User can manage all records.</field>
+  </record>
 
-    <!-- Manager group -->
-    <record id="group_my_module_manager" model="res.groups">
-        <field name="name">Manager</field>
-        <field name="category_id" ref="module_category_my_module"/>
-        <field name="implied_ids" eval="[(4, ref('group_my_module_user'))]"/>
-        <field name="comment">User can manage all records.</field>
-    </record>
-
-    <!-- User group -->
-    <record id="group_my_module_user" model="res.groups">
-        <field name="name">User</field>
-        <field name="category_id" ref="module_category_my_module"/>
-        <field name="comment">User can access own records.</field>
-    </record>
-
+  <!-- User group -->
+  <record id="group_my_module_user" model="res.groups">
+    <field name="name">User</field>
+    <field name="category_id" ref="module_category_my_module" />
+    <field name="comment">User can access own records.</field>
+  </record>
 </odoo>
 ```
 
@@ -394,136 +394,146 @@ access_my_model_portal,my.model.portal,model_my_model,base.group_portal,1,0,0,0
 ### Report Action (ir.actions.report)
 
 ```xml
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-
-    <record id="action_report_my_model" model="ir.actions.report">
-        <field name="name">My Model Report</field>
-        <field name="model">my.model</field>
-        <field name="report_type">qweb-pdf</field>
-        <field name="report_name">my_module.report_my_model</field>
-        <field name="report_file">my_model_report</field>
-        <field name="print_report_name">'My Model - %s' % (object.name)</field>
-        <field name="binding_model_id" ref="model_my_model"/>
-        <field name="binding_type">report</field>
-    </record>
-
+  <record id="action_report_my_model" model="ir.actions.report">
+    <field name="name">My Model Report</field>
+    <field name="model">my.model</field>
+    <field name="report_type">qweb-pdf</field>
+    <field name="report_name">my_module.report_my_model</field>
+    <field name="report_file">my_model_report</field>
+    <field name="print_report_name">'My Model - %s' % (object.name)</field>
+    <field name="binding_model_id" ref="model_my_model" />
+    <field name="binding_type">report</field>
+  </record>
 </odoo>
 ```
 
 ### Report Types
 
-| Type | Description |
-|------|-------------|
-| `qweb-pdf` | PDF report (most common) |
+| Type        | Description                     |
+| ----------- | ------------------------------- |
+| `qweb-pdf`  | PDF report (most common)        |
 | `qweb-html` | HTML report (viewed in browser) |
-| `qweb-text` | Text report (e.g., for labels) |
+| `qweb-text` | Text report (e.g., for labels)  |
 
 ### Report with Groups
 
 ```xml
 <record id="action_report_my_model_confidential" model="ir.actions.report">
-    <field name="name">Confidential Report</field>
-    <field name="model">my.model</field>
-    <field name="report_type">qweb-pdf</field>
-    <field name="report_name">my_module.report_confidential</field>
-    <field name="groups_id" eval="[(4, ref('group_my_module_manager'))]"/>
-    <field name="binding_model_id" ref="model_my_model"/>
-    <field name="binding_type">report</field>
+  <field name="name">Confidential Report</field>
+  <field name="model">my.model</field>
+  <field name="report_type">qweb-pdf</field>
+  <field name="report_name">my_module.report_confidential</field>
+  <field name="groups_id" eval="[(4, ref('group_my_module_manager'))]" />
+  <field name="binding_model_id" ref="model_my_model" />
+  <field name="binding_type">report</field>
 </record>
 ```
 
 ### QWeb Report Template
 
 ```xml
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
+  <!-- Main report template (called for each record) -->
+  <template id="report_my_model_document">
+    <t t-call="web.external_layout">
+      <t t-set="doc" t-value="doc.with_context(lang=doc.partner_id.lang)" />
 
-    <!-- Main report template (called for each record) -->
-    <template id="report_my_model_document">
-        <t t-call="web.external_layout">
-            <t t-set="doc" t-value="doc.with_context(lang=doc.partner_id.lang)"/>
-
-            <div class="page">
-                <h2 t-field="doc.name"/>
-                <table class="table table-sm">
-                    <tr>
-                        <th>Date</th>
-                        <td><span t-field="doc.date"/></td>
-                    </tr>
-                    <tr>
-                        <th>Customer</th>
-                        <td>
-                            <span t-field="doc.partner_id.name"/>
-                            <br/>
-                            <span t-field="doc.partner_id.street"/>
-                            <span t-field="doc.partner_id.city"/>,
-                            <span t-field="doc.partner_id.country_id.code"/>
+      <div class="page">
+        <h2 t-field="doc.name" />
+        <table class="table table-sm">
+          <tr>
+            <th>Date</th>
+            <td>
+              <span t-field="doc.date" />
+            </td>
+          </tr>
+          <tr>
+            <th>Customer</th>
+            <td>
+                            <span t-field="doc.partner_id.name" />
+                            <br />
+                            <span t-field="doc.partner_id.street" />
+                            <span t-field="doc.partner_id.city" />,
+                            <span t-field="doc.partner_id.country_id.code" />
                         </td>
-                    </tr>
-                </table>
+          </tr>
+        </table>
 
-                <!-- Lines -->
-                <t t-if="doc.line_ids">
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>Product</th>
-                                <th class="text-right">Quantity</th>
-                                <th class="text-right">Price</th>
-                                <th class="text-right">Total</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr t-foreach="doc.line_ids" t-as="line">
-                                <td><span t-field="line.product_id.name"/></td>
-                                <td class="text-right"><span t-field="line.quantity"/></td>
-                                <td class="text-right"><span t-field="line.price_unit"/></td>
-                                <td class="text-right"><span t-field="line.price_total"/></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </t>
-
-                <!-- Totals -->
-                <div class="row">
-                    <div class="col-6 offset-6">
-                        <table class="table table-sm">
-                            <tr>
-                                <td class="text-right"><strong>Total</strong></td>
-                                <td class="text-right"><span t-field="doc.amount_total"/></td>
-                            </tr>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Footer note -->
-            <div class="footer_note">
-                <t t-if="doc.note">
-                    <p t-field="doc.note"/>
-                </t>
-                <t t-if="doc.conditions">
-                    <p t-esc="doc.conditions"/>
-                </t>
-            </div>
+        <!-- Lines -->
+        <t t-if="doc.line_ids">
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th class="text-right">Quantity</th>
+                <th class="text-right">Price</th>
+                <th class="text-right">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr t-foreach="doc.line_ids" t-as="line">
+                <td>
+                  <span t-field="line.product_id.name" />
+                </td>
+                <td class="text-right">
+                  <span t-field="line.quantity" />
+                </td>
+                <td class="text-right">
+                  <span t-field="line.price_unit" />
+                </td>
+                <td class="text-right">
+                  <span t-field="line.price_total" />
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </t>
-    </template>
 
-    <!-- Wrapper template (handles multiple records) -->
-    <template id="report_my_model_raw">
-        <t t-call="web.html_container">
-            <t t-foreach="docs" t-as="doc">
-                <t t-call="my_module.report_my_model_document" t-lang="doc.partner_id.lang"/>
-            </t>
+        <!-- Totals -->
+        <div class="row">
+          <div class="col-6 offset-6">
+            <table class="table table-sm">
+              <tr>
+                <td class="text-right">
+                  <strong>Total</strong>
+                </td>
+                <td class="text-right">
+                  <span t-field="doc.amount_total" />
+                </td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer note -->
+      <div class="footer_note">
+        <t t-if="doc.note">
+          <p t-field="doc.note" />
         </t>
-    </template>
+        <t t-if="doc.conditions">
+          <p t-esc="doc.conditions" />
+        </t>
+      </div>
+    </t>
+  </template>
 
-    <!-- Main entry point -->
-    <template id="report_my_model">
-        <t t-call="my_module.report_my_model_raw"/>
-    </template>
+  <!-- Wrapper template (handles multiple records) -->
+  <template id="report_my_model_raw">
+    <t t-call="web.html_container">
+      <t t-foreach="docs" t-as="doc">
+        <t t-call="my_module.report_my_model_document" t-lang="doc.partner_id.lang" />
+      </t>
+    </t>
+  </template>
 
+  <!-- Main entry point -->
+  <template id="report_my_model">
+    <t t-call="my_module.report_my_model_raw" />
+  </template>
 </odoo>
 ```
 
@@ -531,13 +541,13 @@ access_my_model_portal,my.model.portal,model_my_model,base.group_portal,1,0,0,0
 
 Odoo provides several built-in layouts:
 
-| Layout | Usage |
-|--------|-------|
-| `web.external_layout` | Standard external layout (with header/footer) |
-| `web.external_layout_background` | With background styling |
-| `web.external_layout_clean` | Minimal layout |
-| `web.html_container` | Container without header/footer |
-| `web.internal_layout` | Internal layout for backend |
+| Layout                           | Usage                                         |
+| -------------------------------- | --------------------------------------------- |
+| `web.external_layout`            | Standard external layout (with header/footer) |
+| `web.external_layout_background` | With background styling                       |
+| `web.external_layout_clean`      | Minimal layout                                |
+| `web.html_container`             | Container without header/footer               |
+| `web.internal_layout`            | Internal layout for backend                   |
 
 ### Dynamic Report Name
 
@@ -622,44 +632,47 @@ class MyWizard(models.TransientModel):
 ### Wizard View
 
 ```xml
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
+  <!-- Wizard Form View -->
+  <record id="view_my_wizard_form" model="ir.ui.view">
+    <field name="name">my.wizard.form</field>
+    <field name="model">my.wizard</field>
+    <field name="arch" type="xml">
+      <form string="My Wizard">
+        <field name="record_ids" invisible="1" />
+        <group>
+          <group>
+            <field name="date" />
+          </group>
+          <group>
+            <field name="user_id" />
+          </group>
+        </group>
+        <group>
+          <field name="reason" nolabel="1" placeholder="Enter reason..." />
+        </group>
+        <footer>
+          <button
+            string="Process"
+            name="action_process"
+            type="object"
+            class="btn-primary"
+          />
+          <button string="Cancel" class="btn-secondary" special="cancel" />
+        </footer>
+      </form>
+    </field>
+  </record>
 
-    <!-- Wizard Form View -->
-    <record id="view_my_wizard_form" model="ir.ui.view">
-        <field name="name">my.wizard.form</field>
-        <field name="model">my.wizard</field>
-        <field name="arch" type="xml">
-            <form string="My Wizard">
-                <field name="record_ids" invisible="1"/>
-                <group>
-                    <group>
-                        <field name="date"/>
-                    </group>
-                    <group>
-                        <field name="user_id"/>
-                    </group>
-                </group>
-                <group>
-                    <field name="reason" nolabel="1" placeholder="Enter reason..."/>
-                </group>
-                <footer>
-                    <button string="Process" name="action_process" type="object" class="btn-primary"/>
-                    <button string="Cancel" class="btn-secondary" special="cancel"/>
-                </footer>
-            </form>
-        </field>
-    </record>
-
-    <!-- Wizard Action -->
-    <record id="action_my_wizard" model="ir.actions.act_window">
-        <field name="name">My Wizard</field>
-        <field name="res_model">my.wizard</field>
-        <field name="view_mode">form</field>
-        <field name="view_id" ref="view_my_wizard_form"/>
-        <field name="target">new</field>
-    </record>
-
+  <!-- Wizard Action -->
+  <record id="action_my_wizard" model="ir.actions.act_window">
+    <field name="name">My Wizard</field>
+    <field name="res_model">my.wizard</field>
+    <field name="view_mode">form</field>
+    <field name="view_id" ref="view_my_wizard_form" />
+    <field name="target">new</field>
+  </record>
 </odoo>
 ```
 
@@ -668,28 +681,32 @@ class MyWizard(models.TransientModel):
 ```xml
 <!-- Add wizard button to model form -->
 <record id="view_my_model_form" model="ir.ui.view">
-    <field name="name">my.model.form</field>
-    <field name="model">my.model</field>
-    <field name="inherit_id" ref="my_module.view_my_model_form"/>
-    <field name="arch" type="xml">
-        <header position="inside">
-            <button string="Open Wizard" name="%(action_my_wizard)d"
-                    type="action" class="btn-primary"/>
-        </header>
-    </field>
+  <field name="name">my.model.form</field>
+  <field name="model">my.model</field>
+  <field name="inherit_id" ref="my_module.view_my_model_form" />
+  <field name="arch" type="xml">
+    <header position="inside">
+      <button
+        string="Open Wizard"
+        name="%(action_my_wizard)d"
+        type="action"
+        class="btn-primary"
+      />
+    </header>
+  </field>
 </record>
 ```
 
 ### TransientModel vs Model
 
-| Feature | TransientModel | Model |
-|---------|---------------|-------|
-| Data persistence | Auto-deleted (periodic cleanup) | Persistent |
-| Use for | Wizards, temporary data | Regular business data |
-| Database table | Yes (temporary) | Yes (permanent) |
-| Inheritance | `models.TransientModel` | `models.Model` |
-| Lifecycle | ~1 day (configurable) | Forever |
-| `active_id` | Works | Works |
+| Feature          | TransientModel                  | Model                 |
+| ---------------- | ------------------------------- | --------------------- |
+| Data persistence | Auto-deleted (periodic cleanup) | Persistent            |
+| Use for          | Wizards, temporary data         | Regular business data |
+| Database table   | Yes (temporary)                 | Yes (permanent)       |
+| Inheritance      | `models.TransientModel`         | `models.Model`        |
+| Lifecycle        | ~1 day (configurable)           | Forever               |
+| `active_id`      | Works                           | Works                 |
 
 ### Multi-Step Wizard
 
@@ -748,79 +765,75 @@ def default_get(self, fields):
 ### Data Records (XML)
 
 ```xml
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
+  <!-- Simple record -->
+  <record id="my_record_1" model="my.model">
+    <field name="name">Record 1</field>
+    <field name="code">R001</field>
+  </record>
 
-    <!-- Simple record -->
-    <record id="my_record_1" model="my.model">
-        <field name="name">Record 1</field>
-        <field name="code">R001</field>
-    </record>
+  <!-- Record with relation -->
+  <record id="my_record_2" model="my.model">
+    <field name="name">Record 2</field>
+    <field name="category_id" ref="my_category_1" />
+    <field name="user_id" ref="base.user_admin" />
+  </record>
 
-    <!-- Record with relation -->
-    <record id="my_record_2" model="my.model">
-        <field name="name">Record 2</field>
-        <field name="category_id" ref="my_category_1"/>
-        <field name="user_id" ref="base.user_admin"/>
-    </record>
-
-    <!-- noupdate: don't update on module upgrade -->
-    <record id="my_record_3" model="my.model" noupdate="1">
-        <field name="name">Record 3 (Customizable)</field>
-    </record>
-
+  <!-- noupdate: don't update on module upgrade -->
+  <record id="my_record_3" model="my.model" noupdate="1">
+    <field name="name">Record 3 (Customizable)</field>
+  </record>
 </odoo>
 ```
 
 ### Cron Jobs
 
 ```xml
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-
-    <record id="cron_my_model_cleanup" model="ir.cron">
-        <field name="name">Clean up old records</field>
-        <field name="model_id" ref="model_my_model"/>
-        <field name="state">code</field>
-        <field name="code">model.cron_cleanup_old_records()</field>
-        <field name="interval_number">1</field>
-        <field name="interval_type">days</field>
-        <field name="numbercall">-1</field>
-        <field name="doall" eval="False"/>
-        <field name="active" eval="True"/>
-    </record>
-
+  <record id="cron_my_model_cleanup" model="ir.cron">
+    <field name="name">Clean up old records</field>
+    <field name="model_id" ref="model_my_model" />
+    <field name="state">code</field>
+    <field name="code">model.cron_cleanup_old_records()</field>
+    <field name="interval_number">1</field>
+    <field name="interval_type">days</field>
+    <field name="numbercall">-1</field>
+    <field name="doall" eval="False" />
+    <field name="active" eval="True" />
+  </record>
 </odoo>
 ```
 
 ### Server Actions
 
 ```xml
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-
-    <!-- Python code server action -->
-    <record id="server_action_my_model" model="ir.actions.server">
-        <field name="name">My Server Action</field>
-        <field name="model_id" ref="model_my_model"/>
-        <field name="state">code</field>
-        <field name="code">
+  <!-- Python code server action -->
+  <record id="server_action_my_model" model="ir.actions.server">
+    <field name="name">My Server Action</field>
+    <field name="model_id" ref="model_my_model" />
+    <field name="state">code</field>
+    <field name="code">
 records.action_done()
         </field>
-    </record>
+  </record>
 
-    <!-- Create new record server action -->
-    <record id="server_action_create" model="ir.actions.server">
-        <field name="name">Create Record</field>
-        <field name="model_id" ref="model_my_model"/>
-        <field name="state">object_create</field>
-        <field name="use_create">new</field>
-        <field name="fields_lines_ids">
-            <field eval="[(0, 0, {'field_id': ref('field_my_model_name'), 'value': 'New Record'})]"
-                   name="fields_lines_ids"/>
-        </field>
-    </record>
-
+  <!-- Create new record server action -->
+  <record id="server_action_create" model="ir.actions.server">
+    <field name="name">Create Record</field>
+    <field name="model_id" ref="model_my_model" />
+    <field name="state">object_create</field>
+    <field name="use_create">new</field>
+    <field name="fields_lines_ids">
+      <field
+        eval="[(0, 0, {'field_id': ref('field_my_model_name'), 'value': 'New Record'})]"
+        name="fields_lines_ids"
+      />
+    </field>
+  </record>
 </odoo>
 ```
 
@@ -884,7 +897,7 @@ def pre_init_hook(env):
 
 ## Complete Module Example
 
-### __manifest__.py
+### **manifest**.py
 
 ```python
 #!/usr/bin/env python
@@ -963,12 +976,12 @@ access_my_model_manager,my.model.manager,model_my_model,group_my_module_manager,
 ### security/my_module_security.xml
 
 ```xml
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo noupdate="1">
-    <record id="group_my_module_manager" model="res.groups">
-        <field name="name">Manager</field>
-        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
-    </record>
+  <record id="group_my_module_manager" model="res.groups">
+    <field name="name">Manager</field>
+    <field name="implied_ids" eval="[(4, ref('base.group_user'))]" />
+  </record>
 </odoo>
 ```
 
@@ -981,14 +994,14 @@ access_my_model_manager,my.model.manager,model_my_model,group_my_module_manager,
 ```xml
 <!-- Window action -->
 <record id="action_my_model" model="ir.actions.act_window">
-    <field name="name">My Models</field>
-    <field name="res_model">my.model</field>
-    <field name="view_mode">list,form</field>
-    <field name="domain">[]</field>
-    <field name="context">{'search_default_draft': 1}</field>
-    <field name="help" type="html">
-        <p class="o_view_nocontent_smiling_face">Create your first record!</p>
-    </field>
+  <field name="name">My Models</field>
+  <field name="res_model">my.model</field>
+  <field name="view_mode">list,form</field>
+  <field name="domain">[]</field>
+  <field name="context">{'search_default_draft': 1}</field>
+  <field name="help" type="html">
+    <p class="o_view_nocontent_smiling_face">Create your first record!</p>
+  </field>
 </record>
 ```
 
@@ -1017,12 +1030,12 @@ access_my_model_manager,my.model.manager,model_my_model,group_my_module_manager,
 ```xml
 <!-- Report action appears in Print menu -->
 <record id="action_report_my_model" model="ir.actions.report">
-    <field name="name">My Model Report</field>
-    <field name="model">my.model</field>
-    <field name="report_type">qweb-pdf</field>
-    <field name="report_name">my_module.report_my_model</field>
-    <field name="binding_model_id" ref="model_my_model"/>
-    <field name="binding_type">report</field>
+  <field name="name">My Model Report</field>
+  <field name="model">my.model</field>
+  <field name="report_type">qweb-pdf</field>
+  <field name="report_name">my_module.report_my_model</field>
+  <field name="binding_model_id" ref="model_my_model" />
+  <field name="binding_type">report</field>
 </record>
 ```
 
@@ -1050,11 +1063,12 @@ access_my_model_manager,my.model.manager,model_my_model,group_my_module_manager,
 
 ```xml
 <!-- Add to right-click menu -->
-<act_window id="action_my_model_context"
-    name="My Action"
-    res_model="my.model"
-    src_model="my.model"
-    multi="False"
+<act_window
+  id="action_my_model_context"
+  name="My Action"
+  res_model="my.model"
+  src_model="my.model"
+  multi="False"
 />
 ```
 
@@ -1077,7 +1091,8 @@ Exception
 
 ### UserError
 
-**Purpose**: Generic error managed by the client. When the user tries to do something that doesn't make sense.
+**Purpose**: Generic error managed by the client. When the user tries to do something
+that doesn't make sense.
 
 ```python
 from odoo.exceptions import UserError
@@ -1102,7 +1117,8 @@ def check_password(self, password):
 
 ### AccessError
 
-**Purpose**: Access rights error. When user tries to access records they're not allowed to.
+**Purpose**: Access rights error. When user tries to access records they're not allowed
+to.
 
 ```python
 from odoo.exceptions import AccessError
@@ -1171,15 +1187,15 @@ except CacheMiss:
 
 ### Exception Usage Guidelines
 
-| Exception | When to Use | Behavior |
-|-----------|-------------|----------|
-| `UserError` | Generic business logic errors | Shows modal to user |
-| `AccessDenied` | Wrong login/password | No traceback, login error |
-| `AccessError` | Insufficient permissions | Shows error to user |
-| `MissingError` | Record deleted/not found | Shows error to user |
-| `ValidationError` | Data validation fails | Shows error to user |
-| `RedirectWarning` | Need to redirect user | Shows dialog with button |
-| `CacheMiss` | Cache lookup (internal) | Handled by ORM |
+| Exception         | When to Use                   | Behavior                  |
+| ----------------- | ----------------------------- | ------------------------- |
+| `UserError`       | Generic business logic errors | Shows modal to user       |
+| `AccessDenied`    | Wrong login/password          | No traceback, login error |
+| `AccessError`     | Insufficient permissions      | Shows error to user       |
+| `MissingError`    | Record deleted/not found      | Shows error to user       |
+| `ValidationError` | Data validation fails         | Shows error to user       |
+| `RedirectWarning` | Need to redirect user         | Shows dialog with button  |
+| `CacheMiss`       | Cache lookup (internal)       | Handled by ORM            |
 
 ### Import Statement
 

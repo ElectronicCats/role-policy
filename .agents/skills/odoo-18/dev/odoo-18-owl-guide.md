@@ -1,11 +1,14 @@
 ---
 name: odoo-18-owl
-description: Complete reference for Odoo 18 OWL (Owl Web Library) components, hooks, services, and patterns for building interactive JavaScript UI components.
+description:
+  Complete reference for Odoo 18 OWL (Owl Web Library) components, hooks, services, and
+  patterns for building interactive JavaScript UI components.
 globs: "**/static/src/**/*.js"
 topics:
   - OWL basics (Component, setup, template, props, state)
   - OWL hooks (useState, useEffect, onMounted, onWillUnmount, useRef, useService)
-  - Odoo components (Dropdown, SelectMenu, TagsList, Notebook, Pager, CheckBox, ColorList, ActionSwiper)
+  - Odoo components (Dropdown, SelectMenu, TagsList, Notebook, Pager, CheckBox,
+    ColorList, ActionSwiper)
   - Services (rpc, dialog, notification, ui, action, router)
   - QWeb templates and directives
   - Registries (category, add, get, contains)
@@ -20,7 +23,8 @@ when_to_use:
 
 # Odoo 18 OWL Guide
 
-Complete reference for Odoo 18 OWL (Owl Web Library) components, hooks, services, and patterns for building interactive JavaScript UI components.
+Complete reference for Odoo 18 OWL (Owl Web Library) components, hooks, services, and
+patterns for building interactive JavaScript UI components.
 
 ## Table of Contents
 
@@ -43,86 +47,88 @@ Complete reference for Odoo 18 OWL (Owl Web Library) components, hooks, services
 
 ```javascript
 import {
-    Component,
-    xml,
-    useState,
-    useEffect,
-    onMounted,
-    onWillUnmount,
-    useRef,
-    useSubEnv
+  Component,
+  xml,
+  useState,
+  useEffect,
+  onMounted,
+  onWillUnmount,
+  useRef,
+  useSubEnv,
 } from "@odoo/owl";
 ```
 
 ### Basic Component Structure
 
 ```javascript
-import { Component, xml, useState } from "@odoo/owl";
+import {Component, xml, useState} from "@odoo/owl";
 
 export class MyComponent extends Component {
-    // Static properties define component metadata
-    static template = xml`
+  // Static properties define component metadata
+  static template = xml`
         <div class="my-component" t-on-click="increment">
             <span t-esc="state.value"/>
         </div>
     `;
 
-    static components = {}; // Child components
+  static components = {}; // Child components
 
-    static props = {
-        value: { type: Number, optional: true },
-        onValueChange: { type: Function, optional: true },
-    };
+  static props = {
+    value: {type: Number, optional: true},
+    onValueChange: {type: Function, optional: true},
+  };
 
-    static defaultProps = {
-        value: 0,
-    };
+  static defaultProps = {
+    value: 0,
+  };
 
-    // setup() is called once when component is created
-    setup() {
-        this.state = useState({ value: this.props.value || 0 });
+  // setup() is called once when component is created
+  setup() {
+    this.state = useState({value: this.props.value || 0});
+  }
+
+  increment() {
+    this.state.value++;
+    if (this.props.onValueChange) {
+      this.props.onValueChange(this.state.value);
     }
-
-    increment() {
-        this.state.value++;
-        if (this.props.onValueChange) {
-            this.props.onValueChange(this.state.value);
-        }
-    }
+  }
 }
 ```
 
 ### Template in XML File (Recommended)
 
 **JavaScript file (`my_component.js`)**:
+
 ```javascript
-import { Component, useState } from "@odoo/owl";
+import {Component, useState} from "@odoo/owl";
 
 export class MyComponent extends Component {
-    static template = "myaddon.MyComponent";
-    static props = ["*"];
+  static template = "myaddon.MyComponent";
+  static props = ["*"];
 
-    setup() {
-        this.state = useState({ count: 0 });
-    }
+  setup() {
+    this.state = useState({count: 0});
+  }
 
-    increment() {
-        this.state.count++;
-    }
+  increment() {
+    this.state.count++;
+  }
 }
 ```
 
 **XML template file (`my_component.xml`)**:
+
 ```xml
 <?xml version="1.0" encoding="UTF-8" ?>
 <templates xml:space="preserve">
     <t t-name="myaddon.MyComponent">
-        <div class="my-component">
-            <button t-on-click="increment">
-                Count: <t t-esc="state.count"/>
+    <div class="my-component">
+      <button t-on-click="increment">
+                Count: <t t-esc="state.count" />
             </button>
-        </div>
-    </t>
+    </div>
+  </t>
 </templates>
 ```
 
@@ -159,61 +165,61 @@ Add to assets bundle in `__manifest__.py`:
 
 ```javascript
 import {
-    Component,
-    setup,
-    onMounted,
-    onWillStart,
-    onWillUnmount,
-    onWillUpdateProps,
-    onWillPatch,
-    onPatched,
-    onRendered
+  Component,
+  setup,
+  onMounted,
+  onWillStart,
+  onWillUnmount,
+  onWillUpdateProps,
+  onWillPatch,
+  onPatched,
+  onRendered,
 } from "@odoo/owl";
 
 class LifecycleDemo extends Component {
-    setup() {
-        // 1. Called first - component initialization
-        console.log("setup");
+  setup() {
+    // 1. Called first - component initialization
+    console.log("setup");
 
-        // 2. Called before first render
-        onWillStart(() => {
-            console.log("onWillStart");
-            // Async setup: load data, start services
-            return this.loadData();
-        });
+    // 2. Called before first render
+    onWillStart(() => {
+      console.log("onWillStart");
+      // Async setup: load data, start services
+      return this.loadData();
+    });
 
-        // 3. Called after DOM is mounted
-        onMounted(() => {
-            console.log("onMounted");
-            // DOM access, animations, third-party libs
-        });
+    // 3. Called after DOM is mounted
+    onMounted(() => {
+      console.log("onMounted");
+      // DOM access, animations, third-party libs
+    });
 
-        // 4. Called before props update
-        onWillUpdateProps((nextProps) => {
-            console.log("onWillUpdateProps", nextProps);
-        });
+    // 4. Called before props update
+    onWillUpdateProps((nextProps) => {
+      console.log("onWillUpdateProps", nextProps);
+    });
 
-        // 5. Called before DOM patch
-        onWillPatch(() => {
-            console.log("onWillPatch");
-        });
+    // 5. Called before DOM patch
+    onWillPatch(() => {
+      console.log("onWillPatch");
+    });
 
-        // 6. Called after DOM patch
-        onPatched(() => {
-            console.log("onPatched");
-        });
+    // 6. Called after DOM patch
+    onPatched(() => {
+      console.log("onPatched");
+    });
 
-        // 7. Called after each render
-        onRendered(() => {
-            console.log("onRendered");
-        });
+    // 7. Called after each render
+    onRendered(() => {
+      console.log("onRendered");
+    });
 
-        // 8. Called before component unmount
-        onWillUnmount(() => {
-            console.log("onWillUnmount");
-            // Cleanup: remove listeners, cancel timers
-        });
-    }
+    // 8. Called before component unmount
+    onWillUnmount(() => {
+      console.log("onWillUnmount");
+      // Cleanup: remove listeners, cancel timers
+    });
+  }
 }
 ```
 
@@ -224,21 +230,22 @@ class LifecycleDemo extends Component {
 ```javascript
 // CORRECT
 class GoodComponent extends Component {
-    setup() {
-        this.state = useState({ value: 1 });
-    }
+  setup() {
+    this.state = useState({value: 1});
+  }
 }
 
 // INCORRECT - Do not use constructor
 class BadComponent extends Component {
-    constructor(parent, props) {
-        super(parent, props);
-        this.state = useState({ value: 1 });
-    }
+  constructor(parent, props) {
+    super(parent, props);
+    this.state = useState({value: 1});
+  }
 }
 ```
 
-**Why**: `setup()` is overridable, constructor is not. Odoo needs to extend component behavior.
+**Why**: `setup()` is overridable, constructor is not. Odoo needs to extend component
+behavior.
 
 ---
 
@@ -395,31 +402,29 @@ static template = xml`
 ```
 
 **Nested Dropdown**:
+
 ```xml
 <Dropdown>
-    <button>File</button>
-    <t t-set-slot="content">
-        <DropdownItem onSelected="save">Save</DropdownItem>
-        <Dropdown>
-            <button>New</button>
-            <t t-set-slot="content">
-                <DropdownItem onSelected="newDocument">Document</DropdownItem>
-                <DropdownItem onSelected="newSpreadsheet">Spreadsheet</DropdownItem>
-            </t>
-        </Dropdown>
-    </t>
+  <button>File</button>
+  <t t-set-slot="content">
+    <DropdownItem onSelected="save">Save</DropdownItem>
+    <Dropdown>
+      <button>New</button>
+      <t t-set-slot="content">
+        <DropdownItem onSelected="newDocument">Document</DropdownItem>
+        <DropdownItem onSelected="newSpreadsheet">Spreadsheet</DropdownItem>
+      </t>
+    </Dropdown>
+  </t>
 </Dropdown>
 ```
 
-**Dropdown Props**:
-| Prop | Type | Description |
-|------|------|-------------|
-| `menuClass` | `String` | Optional classname for menu |
-| `disabled` | `Boolean` | Disable dropdown |
-| `position` | `String` | Menu position (default: `bottom-start`) |
-| `beforeOpen` | `Function` | Called before opening (async ok) |
-| `onOpened` | `Function` | Called after opening |
-| `manual` | `Boolean` | Don't add click handlers (use with `state`) |
+**Dropdown Props**: | Prop | Type | Description | |------|------|-------------| |
+`menuClass` | `String` | Optional classname for menu | | `disabled` | `Boolean` |
+Disable dropdown | | `position` | `String` | Menu position (default: `bottom-start`) | |
+`beforeOpen` | `Function` | Called before opening (async ok) | | `onOpened` | `Function`
+| Called after opening | | `manual` | `Boolean` | Don't add click handlers (use with
+`state`) |
 
 ### SelectMenu - Enhanced Select
 
@@ -451,29 +456,26 @@ onSelect(value) {
 ```
 
 **Multi-Select with Groups**:
+
 ```xml
 <SelectMenu
-    choices="choices"
-    groups="groups"
-    multiSelect="true"
-    value="state.selectedValues"
+  choices="choices"
+  groups="groups"
+  multiSelect="true"
+  value="state.selectedValues"
 >
-    <span>Select items</span>
-    <t t-set-slot="choice" t-slot-scope="choice">
-        <span t-esc="'👉 ' + choice.data.label + ' 👈'" />
-    </t>
+  <span>Select items</span>
+  <t t-set-slot="choice" t-slot-scope="choice">
+    <span t-esc="'👉 ' + choice.data.label + ' 👈'" />
+  </t>
 </SelectMenu>
 ```
 
-**SelectMenu Props**:
-| Prop | Type | Description |
-|------|------|-------------|
-| `choices` | `Array` | List of `{value, label}` |
-| `groups` | `Array` | Grouped choices |
-| `multiSelect` | `Boolean` | Enable multiple selection |
-| `searchable` | `Boolean` | Show search box |
-| `value` | `any` | Selected value(s) |
-| `onSelect` | `Function` | Callback on selection |
+**SelectMenu Props**: | Prop | Type | Description | |------|------|-------------| |
+`choices` | `Array` | List of `{value, label}` | | `groups` | `Array` | Grouped choices
+| | `multiSelect` | `Boolean` | Enable multiple selection | | `searchable` | `Boolean` |
+Show search box | | `value` | `any` | Selected value(s) | | `onSelect` | `Function` |
+Callback on selection |
 
 ### TagsList - Display Tags
 
@@ -506,7 +508,9 @@ get state() {
 }
 ```
 
-**Color IDs**: 0 (No color), 1 (Red), 2 (Orange), 3 (Yellow), 4 (Light blue), 5 (Dark purple), 6 (Salmon pink), 7 (Medium blue), 8 (Dark blue), 9 (Fuchsia), 11 (Purple), 12 (Green)
+**Color IDs**: 0 (No color), 1 (Red), 2 (Orange), 3 (Yellow), 4 (Light blue), 5 (Dark
+purple), 6 (Salmon pink), 7 (Medium blue), 8 (Dark blue), 9 (Fuchsia), 11 (Purple), 12
+(Green)
 
 ### Notebook - Tabbed Interface
 
@@ -526,6 +530,7 @@ static template = xml`
 ```
 
 **Programmatic Pages**:
+
 ```javascript
 get pages() {
     return [
@@ -650,21 +655,21 @@ get swipeRightAction() {
 this.rpc = useService("rpc");
 
 // Simple call
-const result = await this.rpc("/my/controller/endpoint", { arg1: "value" });
+const result = await this.rpc("/my/controller/endpoint", {arg1: "value"});
 
 // Model method call
 const partners = await this.rpc({
-    model: "res.partner",
-    method: "search_read",
-    args: [[["is_company", "=", true]]],
-    kwargs: { fields: ["name", "email"] },
+  model: "res.partner",
+  method: "search_read",
+  args: [[["is_company", "=", true]]],
+  kwargs: {fields: ["name", "email"]},
 });
 
 // Named route with params
 const data = await this.rpc("/web/dataset/call_kw", {
-    model: "sale.order",
-    method: "action_confirm",
-    args: [[orderId]],
+  model: "sale.order",
+  method: "action_confirm",
+  args: [[orderId]],
 });
 ```
 
@@ -675,20 +680,22 @@ this.orm = useService("orm");
 
 // Read records
 const records = await this.orm.searchRead(
-    "res.partner",
-    [["customer_rank", ">", 0]],
-    ["name", "email", "phone"]
+  "res.partner",
+  [["customer_rank", ">", 0]],
+  ["name", "email", "phone"]
 );
 
 // Create record
-const id = await this.orm.create("res.partner", [{
+const id = await this.orm.create("res.partner", [
+  {
     name: "New Partner",
     email: "test@example.com",
-}]);
+  },
+]);
 
 // Write records
 await this.orm.write("res.partner", [id], {
-    phone: "123456"
+  phone: "123456",
 });
 
 // Unlink records
@@ -699,10 +706,10 @@ const result = await this.orm.call("res.partner", "name_get", [[id]]);
 
 // Read group
 const groups = await this.orm.readGroup(
-    "sale.order",
-    [["state", "!=", "draft"]],
-    ["state", "amount_total:sum"],
-    ["state"]
+  "sale.order",
+  [["state", "!=", "draft"]],
+  ["state", "amount_total:sum"],
+  ["state"]
 );
 ```
 
@@ -713,20 +720,20 @@ this.dialog = useService("dialog");
 
 // Simple dialog
 this.dialog.add(MyDialogComponent, {
-    title: "Confirmation",
-    message: "Are you sure?",
-    confirm: () => this.doAction(),
+  title: "Confirmation",
+  message: "Are you sure?",
+  confirm: () => this.doAction(),
 });
 
 // Confirm dialog
 this.dialog.add(ConfirmationDialog, {
-    title: this.env._t("Delete Record"),
-    body: this.env._t("Are you sure you want to delete this record?"),
-    confirm: async () => {
-        await this.orm.unlink(this.props.resModel, [this.props.resId]);
-        this.props.close();
-    },
-    cancel: () => {},
+  title: this.env._t("Delete Record"),
+  body: this.env._t("Are you sure you want to delete this record?"),
+  confirm: async () => {
+    await this.orm.unlink(this.props.resModel, [this.props.resId]);
+    this.props.close();
+  },
+  cancel: () => {},
 });
 ```
 
@@ -736,13 +743,13 @@ this.dialog.add(ConfirmationDialog, {
 this.notification = useService("notification");
 
 // Simple notification
-this.notification.notify("Message sent!", { type: "success" });
+this.notification.notify("Message sent!", {type: "success"});
 
 // With options
 this.notification.notify("Error occurred", {
-    type: "danger",
-    sticky: true,
-    title: "Error",
+  type: "danger",
+  sticky: true,
+  title: "Error",
 });
 
 // Types: success, info, warning, danger
@@ -755,21 +762,24 @@ this.action = useService("action");
 
 // Execute window action
 await this.action.doAction({
-    name: "Partners",
-    type: "ir.actions.act_window",
-    res_model: "res.partner",
-    view_mode: "tree,form",
-    views: [[false, "list"], [false, "form"]],
-    domain: [["customer_rank", ">", 0]],
+  name: "Partners",
+  type: "ir.actions.act_window",
+  res_model: "res.partner",
+  view_mode: "tree,form",
+  views: [
+    [false, "list"],
+    [false, "form"],
+  ],
+  domain: [["customer_rank", ">", 0]],
 });
 
 // Open form
 await this.action.doAction({
-    type: "ir.actions.act_window",
-    res_model: "res.partner",
-    res_id: partnerId,
-    views: [[false, "form"]],
-    target: "new",  // or "current", "fullscreen"
+  type: "ir.actions.act_window",
+  res_model: "res.partner",
+  res_id: partnerId,
+  views: [[false, "form"]],
+  target: "new", // or "current", "fullscreen"
 });
 
 // Reload current action
@@ -785,14 +795,14 @@ await this.action.doBack();
 this.router = useService("router");
 
 // Navigate to action
-this.router.push({ action: 123 });
+this.router.push({action: 123});
 
 // Navigate with search domain
 this.router.push({
-    action: 123,
-    view_type: "list",
-    model: "sale.order",
-    domain: '[["state", "=", "draft"]]',
+  action: 123,
+  view_type: "list",
+  model: "sale.order",
+  domain: '[["state", "=", "draft"]]',
 });
 
 // Get current state
@@ -813,9 +823,9 @@ const isActive = this.ui.isActiveElement(element);
 // Block/Unblock UI
 this.ui.block();
 try {
-    await someOperation();
+  await someOperation();
 } finally {
-    this.ui.unblock();
+  this.ui.unblock();
 }
 ```
 
@@ -829,7 +839,7 @@ const viewRegistry = registry.category("views");
 
 // Add to registry
 viewRegistry.add("my_view", {
-    ...myViewDefinition,
+  ...myViewDefinition,
 });
 
 // Get from registry
@@ -837,7 +847,7 @@ const viewDef = viewRegistry.get("my_view");
 
 // Check existence
 if (viewRegistry.contains("my_view")) {
-    // ...
+  // ...
 }
 
 // Remove from registry
@@ -928,7 +938,7 @@ static template = xml`
 ### Using Registries
 
 ```javascript
-import { registry } from "@web/core/registry";
+import {registry} from "@web/core/registry";
 
 // Get or create category
 const viewRegistry = registry.category("views");
@@ -937,13 +947,13 @@ const actionRegistry = registry.category("actions");
 
 // Add to registry
 viewRegistry.add("my_custom_view", {
-    type: "my_custom_view",
-    display_name: "My Custom View",
-    icon: "fa-star",
-    isMobileFriendly: true,
-    Controller: MyViewController,
-    Renderer: MyViewRenderer,
-    Model: MyViewModel,
+  type: "my_custom_view",
+  display_name: "My Custom View",
+  icon: "fa-star",
+  isMobileFriendly: true,
+  Controller: MyViewController,
+  Renderer: MyViewRenderer,
+  Model: MyViewModel,
 });
 
 // Get from registry
@@ -951,7 +961,7 @@ const viewDef = viewRegistry.get("my_custom_view");
 
 // Check if contains
 if (viewRegistry.contains("my_custom_view")) {
-    console.log("View registered!");
+  console.log("View registered!");
 }
 
 // Add multiple
@@ -965,19 +975,23 @@ viewRegistry.remove("view1");
 const allViews = viewRegistry.getAll();
 
 // Add with validation
-fieldRegistry.add("custom.field", {
+fieldRegistry.add(
+  "custom.field",
+  {
     component: CustomField,
     supportedTypes: ["char", "text"],
     extractProps: (fieldInfo, props) => {
-        return {
-            maxLength: fieldInfo.rawAttrs.maxlength,
-        };
+      return {
+        maxLength: fieldInfo.rawAttrs.maxlength,
+      };
     },
-}, {
+  },
+  {
     // Validate
     component: (c) => c.prototype instanceof Component,
-    supportedTypes: { type: Array, element: String },
-});
+    supportedTypes: {type: Array, element: String},
+  }
+);
 ```
 
 ---
@@ -987,47 +1001,47 @@ fieldRegistry.add("custom.field", {
 ### Common Data Patterns
 
 ```javascript
-import { Component, useState, onWillStart } from "@odoo/owl";
-import { useService } from "@web/core/utils/hooks";
+import {Component, useState, onWillStart} from "@odoo/owl";
+import {useService} from "@web/core/utils/hooks";
 
 export class DataComponent extends Component {
-    static template = "myaddon.DataComponent";
-    static props = ["*"];
+  static template = "myaddon.DataComponent";
+  static props = ["*"];
 
-    setup() {
-        this.orm = useService("orm");
-        this.rpc = useService("rpc");
+  setup() {
+    this.orm = useService("orm");
+    this.rpc = useService("rpc");
 
-        this.state = useState({
-            records: [],
-            isLoading: false,
-            error: null,
-        });
+    this.state = useState({
+      records: [],
+      isLoading: false,
+      error: null,
+    });
 
-        onWillStart(this.onWillStart);
+    onWillStart(this.onWillStart);
+  }
+
+  async onWillStart() {
+    await this.loadRecords();
+  }
+
+  async loadRecords() {
+    this.state.isLoading = true;
+    this.state.error = null;
+
+    try {
+      this.state.records = await this.orm.searchRead(
+        "res.partner",
+        [["customer_rank", ">", 0]],
+        ["name", "email", "phone"],
+        {limit: 100}
+      );
+    } catch (error) {
+      this.state.error = error.message;
+    } finally {
+      this.state.isLoading = false;
     }
-
-    async onWillStart() {
-        await this.loadRecords();
-    }
-
-    async loadRecords() {
-        this.state.isLoading = true;
-        this.state.error = null;
-
-        try {
-            this.state.records = await this.orm.searchRead(
-                "res.partner",
-                [["customer_rank", ">", 0]],
-                ["name", "email", "phone"],
-                { limit: 100 }
-            );
-        } catch (error) {
-            this.state.error = error.message;
-        } finally {
-            this.state.isLoading = false;
-        }
-    }
+  }
 }
 ```
 
@@ -1199,6 +1213,7 @@ setup() {
 ### DO ✓
 
 1. **Use `setup()` instead of `constructor`**
+
    ```javascript
    setup() {
        this.state = useState({ value: 1 });
@@ -1206,17 +1221,20 @@ setup() {
    ```
 
 2. **Define templates in XML files**
+
    ```javascript
    static template = "myaddon.MyComponent";
    ```
 
 3. **Use proper template naming**
+
    ```javascript
    // Convention: addon_name.ComponentName
    static template = "myaddon.MyComponent";
    ```
 
 4. **Define props explicitly**
+
    ```javascript
    static props = {
        record: Object,
@@ -1225,14 +1243,16 @@ setup() {
    ```
 
 5. **Clean up in `onWillUnmount`**
+
    ```javascript
    onWillUnmount(() => {
-       this.observer.disconnect();
-       clearInterval(this.timer);
+     this.observer.disconnect();
+     clearInterval(this.timer);
    });
    ```
 
 6. **Use services for cross-cutting concerns**
+
    ```javascript
    this.rpc = useService("rpc");
    this.orm = useService("orm");
@@ -1243,13 +1263,14 @@ setup() {
    ```javascript
    // Use native select for simple cases
    <select t-model="state.value">
-       <option value="1">Option 1</option>
+     <option value="1">Option 1</option>
    </select>
    ```
 
 ### DON'T ✗
 
 1. **Don't use `constructor`**
+
    ```javascript
    // BAD
    constructor(parent, props) {
@@ -1258,18 +1279,21 @@ setup() {
    ```
 
 2. **Don't inline templates for production**
+
    ```javascript
    // BAD (except for simple components)
    static template = xml`<div>...</div>`;
    ```
 
-4. **Don't use `*` for props unless necessary**
+3. **Don't use `*` for props unless necessary**
+
    ```javascript
    // BAD - use explicit props
    static props = ["*"];
    ```
 
-5. **Don't forget cleanup**
+4. **Don't forget cleanup**
+
    ```javascript
    // BAD - memory leak
    setup() {
@@ -1277,7 +1301,8 @@ setup() {
    }
    ```
 
-6. **Don't manipulate DOM directly**
+5. **Don't manipulate DOM directly**
+
    ```javascript
    // BAD
    setup() {
@@ -1298,174 +1323,173 @@ setup() {
 
 ```javascript
 /** @odoo-module **/
-import { Component, xml, useState, onMounted, useRef, onWillUnmount } from "@odoo/owl";
-import { useService } from "@web/core/utils/hooks";
-import { Dropdown } from "@web/core/dropdown/dropdown";
-import { DropdownItem } from "@web/core/dropdown/dropdown_item";
-import { TagsList } from "@web/core/tags_list/tags_list";
+import {Component, xml, useState, onMounted, useRef, onWillUnmount} from "@odoo/owl";
+import {useService} from "@web/core/utils/hooks";
+import {Dropdown} from "@web/core/dropdown/dropdown";
+import {DropdownItem} from "@web/core/dropdown/dropdown_item";
+import {TagsList} from "@web/core/tags_list/tags_list";
 
 export class PartnerList extends Component {
-    static template = "myaddon.PartnerList";
-    static components = { Dropdown, DropdownItem, TagsList };
+  static template = "myaddon.PartnerList";
+  static components = {Dropdown, DropdownItem, TagsList};
 
-    static props = {
-        domain: { type: Array, optional: true },
-        limit: { type: Number, optional: true },
-    };
+  static props = {
+    domain: {type: Array, optional: true},
+    limit: {type: Number, optional: true},
+  };
 
-    static defaultProps = {
-        domain: [],
-        limit: 80,
-    };
+  static defaultProps = {
+    domain: [],
+    limit: 80,
+  };
 
-    setup() {
-        this.orm = useService("orm");
-        this.notification = useService("notification");
+  setup() {
+    this.orm = useService("orm");
+    this.notification = useService("notification");
 
-        this.state = useState({
-            partners: [],
-            selectedPartners: new Set(),
-            isLoading: false,
-            searchValue: "",
-        });
+    this.state = useState({
+      partners: [],
+      selectedPartners: new Set(),
+      isLoading: false,
+      searchValue: "",
+    });
 
-        this.rootRef = useRef("root");
+    this.rootRef = useRef("root");
 
-        onMounted(() => this.loadPartners());
+    onMounted(() => this.loadPartners());
+  }
+
+  get filteredPartners() {
+    if (!this.state.searchValue) {
+      return this.state.partners;
+    }
+    const search = this.state.searchValue.toLowerCase();
+    return this.state.partners.filter((p) => p.name.toLowerCase().includes(search));
+  }
+
+  get tags() {
+    return Array.from(this.state.selectedPartners).map((id) => {
+      const partner = this.state.partners.find((p) => p.id === id);
+      return {
+        id: id.toString(),
+        text: partner ? partner.name : `#${id}`,
+        colorIndex: 1,
+        onDelete: () => this.togglePartner(id),
+      };
+    });
+  }
+
+  async loadPartners() {
+    this.state.isLoading = true;
+    try {
+      this.state.partners = await this.orm.searchRead(
+        "res.partner",
+        this.props.domain,
+        ["name", "email", "phone"],
+        {limit: this.props.limit}
+      );
+    } catch (error) {
+      this.notification.notify("Failed to load partners", {type: "danger"});
+    } finally {
+      this.state.isLoading = false;
+    }
+  }
+
+  togglePartner(id) {
+    if (this.state.selectedPartners.has(id)) {
+      this.state.selectedPartners.delete(id);
+    } else {
+      this.state.selectedPartners.add(id);
+    }
+    // Trigger reactivity
+    this.state.selectedPartners = new Set(this.state.selectedPartners);
+  }
+
+  onSearchInput(ev) {
+    this.state.searchValue = ev.target.value;
+  }
+
+  async doAction(action) {
+    const ids = Array.from(this.state.selectedPartners);
+    if (!ids.length) {
+      this.notification.notify("No partners selected", {type: "warning"});
+      return;
     }
 
-    get filteredPartners() {
-        if (!this.state.searchValue) {
-            return this.state.partners;
-        }
-        const search = this.state.searchValue.toLowerCase();
-        return this.state.partners.filter(p =>
-            p.name.toLowerCase().includes(search)
-        );
+    try {
+      if (action === "archive") {
+        await this.orm.write("res.partner", ids, {active: false});
+        this.notification.notify(`${ids.length} partners archived`, {type: "success"});
+      } else if (action === "delete") {
+        await this.orm.unlink("res.partner", ids);
+        this.notification.notify(`${ids.length} partners deleted`, {type: "success"});
+      }
+      this.state.selectedPartners = new Set();
+      await this.loadPartners();
+    } catch (error) {
+      this.notification.notify("Action failed", {type: "danger"});
     }
-
-    get tags() {
-        return Array.from(this.state.selectedPartners).map(id => {
-            const partner = this.state.partners.find(p => p.id === id);
-            return {
-                id: id.toString(),
-                text: partner ? partner.name : `#${id}`,
-                colorIndex: 1,
-                onDelete: () => this.togglePartner(id),
-            };
-        });
-    }
-
-    async loadPartners() {
-        this.state.isLoading = true;
-        try {
-            this.state.partners = await this.orm.searchRead(
-                "res.partner",
-                this.props.domain,
-                ["name", "email", "phone"],
-                { limit: this.props.limit }
-            );
-        } catch (error) {
-            this.notification.notify("Failed to load partners", { type: "danger" });
-        } finally {
-            this.state.isLoading = false;
-        }
-    }
-
-    togglePartner(id) {
-        if (this.state.selectedPartners.has(id)) {
-            this.state.selectedPartners.delete(id);
-        } else {
-            this.state.selectedPartners.add(id);
-        }
-        // Trigger reactivity
-        this.state.selectedPartners = new Set(this.state.selectedPartners);
-    }
-
-    onSearchInput(ev) {
-        this.state.searchValue = ev.target.value;
-    }
-
-    async doAction(action) {
-        const ids = Array.from(this.state.selectedPartners);
-        if (!ids.length) {
-            this.notification.notify("No partners selected", { type: "warning" });
-            return;
-        }
-
-        try {
-            if (action === "archive") {
-                await this.orm.write("res.partner", ids, { active: false });
-                this.notification.notify(`${ids.length} partners archived`, { type: "success" });
-            } else if (action === "delete") {
-                await this.orm.unlink("res.partner", ids);
-                this.notification.notify(`${ids.length} partners deleted`, { type: "success" });
-            }
-            this.state.selectedPartners = new Set();
-            await this.loadPartners();
-        } catch (error) {
-            this.notification.notify("Action failed", { type: "danger" });
-        }
-    }
+  }
 }
 ```
 
 **XML Template (`partner_list.xml`)**:
+
 ```xml
 <?xml version="1.0" encoding="UTF-8" ?>
 <templates xml:space="preserve">
     <t t-name="myaddon.PartnerList">
-        <div class="partner-list" t-ref="root">
-            <!-- Tags for selected partners -->
-            <TagsList tags="tags" />
+    <div class="partner-list" t-ref="root">
+      <!-- Tags for selected partners -->
+      <TagsList tags="tags" />
 
-            <!-- Search and actions -->
-            <div class="d-flex justify-content-between mb-3">
-                <input
-                    type="text"
-                    class="form-control"
-                    placeholder="Search partners..."
-                    t-model="state.searchValue"
-                    t-on-input="onSearchInput"
-                />
-                <Dropdown>
-                    <button class="btn btn-primary">Actions</button>
-                    <t t-set-slot="content">
-                        <DropdownItem onSelected="() => this.doAction('archive')">
+      <!-- Search and actions -->
+      <div class="d-flex justify-content-between mb-3">
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Search partners..."
+          t-model="state.searchValue"
+          t-on-input="onSearchInput"
+        />
+        <Dropdown>
+          <button class="btn btn-primary">Actions</button>
+          <t t-set-slot="content">
+            <DropdownItem onSelected="() => this.doAction('archive')">
                             Archive
                         </DropdownItem>
-                        <DropdownItem onSelected="() => this.doAction('delete')">
+            <DropdownItem onSelected="() => this.doAction('delete')">
                             Delete
                         </DropdownItem>
-                    </t>
-                </Dropdown>
-            </div>
+          </t>
+        </Dropdown>
+      </div>
 
-            <!-- Loading state -->
-            <div t-if="state.isLoading" class="text-center">
-                <i class="fa fa-spinner fa-spin" />
-            </div>
+      <!-- Loading state -->
+      <div t-if="state.isLoading" class="text-center">
+        <i class="fa fa-spinner fa-spin" />
+      </div>
 
-            <!-- Partner list -->
-            <div class="list-group">
-                <t t-foreach="filteredPartners" t-as="partner" t-key="partner.id">
-                    <div
-                        class="list-group-item d-flex justify-content-between align-items-center"
-                        t-att-class="state.selectedPartners.has(partner.id) ? 'active' : ''"
-                        t-on-click="() => this.togglePartner(partner.id)"
-                    >
-                        <div>
-                            <strong t-esc="partner.name" />
-                            <div t-if="partner.email" class="text-muted">
-                                <t t-esc="partner.email" />
-                            </div>
-                        </div>
-                        <i class="fa fa-check" t-if="state.selectedPartners.has(partner.id)" />
-                    </div>
-                </t>
+      <!-- Partner list -->
+      <div class="list-group">
+        <t t-foreach="filteredPartners" t-as="partner" t-key="partner.id">
+          <div
+            class="list-group-item d-flex justify-content-between align-items-center"
+            t-att-class="state.selectedPartners.has(partner.id) ? 'active' : ''"
+            t-on-click="() => this.togglePartner(partner.id)"
+          >
+            <div>
+              <strong t-esc="partner.name" />
+              <div t-if="partner.email" class="text-muted">
+                <t t-esc="partner.email" />
+              </div>
             </div>
-        </div>
-    </t>
+            <i class="fa fa-check" t-if="state.selectedPartners.has(partner.id)" />
+          </div>
+        </t>
+      </div>
+    </div>
+  </t>
 </templates>
 ```
 

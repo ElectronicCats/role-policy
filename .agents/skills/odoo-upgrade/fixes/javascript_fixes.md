@@ -14,77 +14,80 @@ import {registry} from "@web/core/registry";
 // TEMPLATE FOR MIGRATING A COMPONENT FROM ODOO 17 TO ODOO 19
 
 export class MigratedComponent extends Component {
-    setup() {
-        // REMOVED: this.rpc = useService("rpc");
-        // Services still available in frontend:
-        const localization = useService("localization");
+  setup() {
+    // REMOVED: this.rpc = useService("rpc");
+    // Services still available in frontend:
+    const localization = useService("localization");
 
-        this.state = useState({
-            data: [],
-            loading: true,
-            error: null,
-            isAr: (localization?.code || '').startsWith('ar')
-        });
+    this.state = useState({
+      data: [],
+      loading: true,
+      error: null,
+      isAr: (localization?.code || "").startsWith("ar"),
+    });
 
-        onMounted(async () => {
-            await this.loadData();
-        });
+    onMounted(async () => {
+      await this.loadData();
+    });
+  }
+
+  /**
+   * Helper method to make JSON-RPC calls in Odoo 19 frontend context
+   * Replaces the RPC service which is not available in public components
+   */
+  async _jsonRpc(endpoint, params = {}) {
+    try {
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Csrf-Token":
+            document.querySelector('meta[name="csrf-token"]')?.content || "",
+        },
+        body: JSON.stringify({
+          jsonrpc: "2.0",
+          method: "call",
+          params: params,
+          id: Math.floor(Math.random() * 1000000),
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      if (data.error) {
+        console.error("JSON-RPC Error:", data.error);
+        throw new Error(data.error.message || "RPC call failed");
+      }
+      return data.result;
+    } catch (error) {
+      console.error("JSON-RPC call failed:", error);
+      throw error;
     }
+  }
 
-    /**
-     * Helper method to make JSON-RPC calls in Odoo 19 frontend context
-     * Replaces the RPC service which is not available in public components
-     */
-    async _jsonRpc(endpoint, params = {}) {
-        try {
-            const response = await fetch(endpoint, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-Csrf-Token': document.querySelector('meta[name="csrf-token"]')?.content || '',
-                },
-                body: JSON.stringify({
-                    jsonrpc: "2.0",
-                    method: "call",
-                    params: params,
-                    id: Math.floor(Math.random() * 1000000)
-                })
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            const data = await response.json();
-            if (data.error) {
-                console.error('JSON-RPC Error:', data.error);
-                throw new Error(data.error.message || 'RPC call failed');
-            }
-            return data.result;
-        } catch (error) {
-            console.error('JSON-RPC call failed:', error);
-            throw error;
-        }
+  async loadData() {
+    this.state.loading = true;
+    try {
+      // OLD: const result = await this.rpc("/api/endpoint", {param: value});
+      const result = await this._jsonRpc("/api/endpoint", {param: value});
+      this.state.data = result;
+    } catch (error) {
+      this.state.error = error.message;
+    } finally {
+      this.state.loading = false;
     }
+  }
 
-    async loadData() {
-        this.state.loading = true;
-        try {
-            // OLD: const result = await this.rpc("/api/endpoint", {param: value});
-            const result = await this._jsonRpc("/api/endpoint", {param: value});
-            this.state.data = result;
-        } catch (error) {
-            this.state.error = error.message;
-        } finally {
-            this.state.loading = false;
-        }
-    }
-
-    static template = "module_name.ComponentTemplate";
+  static template = "module_name.ComponentTemplate";
 }
 
 // Register the component
-registry.category("public_components").add("module_name.MigratedComponent", MigratedComponent);
+registry
+  .category("public_components")
+  .add("module_name.MigratedComponent", MigratedComponent);
 ```
 
 ### Batch RPC Fix Script
@@ -175,25 +178,25 @@ def ensure_module_annotation(js_content):
 import publicWidget from "@web/legacy/js/public/public_widget";
 
 publicWidget.registry.MyWidget = publicWidget.Widget.extend({
-    selector: '.my-selector',
-    events: {
-        'click .button': '_onClick',
-    },
+  selector: ".my-selector",
+  events: {
+    "click .button": "_onClick",
+  },
 
-    start: function () {
-        // Initialize widget
-        return this._super.apply(this, arguments);
-    },
+  start: function () {
+    // Initialize widget
+    return this._super.apply(this, arguments);
+  },
 
-    _onClick: function (ev) {
-        // Handle click
-    },
+  _onClick: function (ev) {
+    // Handle click
+  },
 
-    // For RPC calls in publicWidget
-    _rpc: function (params) {
-        // Use the built-in _rpc method for widgets
-        return this._super(params);
-    },
+  // For RPC calls in publicWidget
+  _rpc: function (params) {
+    // Use the built-in _rpc method for widgets
+    return this._super(params);
+  },
 });
 
 export default publicWidget.registry.MyWidget;
@@ -206,13 +209,13 @@ export default publicWidget.registry.MyWidget;
 import {serviceRegistry} from "@web/core/registry";
 
 const myService = {
-    start(env, {rpc}) {
-        return {
-            async fetchData() {
-                return rpc("/api/data");
-            }
-        };
-    }
+  start(env, {rpc}) {
+    return {
+      async fetchData() {
+        return rpc("/api/data");
+      },
+    };
+  },
 };
 
 serviceRegistry.add("myService", myService);
@@ -221,27 +224,27 @@ serviceRegistry.add("myService", myService);
 import {registry} from "@web/core/registry";
 
 const myService = {
-    start(env) {
-        async function fetchData() {
-            // Use fetch directly
-            const response = await fetch("/api/data", {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    jsonrpc: "2.0",
-                    method: "call",
-                    params: {},
-                    id: 1
-                })
-            });
-            const data = await response.json();
-            return data.result;
-        }
-
-        return {fetchData};
+  start(env) {
+    async function fetchData() {
+      // Use fetch directly
+      const response = await fetch("/api/data", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          jsonrpc: "2.0",
+          method: "call",
+          params: {},
+          id: 1,
+        }),
+      });
+      const data = await response.json();
+      return data.result;
     }
+
+    return {fetchData};
+  },
 };
 
 registry.category("services").add("myService", myService);
@@ -297,6 +300,7 @@ def fix_all_js_files(project_path):
 ## Common JavaScript Errors and Fixes
 
 ### Error: "Service rpc is not available"
+
 ```javascript
 // Problem
 this.rpc = useService("rpc");
@@ -306,6 +310,7 @@ this.rpc = useService("rpc");
 ```
 
 ### Error: "Cannot find module"
+
 ```javascript
 // Problem
 import {slug} from "@web_editor/js/common/utils";
@@ -313,11 +318,12 @@ import {slug} from "@web_editor/js/common/utils";
 // Solution
 // Create compatibility function
 function slug(value) {
-    return value.toLowerCase().replace(/\s+/g, '-');
+  return value.toLowerCase().replace(/\s+/g, "-");
 }
 ```
 
 ### Error: "Registry category not found"
+
 ```javascript
 // Problem
 registry.category("custom_category").add("name", Component);

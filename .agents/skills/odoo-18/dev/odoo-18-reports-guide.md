@@ -1,6 +1,9 @@
 ---
 name: odoo-18-reports
-description: Complete reference for Odoo 18 QWeb reports covering PDF/HTML reports, report templates, paper formats, custom reports, custom fonts, translatable templates, barcodes, and report actions.
+description:
+  Complete reference for Odoo 18 QWeb reports covering PDF/HTML reports, report
+  templates, paper formats, custom reports, custom fonts, translatable templates,
+  barcodes, and report actions.
 globs: "**/*.{py,xml}"
 topics:
   - QWeb reports (qweb-pdf, qweb-html)
@@ -22,7 +25,8 @@ when_to_use:
 
 # Odoo 18 Reports Guide
 
-Complete reference for Odoo 18 QWeb reports: PDF/HTML reports, templates, paper formats, and custom reports.
+Complete reference for Odoo 18 QWeb reports: PDF/HTML reports, templates, paper formats,
+and custom reports.
 
 ## Table of Contents
 
@@ -45,42 +49,42 @@ Reports in Odoo are written in HTML/QWeb and rendered to PDF using `wkhtmltopdf`
 
 #### Report Types
 
-| Type | Description |
-|------|-------------|
-| `qweb-pdf` | PDF report (most common) |
+| Type        | Description                   |
+| ----------- | ----------------------------- |
+| `qweb-pdf`  | PDF report (most common)      |
 | `qweb-html` | HTML report (for web viewing) |
 
 ### Report Declaration
 
 ```xml
 <report
-    id="account_invoices"
-    model="account.move"
-    string="Invoices"
-    report_type="qweb-pdf"
-    name="account.report_invoice"
-    file="account_report_invoice"
-    print_report_name="'Invoice-{}-{}'.format(object.number or 'n/a', object.state)"
+  id="account_invoices"
+  model="account.move"
+  string="Invoices"
+  report_type="qweb-pdf"
+  name="account.report_invoice"
+  file="account_report_invoice"
+  print_report_name="'Invoice-{}-{}'.format(object.number or 'n/a', object.state)"
 />
 ```
 
 ### Report Attributes
 
-| Attribute | Type | Description | Required |
-|-----------|------|-------------|----------|
-| `id` | string | Unique identifier (external ID) | Yes |
-| `model` | string | Model to report on | Yes |
-| `string` / `name` | string | Human-readable name | Yes |
-| `report_type` | string | `qweb-pdf` or `qweb-html` | No (default: qweb-pdf) |
-| `name` | string | External ID of QWeb template | Yes |
-| `file` | string | Output file name pattern | No |
-| `print_report_name` | string | Python expression for file name | No |
-| `groups_id` | Many2many | Groups allowed to view/use | No |
-| `multi` | boolean | Don't show on form view if True | No |
-| `paperformat_id` | Many2one | Paper format to use | No |
-| `attachment_use` | boolean | Generate once, reprint stored | No |
-| `attachment` | string | Python expression for attachment name | No |
-| `binding_model_id` | Many2one | Model to bind action to | No |
+| Attribute           | Type      | Description                           | Required               |
+| ------------------- | --------- | ------------------------------------- | ---------------------- |
+| `id`                | string    | Unique identifier (external ID)       | Yes                    |
+| `model`             | string    | Model to report on                    | Yes                    |
+| `string` / `name`   | string    | Human-readable name                   | Yes                    |
+| `report_type`       | string    | `qweb-pdf` or `qweb-html`             | No (default: qweb-pdf) |
+| `name`              | string    | External ID of QWeb template          | Yes                    |
+| `file`              | string    | Output file name pattern              | No                     |
+| `print_report_name` | string    | Python expression for file name       | No                     |
+| `groups_id`         | Many2many | Groups allowed to view/use            | No                     |
+| `multi`             | boolean   | Don't show on form view if True       | No                     |
+| `paperformat_id`    | Many2one  | Paper format to use                   | No                     |
+| `attachment_use`    | boolean   | Generate once, reprint stored         | No                     |
+| `attachment`        | string    | Python expression for attachment name | No                     |
+| `binding_model_id`  | Many2one  | Model to bind action to               | No                     |
 
 ### Report Action vs Record
 
@@ -119,17 +123,17 @@ The `<report>` tag creates two records:
 
 ```xml
 <template id="report_invoice">
-    <t t-call="web.html_container">
-        <t t-foreach="docs" t-as="o">
-            <t t-call="web.external_layout">
-                <div class="page">
-                    <h2>Invoice</h2>
-                    <p>Invoice Number: <span t-field="o.name"/></p>
-                    <p>Amount: <span t-field="o.amount_total"/></p>
-                </div>
-            </t>
-        </t>
+  <t t-call="web.html_container">
+    <t t-foreach="docs" t-as="o">
+      <t t-call="web.external_layout">
+        <div class="page">
+          <h2>Invoice</h2>
+          <p>Invoice Number: <span t-field="o.name" /></p>
+          <p>Amount: <span t-field="o.amount_total" /></p>
+        </div>
+      </t>
     </t>
+  </t>
 </template>
 ```
 
@@ -143,45 +147,45 @@ web.html_container
 
 ### Available Variables
 
-| Variable | Description |
-|----------|-------------|
-| `docs` | Records for the report (recordset) |
-| `doc_ids` | List of IDs for `docs` |
-| `doc_model` | Model name for `docs` |
-| `time` | Python `time` module |
-| `user` | Current user (res.user) |
-| `res_company` | Current user's company |
-| `website` | Current website (if any) |
-| `web_base_url` | Base URL for webserver |
+| Variable            | Description                                   |
+| ------------------- | --------------------------------------------- |
+| `docs`              | Records for the report (recordset)            |
+| `doc_ids`           | List of IDs for `docs`                        |
+| `doc_model`         | Model name for `docs`                         |
+| `time`              | Python `time` module                          |
+| `user`              | Current user (res.user)                       |
+| `res_company`       | Current user's company                        |
+| `website`           | Current website (if any)                      |
+| `web_base_url`      | Base URL for webserver                        |
 | `context_timestamp` | Function to convert datetime to user timezone |
 
 ### Using Variables
 
 ```xml
 <template id="my_report">
-    <t t-call="web.html_container">
-        <t t-foreach="docs" t-as="o">
-            <t t-call="web.external_layout">
-                <div class="page">
-                    <!-- Standard fields -->
-                    <p t-field="o.name"/>
-                    <p t-field="o.partner_id.name"/>
+  <t t-call="web.html_container">
+    <t t-foreach="docs" t-as="o">
+      <t t-call="web.external_layout">
+        <div class="page">
+          <!-- Standard fields -->
+          <p t-field="o.name" />
+          <p t-field="o.partner_id.name" />
 
-                    <!-- User info -->
-                    <p>Printed by: <span t-field="user.name"/></p>
+          <!-- User info -->
+          <p>Printed by: <span t-field="user.name" /></p>
 
-                    <!-- Company info -->
-                    <p>Company: <span t-field="res_company.name"/></p>
+          <!-- Company info -->
+          <p>Company: <span t-field="res_company.name" /></p>
 
-                    <!-- Time -->
-                    <p>Printed at: <span t-esc="time.strftime('%Y-%m-%d %H:%M')"/></p>
+          <!-- Time -->
+          <p>Printed at: <span t-esc="time.strftime('%Y-%m-%d %H:%M')" /></p>
 
-                    <!-- Context timestamp (converts to user timezone) -->
-                    <p>Invoice date: <span t-esc="context_timestamp(o.invoice_date)"/></p>
-                </div>
-            </t>
-        </t>
+          <!-- Context timestamp (converts to user timezone) -->
+          <p>Invoice date: <span t-esc="context_timestamp(o.invoice_date)" /></p>
+        </div>
+      </t>
     </t>
+  </t>
 </template>
 ```
 
@@ -231,10 +235,10 @@ web.html_container
 
 ```xml
 <record id="report_my_report" model="ir.actions.report">
-    <field name="name">My Report</field>
-    <field name="model">my.model</field>
-    <field name="report_type">qweb-pdf</field>
-    <field name="report_name">my_module.my_report_template</field>
+  <field name="name">My Report</field>
+  <field name="model">my.model</field>
+  <field name="report_type">qweb-pdf</field>
+  <field name="report_name">my_module.my_report_template</field>
 </record>
 ```
 
@@ -242,11 +246,11 @@ web.html_container
 
 ```xml
 <record id="report_invoice" model="ir.actions.report">
-    <field name="name">Invoice</field>
-    <field name="model">account.move</field>
-    <field name="report_type">qweb-pdf</field>
-    <field name="report_name">account.report_invoice</field>
-    <field name="print_report_name">
+  <field name="name">Invoice</field>
+  <field name="model">account.move</field>
+  <field name="report_type">qweb-pdf</field>
+  <field name="report_name">account.report_invoice</field>
+  <field name="print_report_name">
         'Invoice-{}-{}'.format(
             object.number or 'n/a',
             object.state
@@ -259,12 +263,12 @@ web.html_container
 
 ```xml
 <record id="report_with_attachment" model="ir.actions.report">
-    <field name="name">Report with Attachment</field>
-    <field name="model">my.model</field>
-    <field name="report_type">qweb-pdf</field>
-    <field name="report_name">my_module.my_report</field>
-    <field name="attachment_use" eval="True"/>
-    <field name="attachment">'my_report_' + str(object.id) + '.pdf'</field>
+  <field name="name">Report with Attachment</field>
+  <field name="model">my.model</field>
+  <field name="report_type">qweb-pdf</field>
+  <field name="report_name">my_module.my_report</field>
+  <field name="attachment_use" eval="True" />
+  <field name="attachment">'my_report_' + str(object.id) + '.pdf'</field>
 </record>
 ```
 
@@ -272,11 +276,11 @@ web.html_container
 
 ```xml
 <record id="report_manager_only" model="ir.actions.report">
-    <field name="name">Manager Report</field>
-    <field name="model">my.model</field>
-    <field name="report_type">qweb-pdf</field>
-    <field name="report_name">my_module.manager_report</field>
-    <field name="groups_id" eval="[(4, ref('base.group_system'))]"/>
+  <field name="name">Manager Report</field>
+  <field name="model">my.model</field>
+  <field name="report_type">qweb-pdf</field>
+  <field name="report_name">my_module.manager_report</field>
+  <field name="groups_id" eval="[(4, ref('base.group_system'))]" />
 </record>
 ```
 
@@ -286,12 +290,12 @@ To show in Print menu:
 
 ```xml
 <record id="my_report" model="ir.actions.report">
-    <field name="name">My Report</field>
-    <field name="model">my.model</field>
-    <field name="report_type">qweb-pdf</field>
-    <field name="report_name">my_module.my_report</field>
-    <field name="binding_model_id" ref="model_my_model"/>
-    <!-- binding_type automatically 'report' -->
+  <field name="name">My Report</field>
+  <field name="model">my.model</field>
+  <field name="report_type">qweb-pdf</field>
+  <field name="report_name">my_module.my_report</field>
+  <field name="binding_model_id" ref="model_my_model" />
+  <!-- binding_type automatically 'report' -->
 </record>
 ```
 
@@ -305,62 +309,61 @@ Define custom paper sizes and margins.
 
 ```xml
 <record id="paperformat_euro" model="report.paperformat">
-    <field name="name">European A4</field>
-    <field name="default" eval="True"/>
-    <field name="format">A4</field>
-    <field name="page_height">297</field>
-    <field name="page_width">210</field>
-    <field name="orientation">Portrait</field>
-    <field name="margin_top">40</field>
-    <field name="margin_bottom">20</field>
-    <field name="margin_left">7</field>
-    <field name="margin_right">7</field>
-    <field name="header_line" eval="False"/>
-    <field name="header_spacing">35</field>
-    <field name="dpi">90</field>
+  <field name="name">European A4</field>
+  <field name="default" eval="True" />
+  <field name="format">A4</field>
+  <field name="page_height">297</field>
+  <field name="page_width">210</field>
+  <field name="orientation">Portrait</field>
+  <field name="margin_top">40</field>
+  <field name="margin_bottom">20</field>
+  <field name="margin_left">7</field>
+  <field name="margin_right">7</field>
+  <field name="header_line" eval="False" />
+  <field name="header_spacing">35</field>
+  <field name="dpi">90</field>
 </record>
 ```
 
 ### Paper Format Fields
 
-| Field | Description | Default |
-|-------|-------------|---------|
-| `name` | Description/mnemonic | Required |
-| `format` | Predefined format or `custom` | A4 |
-| `page_height` | Height in mm (if custom) | - |
-| `page_width` | Width in mm (if custom) | - |
-| `orientation` | `Portrait` or `Landscape` | Portrait |
-| `margin_top` | Top margin in mm | - |
-| `margin_bottom` | Bottom margin in mm | - |
-| `margin_left` | Left margin in mm | - |
-| `margin_right` | Right margin in mm | - |
-| `header_line` | Show header line | False |
-| `header_spacing` | Space before header | - |
-| `dpi` | Output DPI | 90 |
+| Field            | Description                   | Default  |
+| ---------------- | ----------------------------- | -------- |
+| `name`           | Description/mnemonic          | Required |
+| `format`         | Predefined format or `custom` | A4       |
+| `page_height`    | Height in mm (if custom)      | -        |
+| `page_width`     | Width in mm (if custom)       | -        |
+| `orientation`    | `Portrait` or `Landscape`     | Portrait |
+| `margin_top`     | Top margin in mm              | -        |
+| `margin_bottom`  | Bottom margin in mm           | -        |
+| `margin_left`    | Left margin in mm             | -        |
+| `margin_right`   | Right margin in mm            | -        |
+| `header_line`    | Show header line              | False    |
+| `header_spacing` | Space before header           | -        |
+| `dpi`            | Output DPI                    | 90       |
 
 ### Predefined Formats
 
-A0, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10
-B0, B1, B2, B3, B4, B5, B6, B7, B8, B9, B10
+A0, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10 B0, B1, B2, B3, B4, B5, B6, B7, B8, B9, B10
 Letter, Legal, Tabloid
 
 ### Custom Paper Format
 
 ```xml
 <record id="paperformat_french_check" model="report.paperformat">
-    <field name="name">French Bank Check</field>
-    <field name="default" eval="True"/>
-    <field name="format">custom</field>
-    <field name="page_height">80</field>
-    <field name="page_width">175</field>
-    <field name="orientation">Portrait</field>
-    <field name="margin_top">3</field>
-    <field name="margin_bottom">3</field>
-    <field name="margin_left">3</field>
-    <field name="margin_right">3</field>
-    <field name="header_line" eval="False"/>
-    <field name="header_spacing">3</field>
-    <field name="dpi">80</field>
+  <field name="name">French Bank Check</field>
+  <field name="default" eval="True" />
+  <field name="format">custom</field>
+  <field name="page_height">80</field>
+  <field name="page_width">175</field>
+  <field name="orientation">Portrait</field>
+  <field name="margin_top">3</field>
+  <field name="margin_bottom">3</field>
+  <field name="margin_left">3</field>
+  <field name="margin_right">3</field>
+  <field name="header_line" eval="False" />
+  <field name="header_spacing">3</field>
+  <field name="dpi">80</field>
 </record>
 ```
 
@@ -368,11 +371,11 @@ Letter, Legal, Tabloid
 
 ```xml
 <report
-    id="my_report"
-    model="my.model"
-    name="my_module.my_report"
-    report_type="qweb-pdf"
-    paperformat_id="my_module.paperformat_euro"
+  id="my_report"
+  model="my.model"
+  name="my_module.my_report"
+  report_type="qweb-pdf"
+  paperformat_id="my_module.paperformat_euro"
 />
 ```
 
@@ -424,20 +427,20 @@ class ReportMyModel(models.AbstractModel):
 
 ```xml
 <template id="my_module.my_report">
-    <t t-call="web.html_container">
-        <t t-foreach="docs" t-as="o">
-            <t t-call="web.external_layout">
-                <div class="page">
-                    <h2>Document: <span t-field="o.name"/></h2>
+  <t t-call="web.html_container">
+    <t t-foreach="docs" t-as="o">
+      <t t-call="web.external_layout">
+        <div class="page">
+          <h2>Document: <span t-field="o.name" /></h2>
 
-                    <!-- Access custom data -->
-                    <p>Line Count: <span t-esc="custom_data[o.id]['line_count']"/></p>
-                    <p>Total: <span t-esc="custom_data[o.id]['total_amount']"/></p>
-                    <p>Special: <span t-esc="custom_data[o.id]['special_field']"/></p>
-                </div>
-            </t>
-        </t>
+          <!-- Access custom data -->
+          <p>Line Count: <span t-esc="custom_data[o.id]['line_count']" /></p>
+          <p>Total: <span t-esc="custom_data[o.id]['total_amount']" /></p>
+          <p>Special: <span t-esc="custom_data[o.id]['special_field']" /></p>
+        </div>
+      </t>
     </t>
+  </t>
 </template>
 ```
 
@@ -468,23 +471,23 @@ class ReportSaleOrder(models.AbstractModel):
 
 ```xml
 <template id="sale.order.report">
-    <t t-call="web.html_container">
-        <t t-foreach="docs" t-as="order">
-            <t t-call="web.external_layout">
-                <div class="page">
-                    <h2>Order: <span t-field="order.name"/></h2>
+  <t t-call="web.html_container">
+    <t t-foreach="docs" t-as="order">
+      <t t-call="web.external_layout">
+        <div class="page">
+          <h2>Order: <span t-field="order.name" /></h2>
 
-                    <!-- Use custom data -->
-                    <h3>Product Categories</h3>
-                    <ul>
-                        <t t-foreach="product_categories" t-as="cat">
-                            <li t-esc="cat.name"/>
-                        </t>
-                    </ul>
-                </div>
+          <!-- Use custom data -->
+          <h3>Product Categories</h3>
+          <ul>
+            <t t-foreach="product_categories" t-as="cat">
+              <li t-esc="cat.name" />
             </t>
-        </t>
+          </ul>
+        </div>
+      </t>
     </t>
+  </t>
 </template>
 ```
 
@@ -524,16 +527,16 @@ Translate only the body, keep header/footer in default language:
 
 ```xml
 <template id="report_saleorder">
-    <t t-call="web.html_container">
-        <t t-foreach="docs" t-as="doc">
-            <t t-call="web.external_layout" t-lang="en_US">
-                <div class="page">
-                    <t t-set="doc" t-value="doc.with_context(lang=doc.partner_id.lang)"/>
-                    <!-- Content in partner language, header/footer in English -->
-                </div>
-            </t>
-        </t>
+  <t t-call="web.html_container">
+    <t t-foreach="docs" t-as="doc">
+      <t t-call="web.external_layout" t-lang="en_US">
+        <div class="page">
+          <t t-set="doc" t-value="doc.with_context(lang=doc.partner_id.lang)" />
+          <!-- Content in partner language, header/footer in English -->
+        </div>
+      </t>
     </t>
+  </t>
 </template>
 ```
 
@@ -541,7 +544,8 @@ Translate only the body, keep header/footer in default language:
 
 - **Only works with `t-call`** - Cannot use `t-lang` on arbitrary XML nodes
 - **Re-browse is necessary** - For translatable fields like country names, sales terms
-- **Not always needed** - If report doesn't use translatable record fields, skip re-browse (performance)
+- **Not always needed** - If report doesn't use translatable record fields, skip
+  re-browse (performance)
 
 ---
 
@@ -568,48 +572,50 @@ Barcodes are returned by a controller and can be embedded in reports.
 
 ### Barcode Types
 
-| Type | Description |
-|------|-------------|
-| `QR` | QR Code (2D) |
-| `EAN13` | EAN-13 (1D, 13 digits) |
-| `EAN8` | EAN-8 (1D, 8 digits) |
-| `UPCA` | UPC-A (1D, 12 digits) |
+| Type      | Description             |
+| --------- | ----------------------- |
+| `QR`      | QR Code (2D)            |
+| `EAN13`   | EAN-13 (1D, 13 digits)  |
+| `EAN8`    | EAN-8 (1D, 8 digits)    |
+| `UPCA`    | UPC-A (1D, 12 digits)   |
 | `Code128` | Code 128 (1D, variable) |
-| `Code39` | Code 39 (1D, variable) |
-| `ISBN` | ISBN (1D, for books) |
+| `Code39`  | Code 39 (1D, variable)  |
+| `ISBN`    | ISBN (1D, for books)    |
 
 ### Barcode Parameters
 
-| Parameter | Description |
-|-----------|-------------|
-| `barcode_type` | Type of barcode |
-| `value` | Data to encode |
-| `width` | Width in pixels |
-| `height` | Height in pixels |
+| Parameter       | Description                      |
+| --------------- | -------------------------------- |
+| `barcode_type`  | Type of barcode                  |
+| `value`         | Data to encode                   |
+| `width`         | Width in pixels                  |
+| `height`        | Height in pixels                 |
 | `humanreadable` | Show text below barcode (1 or 0) |
 
 ### Example: Product Barcode
 
 ```xml
 <template id="product_report_barcode">
-    <t t-call="web.html_container">
-        <t t-foreach="docs" t-as="product">
-            <t t-call="web.external_layout">
-                <div class="page">
-                    <h2 t-field="product.name"/>
-                    <p>Barcode: <span t-field="product.barcode"/></p>
+  <t t-call="web.html_container">
+    <t t-foreach="docs" t-as="product">
+      <t t-call="web.external_layout">
+        <div class="page">
+          <h2 t-field="product.name" />
+          <p>Barcode: <span t-field="product.barcode" /></p>
 
-                    <!-- Barcode image -->
-                    <img t-att-src="'/report/barcode/?barcode_type=%s&amp;value=%s&amp;width=%s&amp;height=%s&amp;humanreadable=1' % (
+          <!-- Barcode image -->
+          <img
+            t-att-src="'/report/barcode/?barcode_type=%s&amp;value=%s&amp;width=%s&amp;height=%s&amp;humanreadable=1' % (
                         'EAN13',
                         product.barcode or '0000000000000',
                         300,
                         100
-                    )"/>
-                </div>
-            </t>
-        </t>
+                    )"
+          />
+        </div>
+      </t>
     </t>
+  </t>
 </template>
 ```
 
@@ -627,9 +633,13 @@ Barcodes are returned by a controller and can be embedded in reports.
 
 ```xml
 <template id="report_assets_common_custom_fonts" inherit_id="web.report_assets_common">
-    <xpath expr="." position="inside">
-        <link href="/my_module/static/src/less/fonts.less" rel="stylesheet" type="text/less"/>
-    </xpath>
+  <xpath expr="." position="inside">
+    <link
+      href="/my_module/static/src/less/fonts.less"
+      rel="stylesheet"
+      type="text/less"
+    />
+  </xpath>
 </template>
 ```
 
@@ -638,16 +648,17 @@ Barcodes are returned by a controller and can be embedded in reports.
 ```less
 /* /my_module/static/src/less/fonts.less */
 @font-face {
-    font-family: 'MonixBold';
-    src: local('MonixBold'),
-         local('MonixBold'),
-         url(/my_module/static/fonts/MonixBold-Regular.otf) format('opentype');
+  font-family: "MonixBold";
+  src:
+    local("MonixBold"),
+    local("MonixBold"),
+    url(/my_module/static/fonts/MonixBold-Regular.otf) format("opentype");
 }
 
 .h1-title-big {
-    font-family: MonixBold;
-    font-size: 60px;
-    color: #3399cc;
+  font-family: MonixBold;
+  font-size: 60px;
+  color: #3399cc;
 }
 ```
 
@@ -655,21 +666,22 @@ Barcodes are returned by a controller and can be embedded in reports.
 
 ```xml
 <template id="my_report">
-    <t t-call="web.html_container">
-        <t t-foreach="docs" t-as="doc">
-            <t t-call="web.external_layout">
-                <div class="page">
-                    <h1 class="h1-title-big" t-field="doc.name"/>
-                </div>
-            </t>
-        </t>
+  <t t-call="web.html_container">
+    <t t-foreach="docs" t-as="doc">
+      <t t-call="web.external_layout">
+        <div class="page">
+          <h1 class="h1-title-big" t-field="doc.name" />
+        </div>
+      </t>
     </t>
+  </t>
 </template>
 ```
 
 ### Important Notes
 
-- Must add to `web.report_assets_common` (NOT `web.assets_common` or `web.assets_backend`)
+- Must add to `web.report_assets_common` (NOT `web.assets_common` or
+  `web.assets_backend`)
 - Must define `@font-face` even if defined elsewhere
 - Font files go in `static/fonts/` or `static/src/fonts/`
 
@@ -681,17 +693,17 @@ Barcodes are returned by a controller and can be embedded in reports.
 
 ```xml
 <report
-    id="my_report"
-    model="my.model"
-    string="My Report"
-    report_type="qweb-pdf"
-    name="my_module.my_template"
-    file="my_report"
-    print_report_name="'Report-' + str(object.id)"
-    groups_id="base.group_user"
-    paperformat_id="my_module.paperformat_custom"
-    attachment_use="False"
-    binding_model_id="model_my_model"
+  id="my_report"
+  model="my.model"
+  string="My Report"
+  report_type="qweb-pdf"
+  name="my_module.my_template"
+  file="my_report"
+  print_report_name="'Report-' + str(object.id)"
+  groups_id="base.group_user"
+  paperformat_id="my_module.paperformat_custom"
+  attachment_use="False"
+  binding_model_id="model_my_model"
 />
 ```
 
@@ -699,40 +711,40 @@ Barcodes are returned by a controller and can be embedded in reports.
 
 ```xml
 <template id="my_template">
-    <t t-call="web.html_container">
-        <t t-foreach="docs" t-as="o">
-            <t t-call="web.external_layout">
-                <div class="page">
-                    <!-- Your content -->
-                </div>
-            </t>
-        </t>
+  <t t-call="web.html_container">
+    <t t-foreach="docs" t-as="o">
+      <t t-call="web.external_layout">
+        <div class="page">
+          <!-- Your content -->
+        </div>
+      </t>
     </t>
+  </t>
 </template>
 ```
 
 ### Common QWeb in Reports
 
-| Directive | Usage |
-|-----------|-------|
-| `t-call="web.html_container"` | Report wrapper |
-| `t-call="web.external_layout"` | Header + footer |
-| `div.page` | Main content area |
-| `t-field="o.field"` | Smart rendering |
-| `t-esc="o.variable"` | Escape + render |
-| `t-foreach="docs" t-as="o"` | Loop over records |
-| `t-if="condition"` | Condition |
-| `t-set="var" t-value="value"` | Set variable |
-| `t-attf-href="url"` | Attribute with format |
-| `t-lang="lang_code"` | Set translation language |
+| Directive                      | Usage                    |
+| ------------------------------ | ------------------------ |
+| `t-call="web.html_container"`  | Report wrapper           |
+| `t-call="web.external_layout"` | Header + footer          |
+| `div.page`                     | Main content area        |
+| `t-field="o.field"`            | Smart rendering          |
+| `t-esc="o.variable"`           | Escape + render          |
+| `t-foreach="docs" t-as="o"`    | Loop over records        |
+| `t-if="condition"`             | Condition                |
+| `t-set="var" t-value="value"`  | Set variable             |
+| `t-attf-href="url"`            | Attribute with format    |
+| `t-lang="lang_code"`           | Set translation language |
 
 ### Direct URLs
 
-| URL | Description |
-|-----|-------------|
-| `/report/html/module.report/ID` | HTML version |
-| `/report/pdf/module.report/ID` | PDF version |
-| `/report/barcode/QR/TEXT` | QR code image |
+| URL                                 | Description             |
+| ----------------------------------- | ----------------------- |
+| `/report/html/module.report/ID`     | HTML version            |
+| `/report/pdf/module.report/ID`      | PDF version             |
+| `/report/barcode/QR/TEXT`           | QR code image           |
 | `/report/barcode/?barcode_type=...` | Barcode with parameters |
 
 ---

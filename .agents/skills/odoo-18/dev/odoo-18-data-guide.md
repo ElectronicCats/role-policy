@@ -1,6 +1,9 @@
 ---
 name: odoo-18-data
-description: Complete reference for Odoo 18 data files covering XML data files, CSV data files, record tags, field tags, shortcuts (menuitem, template, asset), function tags, delete tags, and noupdate attribute.
+description:
+  Complete reference for Odoo 18 data files covering XML data files, CSV data files,
+  record tags, field tags, shortcuts (menuitem, template, asset), function tags, delete
+  tags, and noupdate attribute.
 globs: "**/*.{xml,csv}"
 topics:
   - XML data files structure
@@ -22,7 +25,8 @@ when_to_use:
 
 # Odoo 18 Data Files Guide
 
-Complete reference for Odoo 18 data files: XML structure, records, fields, shortcuts, and CSV files.
+Complete reference for Odoo 18 data files: XML structure, records, fields, shortcuts,
+and CSV files.
 
 ## Table of Contents
 
@@ -42,14 +46,14 @@ Complete reference for Odoo 18 data files: XML structure, records, fields, short
 ### Basic XML Data File
 
 ```xml
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
-    <data noupdate="1">
-        <!-- Operations here -->
-    </data>
+  <data noupdate="1">
+    <!-- Operations here -->
+  </data>
 
-    <!-- (Re)Loaded at install and update -->
-    <operation/>
+  <!-- (Re)Loaded at install and update -->
+  <operation />
 </odoo>
 ```
 
@@ -60,15 +64,16 @@ All data files must have `<odoo>` as root element containing operations.
 ### Data Elements
 
 Operations are executed sequentially:
+
 - Earlier operations can be referenced by later operations
 - Later operations cannot reference earlier operations
 
 ### File Locations
 
-| Location | When Used |
-|----------|-----------|
-| `data/` | Always loaded at install/update |
-| `demo/` | Only in demo mode |
+| Location | When Used                       |
+| -------- | ------------------------------- |
+| `data/`  | Always loaded at install/update |
+| `demo/`  | Only in demo mode               |
 
 ---
 
@@ -78,21 +83,21 @@ Operations are executed sequentially:
 
 ```xml
 <record id="partner_1" model="res.partner">
-    <field name="name">Odoo</field>
-    <field name="email">info@odoo.com</field>
-    <field name="is_company" eval="True"/>
-    <field name="customer" eval="False"/>
+  <field name="name">Odoo</field>
+  <field name="email">info@odoo.com</field>
+  <field name="is_company" eval="True" />
+  <field name="customer" eval="False" />
 </record>
 ```
 
 ### Record Attributes
 
-| Attribute | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `id` | string | No* | External identifier (strongly recommended) |
-| `model` | string | Yes | Model name |
-| `context` | dict | No | Context for creation |
-| `forcecreate` | bool | No | Create if doesn't exist in update mode (default: True) |
+| Attribute     | Type   | Required | Description                                            |
+| ------------- | ------ | -------- | ------------------------------------------------------ |
+| `id`          | string | No\*     | External identifier (strongly recommended)             |
+| `model`       | string | Yes      | Model name                                             |
+| `context`     | dict   | No       | Context for creation                                   |
+| `forcecreate` | bool   | No       | Create if doesn't exist in update mode (default: True) |
 
 ### Updating Records
 
@@ -114,7 +119,7 @@ If `id` exists, record is updated instead of created:
 
 ```xml
 <!-- Does nothing on update -->
-<record id="existing_record" model="res.partner"/>
+<record id="existing_record" model="res.partner" />
 ```
 
 ---
@@ -123,13 +128,13 @@ If `id` exists, record is updated instead of created:
 
 ### field Attributes
 
-| Attribute | Type | Description |
-|-----------|------|-------------|
-| `name` | string | Field name (required) |
-| `ref` | string | External ID reference |
-| `search` | domain | Search for relational field |
-| `eval` | expression | Python expression |
-| `type` | string | Interpretation type |
+| Attribute | Type       | Description                 |
+| --------- | ---------- | --------------------------- |
+| `name`    | string     | Field name (required)       |
+| `ref`     | string     | External ID reference       |
+| `search`  | domain     | Search for relational field |
+| `eval`    | expression | Python expression           |
+| `type`    | string     | Interpretation type         |
 
 ### Setting Values
 
@@ -137,7 +142,8 @@ If `id` exists, record is updated instead of created:
 
 ```xml
 <record id="record" model="my.model">
-    <field name="my_field"/>  <!-- Sets to False -->
+  <field name="my_field" />
+  <!-- Sets to False -->
 </record>
 ```
 
@@ -162,14 +168,14 @@ If `id` exists, record is updated instead of created:
 
 Available in `eval`:
 
-| Variable | Description |
-|----------|-------------|
-| `time` | Python `time` module |
-| `datetime` | Python `datetime` module |
-| `timedelta` | Python `timedelta` module |
-| `relativedelta` | `dateutil.relativedelta` |
-| `ref()` | Resolve external ID |
-| `obj` | Current model (for field-specific) |
+| Variable        | Description                        |
+| --------------- | ---------------------------------- |
+| `time`          | Python `time` module               |
+| `datetime`      | Python `datetime` module           |
+| `timedelta`     | Python `timedelta` module          |
+| `relativedelta` | `dateutil.relativedelta`           |
+| `ref()`         | Resolve external ID                |
+| `obj`           | Current model (for field-specific) |
 
 ```xml
 <field name="date" eval="datetime.date.today()"/>
@@ -186,7 +192,10 @@ Available in `eval`:
 
 ```xml
 <!-- With ref in eval -->
-<field name="groups_id" eval="[(6, 0, [ref('base.group_user'), ref('base.group_system')])]"/>
+<field
+  name="groups_id"
+  eval="[(6, 0, [ref('base.group_user'), ref('base.group_system')])]"
+/>
 ```
 
 #### search - Domain Search
@@ -205,45 +214,45 @@ For relational fields, search for records:
 
 ### type - Interpretation Type
 
-| Type | Description |
-|------|-------------|
-| `xml` / `html` | Extract children as document |
-| `file` | File path (stores as `module,path`) |
-| `char` | Direct string value |
-| `base64` | Base64 encode content |
-| `int` | Convert to integer |
-| `float` | Convert to float |
-| `list` / `tuple` | List of values |
+| Type             | Description                         |
+| ---------------- | ----------------------------------- |
+| `xml` / `html`   | Extract children as document        |
+| `file`           | File path (stores as `module,path`) |
+| `char`           | Direct string value                 |
+| `base64`         | Base64 encode content               |
+| `int`            | Convert to integer                  |
+| `float`          | Convert to float                    |
+| `list` / `tuple` | List of values                      |
 
 #### type="xml" / type="html"
 
 ```xml
 <field name="description" type="xml">
-    <p>This is <strong>formatted</strong> content.</p>
-    <a href="%(link)s">Click here</a>
+  <p>This is <strong>formatted</strong> content.</p>
+  <a href="%(link)s">Click here</a>
 </field>
 ```
 
 #### type="file"
 
 ```xml
-<field name="image" type="file" name="my_module/static/img/logo.png"/>
+<field name="image" type="file" name="my_module/static/img/logo.png" />
 <!-- Stores as: my_module,/static/img/logo.png -->
 ```
 
 #### type="base64"
 
 ```xml
-<field name="file_data" type="base64" file="my_module/static/data/file.bin"/>
+<field name="file_data" type="base64" file="my_module/static/data/file.bin" />
 ```
 
 #### type="list"
 
 ```xml
 <field name="my_list" type="list">
-    <value>1</value>
-    <value>2</value>
-    <value>3</value>
+  <value>1</value>
+  <value>2</value>
+  <value>3</value>
 </field>
 ```
 
@@ -268,32 +277,35 @@ For relational fields, search for records:
 
 Using Command values:
 
-| Command | Description | Format |
-|---------|-------------|--------|
-| 0 | Create | `(0, 0, {values})` |
-| 1 | Update | `(1, id, {values})` |
-| 2 | Remove | `(2, id)` |
-| 3 | Unlink | `(3, id)` |
-| 4 | Link | `(4, id)` |
-| 5 | Clear | `(5, )` |
-| 6 | Replace | `(6, 0, [ids])` |
+| Command | Description | Format              |
+| ------- | ----------- | ------------------- |
+| 0       | Create      | `(0, 0, {values})`  |
+| 1       | Update      | `(1, id, {values})` |
+| 2       | Remove      | `(2, id)`           |
+| 3       | Unlink      | `(3, id)`           |
+| 4       | Link        | `(4, id)`           |
+| 5       | Clear       | `(5, )`             |
+| 6       | Replace     | `(6, 0, [ids])`     |
 
 ```xml
 <record id="my_record" model="my.model">
-    <!-- Create new line -->
-    <field name="line_ids" eval="[
+  <!-- Create new line -->
+  <field
+    name="line_ids"
+    eval="[
         (0, 0, {'name': 'Line 1', 'price': 100}),
         (0, 0, {'name': 'Line 2', 'price': 200}),
-    ]"/>
+    ]"
+  />
 
-    <!-- Link existing records -->
-    <field name="tag_ids" eval="[(6, 0, [ref('tag_1'), ref('tag_2')])]"/>
+  <!-- Link existing records -->
+  <field name="tag_ids" eval="[(6, 0, [ref('tag_1'), ref('tag_2')])]" />
 
-    <!-- Clear all -->
-    <field name="line_ids" eval="[(5,)]"/>
+  <!-- Clear all -->
+  <field name="line_ids" eval="[(5,)]" />
 
-    <!-- Replace with new set -->
-    <field name="tag_ids" eval="[(6, 0, [ref('tag_3')])]"/>
+  <!-- Replace with new set -->
+  <field name="tag_ids" eval="[(6, 0, [ref('tag_3')])]" />
 </record>
 ```
 
@@ -304,35 +316,35 @@ Using Command values:
 ### Deleting Records
 
 ```xml
-<delete model="res.partner" id="partner_to_delete"/>
+<delete model="res.partner" id="partner_to_delete" />
 ```
 
 ### delete Attributes
 
-| Attribute | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `model` | string | Yes | Model to delete from |
-| `id` | string | No* | External ID to delete |
-| `search` | domain | No* | Domain to find records |
+| Attribute | Type   | Required | Description            |
+| --------- | ------ | -------- | ---------------------- |
+| `model`   | string | Yes      | Model to delete from   |
+| `id`      | string | No\*     | External ID to delete  |
+| `search`  | domain | No\*     | Domain to find records |
 
 `id` and `search` are mutually exclusive.
 
 ### Delete by External ID
 
 ```xml
-<delete model="ir.ui.view" id="my_module.old_view"/>
+<delete model="ir.ui.view" id="my_module.old_view" />
 ```
 
 ### Delete by Search
 
 ```xml
-<delete model="res.partner" search="[('name', '=', 'Test Partner')]"/>
+<delete model="res.partner" search="[('name', '=', 'Test Partner')]" />
 ```
 
 ### Delete Multiple
 
 ```xml
-<delete model="ir.rule" search="[('domain_force', '=', False)]"/>
+<delete model="ir.rule" search="[('domain_force', '=', False)]" />
 ```
 
 ---
@@ -343,33 +355,37 @@ Using Command values:
 
 ```xml
 <function model="res.partner" name="send_notification">
-    <!-- Parameters via value elements -->
-    <value eval="[[ref('partner_1'), ref('partner_2')]]"/>
+  <!-- Parameters via value elements -->
+  <value eval="[[ref('partner_1'), ref('partner_2')]]" />
 </function>
 ```
 
 ### function Attributes
 
-| Attribute | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `model` | string | Yes | Model to call method on |
-| `name` | string | Yes | Method name |
-| `eval` | expression | No | Parameters as expression |
+| Attribute | Type       | Required | Description              |
+| --------- | ---------- | -------- | ------------------------ |
+| `model`   | string     | Yes      | Model to call method on  |
+| `name`    | string     | Yes      | Method name              |
+| `eval`    | expression | No       | Parameters as expression |
 
 ### Parameters via eval
 
 ```xml
-<function model="res.partner" name="create" eval="[
+<function
+  model="res.partner"
+  name="create"
+  eval="[
     {'name': 'Partner from XML', 'email': 'test@example.com'}
-]"/>
+]"
+/>
 ```
 
 ### Parameters via value
 
 ```xml
 <function model="my.model" name="my_method">
-    <value>arg1</value>
-    <value>arg2</value>
+  <value>arg1</value>
+  <value>arg2</value>
 </function>
 ```
 
@@ -377,7 +393,7 @@ Using Command values:
 
 ```xml
 <function model="res.partner" name="send_vip_inscription_notice">
-    <function eval="[[('vip', '=', True)]]" model="res.partner" name="search"/>
+  <function eval="[[('vip', '=', True)]]" model="res.partner" name="search" />
 </function>
 ```
 
@@ -405,18 +421,18 @@ Using Command values:
 Creates `ir.ui.menu` with defaults:
 
 ```xml
-<menuitem id="menu_root" name="My Module"/>
+<menuitem id="menu_root" name="My Module" />
 ```
 
 #### menuitem Attributes
 
-| Attribute | Description |
-|-----------|-------------|
-| `id` | External ID |
-| `name` | Menu name (defaults to id if not set) |
-| `parent` | Parent menu (external ID or name path) |
-| `action` | Action to execute (external ID) |
-| `groups` | Comma-separated group external IDs (prefix with `-` to remove) |
+| Attribute | Description                                                    |
+| --------- | -------------------------------------------------------------- |
+| `id`      | External ID                                                    |
+| `name`    | Menu name (defaults to id if not set)                          |
+| `parent`  | Parent menu (external ID or name path)                         |
+| `action`  | Action to execute (external ID)                                |
+| `groups`  | Comma-separated group external IDs (prefix with `-` to remove) |
 
 #### Menu Hierarchy
 
@@ -450,23 +466,23 @@ Creates `ir.ui.view` for QWeb template:
 
 ```xml
 <template id="my_template" name="My Template">
-    <div>
-        <h1>Hello World</h1>
-    </div>
+  <div>
+    <h1>Hello World</h1>
+  </div>
 </template>
 ```
 
 #### template Attributes
 
-| Attribute | Description |
-|-----------|-------------|
-| `id` | External ID (required) |
-| `name` | View name |
-| `inherit_id` | Parent template to inherit from |
-| `priority` | View priority |
-| `primary` | Set as primary view with inheritance |
-| `groups` | Comma-separated group external IDs |
-| `active` | Whether view is active |
+| Attribute    | Description                          |
+| ------------ | ------------------------------------ |
+| `id`         | External ID (required)               |
+| `name`       | View name                            |
+| `inherit_id` | Parent template to inherit from      |
+| `priority`   | View priority                        |
+| `primary`    | Set as primary view with inheritance |
+| `groups`     | Comma-separated group external IDs   |
+| `active`     | Whether view is active               |
 
 ```xml
 <!-- Basic template -->
@@ -507,33 +523,33 @@ Creates `ir.asset` record:
 
 ```xml
 <asset id="website_something.style_asset" name="Some Style Asset">
-    <bundle>web.assets_frontend</bundle>
-    <path>website_something/static/src/some_style.scss</path>
+  <bundle>web.assets_frontend</bundle>
+  <path>website_something/static/src/some_style.scss</path>
 </asset>
 ```
 
 #### asset Attributes
 
-| Attribute | Description |
-|-----------|-------------|
-| `id` | External ID (required) |
-| `name` | Asset name |
-| `active` | Whether asset is active |
+| Attribute | Description             |
+| --------- | ----------------------- |
+| `id`      | External ID (required)  |
+| `name`    | Asset name              |
+| `active`  | Whether asset is active |
 
 #### asset Child Elements
 
-| Element | Description |
-|---------|-------------|
-| `<bundle>` | Asset bundle name |
-| `<path>` | File path |
+| Element       | Description                        |
+| ------------- | ---------------------------------- |
+| `<bundle>`    | Asset bundle name                  |
+| `<path>`      | File path                          |
 | `<directive>` | Directive (include, replace, etc.) |
 
 ```xml
 <asset id="my_module.assets" name="My Assets" active="True">
-    <bundle>web.assets_frontend</bundle>
-    <path>my_module/static/src/js/main.js</path>
-    <path>my_module/static/src/scss/style.scss</path>
-    <field name="directive">replace</field>
+  <bundle>web.assets_frontend</bundle>
+  <path>my_module/static/src/js/main.js</path>
+  <path>my_module/static/src/scss/style.scss</path>
+  <field name="directive">replace</field>
 </asset>
 ```
 
@@ -566,12 +582,12 @@ state_au_qld,country_au,Queensland,QLD
 
 ### CSV Fields
 
-| Column | Description |
-|--------|-------------|
-| `id` | External ID (for create/update) |
+| Column          | Description                        |
+| --------------- | ---------------------------------- |
+| `id`            | External ID (for create/update)    |
 | `country_id:id` | Reference to country (external ID) |
-| `name` | State name |
-| `code` | State code |
+| `name`          | State name                         |
+| `code`          | State code                         |
 
 ### CSV for Access Rights
 
@@ -583,11 +599,11 @@ access_trip_manager,trip.manager,model_business_trip,module.group_manager,1,1,1,
 
 ### CSV vs XML
 
-| CSV | XML |
-|-----|-----|
-| Simpler for bulk data | More flexible |
+| CSV                      | XML                         |
+| ------------------------ | --------------------------- |
+| Simpler for bulk data    | More flexible               |
 | Good for flat structures | Good for complex structures |
-| Easier to edit | Better for relationships |
+| Easier to edit           | Better for relationships    |
 | Limited to simple values | Supports eval, search, etc. |
 
 ---
@@ -600,30 +616,30 @@ Data in `<data noupdate="1">` is only loaded at installation:
 
 ```xml
 <odoo>
-    <!-- Loaded at install and update -->
-    <record id="core_data" model="my.model">
-        <field name="name">Core Data</field>
-    </record>
+  <!-- Loaded at install and update -->
+  <record id="core_data" model="my.model">
+    <field name="name">Core Data</field>
+  </record>
 
-    <!-- Loaded only at install -->
-    <data noupdate="1">
-        <record id="demo_data" model="my.model">
-            <field name="name">Demo Data</field>
-        </record>
-    </data>
+  <!-- Loaded only at install -->
+  <data noupdate="1">
+    <record id="demo_data" model="my.model">
+      <field name="name">Demo Data</field>
+    </record>
+  </data>
 </odoo>
 ```
 
 ### When to Use noupdate
 
-| Use Case | noupdate |
-|----------|----------|
-| Core module data | 0 (default) |
-| User-editable data | 1 |
-| Default records | 1 |
-| Demo data | 1 |
-| Configuration | 1 |
-| Views, actions, menus | 0 |
+| Use Case              | noupdate    |
+| --------------------- | ----------- |
+| Core module data      | 0 (default) |
+| User-editable data    | 1           |
+| Default records       | 1           |
+| Demo data             | 1           |
+| Configuration         | 1           |
+| Views, actions, menus | 0           |
 
 ### noupdate Examples
 
@@ -656,38 +672,40 @@ Data in `<data noupdate="1">` is only loaded at installation:
 
 ```xml
 <record id="external_id" model="model.name" context="{}">
-    <field name="field_name">value</field>
-    <field name="field_ref" ref="module.external_id"/>
-    <field name="field_eval" eval="True"/>
-    <field name="field_search" search="[('name', '=', 'Value')]"/>
-    <field name="field_xml" type="xml"><p>content</p></field>
+  <field name="field_name">value</field>
+  <field name="field_ref" ref="module.external_id" />
+  <field name="field_eval" eval="True" />
+  <field name="field_search" search="[('name', '=', 'Value')]" />
+  <field name="field_xml" type="xml">
+    <p>content</p>
+  </field>
 </record>
 ```
 
 ### field Tag Value Types
 
-| Type | Usage |
-|------|-------|
-| Direct | `<field name="name">Value</field>` |
-| eval | `<field name="active" eval="True"/>` |
-| ref | `<field name="user" ref="base.user_admin"/>` |
-| search | `<field name="country" search="[('code', '=', 'US')]"/>` |
-| type="xml" | `<field name="desc" type="xml"><p>HTML</p></field>` |
-| type="file" | `<field name="image" type="file" name="path.png"/>` |
-| type="base64" | `<field name="data" type="base64" file="file.bin"/>` |
-| type="int" | `<field name="count" type="int">42</field>` |
+| Type          | Usage                                                    |
+| ------------- | -------------------------------------------------------- |
+| Direct        | `<field name="name">Value</field>`                       |
+| eval          | `<field name="active" eval="True"/>`                     |
+| ref           | `<field name="user" ref="base.user_admin"/>`             |
+| search        | `<field name="country" search="[('code', '=', 'US')]"/>` |
+| type="xml"    | `<field name="desc" type="xml"><p>HTML</p></field>`      |
+| type="file"   | `<field name="image" type="file" name="path.png"/>`      |
+| type="base64" | `<field name="data" type="base64" file="file.bin"/>`     |
+| type="int"    | `<field name="count" type="int">42</field>`              |
 
 ### Relational Commands
 
-| Command | Use |
-|---------|-----|
-| `(0, 0, {...})` | Create new |
-| `(1, id, {...})` | Update |
-| `(2, id)` | Remove |
-| `(3, id)` | Unlink |
-| `(4, id)` | Link |
-| `(5,)` | Clear all |
-| `(6, 0, [ids])` | Replace set |
+| Command          | Use         |
+| ---------------- | ----------- |
+| `(0, 0, {...})`  | Create new  |
+| `(1, id, {...})` | Update      |
+| `(2, id)`        | Remove      |
+| `(3, id)`        | Unlink      |
+| `(4, id)`        | Link        |
+| `(5,)`           | Clear all   |
+| `(6, 0, [ids])`  | Replace set |
 
 ### Shortcuts
 

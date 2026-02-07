@@ -1,6 +1,8 @@
 ---
 name: odoo-18-controller
-description: Complete reference for Odoo 18 HTTP controllers, routing, authentication types, and request/response handling.
+description:
+  Complete reference for Odoo 18 HTTP controllers, routing, authentication types, and
+  request/response handling.
 globs: "**/controllers/**/*.py"
 topics:
   - Controller basics (class structure, request object)
@@ -8,7 +10,8 @@ topics:
   - Authentication types (auth types, user, public, none)
   - Request/Response types (http, json)
   - CSRF handling (protection, disable, tokens)
-  - Common patterns (JSON endpoints, file download, website pages, API endpoints, error handling)
+  - Common patterns (JSON endpoints, file download, website pages, API endpoints, error
+    handling)
 when_to_use:
   - Writing HTTP controllers
   - Creating API endpoints
@@ -50,6 +53,7 @@ class MyController(http.Controller):
 ```
 
 **Key points**:
+
 - Extend `http.Controller`
 - Use `@http.route()` decorator
 - Access `request` for environment and data
@@ -159,6 +163,7 @@ def my_orders(self):
 ```
 
 **Behavior**:
+
 - Redirects to login if not authenticated
 - `request.env.uid` is the logged-in user
 - Normal record access rules apply
@@ -178,6 +183,7 @@ def shop_products(self):
 ```
 
 **Behavior**:
+
 - No redirect to login
 - `request.env.uid` is anonymous (usually 3-4)
 - Access rights still enforced (public user has limited access)
@@ -199,6 +205,7 @@ def get_locale(self):
 ```
 
 **Behavior**:
+
 - `request.env` is NOT available
 - No database access
 - For truly public, static endpoints
@@ -270,6 +277,7 @@ this.rpc('/api/action', {id: 123}).then(result => {
 ```
 
 **type='json' behavior**:
+
 - Automatically serializes return value to JSON
 - Used for frontend JavaScript calls
 - CSRF token handled automatically from frontend
@@ -305,8 +313,8 @@ def payment_webhook(self):
 ```xml
 <!-- QWeb template with CSRF token -->
 <form t-action="/form/submit" method="POST">
-    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
-    <!-- other fields -->
+  <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()" />
+  <!-- other fields -->
 </form>
 ```
 
@@ -524,4 +532,4 @@ request.make_json_response({'error': 'message'}, status=400)
 4. **Handle exceptions** - Return meaningful error messages
 5. **Use correct type** - `json` for frontend, `http` for pages
 6. **Respect CSRF** - Only disable for external APIs
-6. **Return proper responses** - Use correct response methods
+7. **Return proper responses** - Use correct response methods

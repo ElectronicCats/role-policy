@@ -3,17 +3,19 @@
 ## Critical Changes
 
 ### 1. RPC Service Removal in Frontend
-**Impact**: HIGH
-**Affected**: All public website components using RPC
+
+**Impact**: HIGH **Affected**: All public website components using RPC
 
 The `rpc` service is no longer available in frontend/public components in Odoo 19.
 
 #### Detection
+
 ```javascript
 grep -r "useService.*['\"]rpc['\"]" --include="*.js"
 ```
 
 #### Solution
+
 Replace with fetch-based JSON-RPC calls. Add this helper to each affected component:
 
 ```javascript
@@ -53,6 +55,7 @@ async _jsonRpc(endpoint, params = {}) {
 ### 2. Kanban View Changes
 
 #### Template Name Change
+
 ```xml
 <!-- Before -->
 <t t-name="kanban-box">
@@ -62,6 +65,7 @@ async _jsonRpc(endpoint, params = {}) {
 ```
 
 #### JS Class Removal
+
 ```xml
 <!-- Before -->
 <kanban js_class="crm_kanban">
@@ -118,15 +122,15 @@ The snippet registration system has changed completely:
 ```xml
 <!-- This no longer works -->
 <template id="custom_option" inherit_id="website.snippet_options">
-    <!-- content -->
+  <!-- content -->
 </template>
-
 <!-- New approach: Use the new snippet system or remove -->
 ```
 
 ## Python API Changes
 
 ### 1. URL Generation
+
 ```python
 # Before
 from odoo.addons.http_routing.models.ir_http import url_for
@@ -137,6 +141,7 @@ url = self.env['ir.http']._url_for('/path')
 ```
 
 ### 2. Slug Functions
+
 ```python
 # Before
 from odoo.addons.http_routing.models.ir_http import slug, unslug
@@ -154,53 +159,72 @@ def unslug(value):
 ## Theme SCSS Changes
 
 ### 1. Color Palette Menu Assignment
+
 ```scss
 // Must specify menu, footer, copyright colors
-$o-color-palettes: map-merge($o-color-palettes, (
-    'my_theme': (
-        'o-color-1': #207AB7,
-        'o-color-2': #FB9F54,
-        'o-color-3': #F6F4F0,
-        'o-color-4': #ffffff,
-        'o-color-5': #191A19,
-        'menu': 1,        // NEW: Required
-        'footer': 3,      // NEW: Required
-        'copyright': 5,   // NEW: Required
+$o-color-palettes: map-merge(
+  $o-color-palettes,
+  (
+    "my_theme": (
+      "o-color-1": #207ab7,
+      "o-color-2": #fb9f54,
+      "o-color-3": #f6f4f0,
+      "o-color-4": #ffffff,
+      "o-color-5": #191a19,
+      "menu": 1,
+      // NEW: Required
+      "footer": 3,
+      // NEW: Required
+      "copyright": 5,
+      // NEW: Required
     ),
-));
+  )
+);
 ```
 
 ### 2. Font Configuration Properties
+
 ```scss
 // Must include properties section
-$o-theme-font-configs: map-merge($o-theme-font-configs, (
-    'FontName': (
-        'family': ('FontName', sans-serif),
-        'url': 'FontName:weights&display=swap',
-        'properties': (  // NEW: Required
-            'base': (
-                'font-size-base': 1rem,
-                'line-height-base': 1.6,
-            ),
-        )
+$o-theme-font-configs: map-merge(
+  $o-theme-font-configs,
+  (
+    "FontName": (
+      "family": (
+        "FontName",
+        sans-serif,
+      ),
+      "url": "FontName:weights&display=swap",
+      "properties": (
+        // NEW: Required
+        "base":
+          (
+            "font-size-base": 1rem,
+            "line-height-base": 1.6,
+          ),
+      ),
     ),
-));
+  )
+);
 ```
 
 ## JavaScript Module Changes
 
 ### 1. Registry Categories
+
 ```javascript
 // Before
 registry.category("public_components").add("name", Component);
 
 // After - May need adjustment based on component type
 registry.category("public_components").add("name", Component);
-registry.category("actions").add("name", Component);  // For action components
+registry.category("actions").add("name", Component); // For action components
 ```
 
 ### 2. Service Availability
+
 Services available in frontend have changed. Check availability:
+
 - ❌ `rpc` - Not available
 - ✅ `localization` - Available
 - ✅ `bus` - Available (via env.bus)
@@ -208,6 +232,7 @@ Services available in frontend have changed. Check availability:
 ## Testing After Migration
 
 ### Critical Tests
+
 1. All JavaScript components load without console errors
 2. RPC calls return data correctly
 3. Kanban views render properly
@@ -217,6 +242,7 @@ Services available in frontend have changed. Check availability:
 7. Cron jobs execute
 
 ### Commands
+
 ```bash
 # Clear assets and regenerate
 rm -rf filestore/assets
@@ -232,6 +258,7 @@ python -m odoo -d test_db -i [module] --stop-after-init
 ## Rollback Plan
 
 If migration fails:
+
 1. Restore from backup
 2. Document specific error
 3. Apply targeted fix

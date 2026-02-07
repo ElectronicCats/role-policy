@@ -4,14 +4,14 @@ Fix RPC Service Usage in Odoo 19 Frontend Components
 Replaces useService("rpc") with fetch-based JSON-RPC calls
 """
 
-import os
-import re
 import argparse
+import re
 from pathlib import Path
+
 
 class RPCServiceFixer:
     def __init__(self):
-        self.json_rpc_method = '''
+        self.json_rpc_method = """
     /**
      * Helper method to make JSON-RPC calls in Odoo 19 frontend context
      * Replaces the RPC service which is not available in public components
@@ -46,15 +46,15 @@ class RPCServiceFixer:
             console.error('JSON-RPC call failed:', error);
             throw error;
         }
-    }'''
+    }"""
 
     def has_rpc_service(self, content):
         """Check if file uses RPC service"""
         patterns = [
             r'useService\(["\']rpc["\']\)',
-            r'this\.rpc\s*=\s*useService',
-            r'await\s+this\.rpc\(',
-            r'this\.rpc\('
+            r"this\.rpc\s*=\s*useService",
+            r"await\s+this\.rpc\(",
+            r"this\.rpc\(",
         ]
         for pattern in patterns:
             if re.search(pattern, content):
@@ -67,16 +67,16 @@ class RPCServiceFixer:
 
         # Step 1: Remove or comment out the RPC service line
         pattern = r'(\s*)this\.rpc\s*=\s*useService\(["\']rpc["\']\);?\s*\n?'
-        replacement = r'\1// Note: RPC service removed - using fetch with JSON-RPC instead for Odoo 19 compatibility\n'
+        replacement = r"\1// Note: RPC service removed - using fetch with JSON-RPC instead for Odoo 19 compatibility\n"
         if re.search(pattern, content):
             content = re.sub(pattern, replacement, content)
             changes_made.append("Removed useService('rpc') declaration")
 
         # Step 2: Add _jsonRpc method if it doesn't exist
-        if '_jsonRpc' not in content and 'this.rpc(' in content:
+        if "_jsonRpc" not in content and "this.rpc(" in content:
             # Find the right place to insert the method
             # Try to find the end of setup() method
-            setup_match = re.search(r'setup\(\)[^{]*{.*?\n(\s*)\}', content, re.DOTALL)
+            setup_match = re.search(r"setup\(\)[^{]*{.*?\n(\s*)\}", content, re.DOTALL)
             if setup_match:
                 indent = setup_match.group(1)
                 insertion_point = setup_match.end()
@@ -84,43 +84,45 @@ class RPCServiceFixer:
                 # Insert the _jsonRpc method after setup()
                 before = content[:insertion_point]
                 after = content[insertion_point:]
-                content = before + '\n' + self.json_rpc_method + '\n' + after
+                content = before + "\n" + self.json_rpc_method + "\n" + after
                 changes_made.append("Added _jsonRpc helper method")
             else:
                 # Try to insert after the class opening
-                class_match = re.search(r'export\s+class\s+\w+\s+extends\s+Component\s*{', content)
+                class_match = re.search(
+                    r"export\s+class\s+\w+\s+extends\s+Component\s*{", content
+                )
                 if class_match:
                     insertion_point = class_match.end()
                     before = content[:insertion_point]
                     after = content[insertion_point:]
-                    content = before + '\n' + self.json_rpc_method + '\n' + after
+                    content = before + "\n" + self.json_rpc_method + "\n" + after
                     changes_made.append("Added _jsonRpc helper method")
 
         # Step 3: Replace this.rpc() calls with this._jsonRpc()
-        rpc_call_pattern = r'this\.rpc\('
+        rpc_call_pattern = r"this\.rpc\("
         if re.search(rpc_call_pattern, content):
-            content = re.sub(rpc_call_pattern, 'this._jsonRpc(', content)
+            content = re.sub(rpc_call_pattern, "this._jsonRpc(", content)
             changes_made.append("Replaced this.rpc() with this._jsonRpc()")
 
         # Step 4: Replace await this.rpc with await this._jsonRpc
-        await_pattern = r'await\s+this\.rpc\('
+        await_pattern = r"await\s+this\.rpc\("
         if re.search(await_pattern, content):
-            content = re.sub(await_pattern, 'await this._jsonRpc(', content)
+            content = re.sub(await_pattern, "await this._jsonRpc(", content)
             # Already covered by step 3
 
         return content, changes_made
 
     def ensure_module_annotation(self, content):
         """Ensure @odoo-module annotation exists"""
-        if '/** @odoo-module **/' not in content[:100]:  # Check first 100 chars
-            content = '/** @odoo-module **/\n' + content
+        if "/** @odoo-module **/" not in content[:100]:  # Check first 100 chars
+            content = "/** @odoo-module **/\n" + content
             return content, True
         return content, False
 
     def process_file(self, file_path):
         """Process a single JavaScript file"""
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, encoding="utf-8") as f:
                 original_content = f.read()
 
             content = original_content
@@ -139,12 +141,12 @@ class RPCServiceFixer:
             # Write back if changes were made
             if all_changes:
                 # Create backup
-                backup_path = str(file_path) + '.rpc_backup'
-                with open(backup_path, 'w', encoding='utf-8') as f:
+                backup_path = str(file_path) + ".rpc_backup"
+                with open(backup_path, "w", encoding="utf-8") as f:
                     f.write(original_content)
 
                 # Write fixed content
-                with open(file_path, 'w', encoding='utf-8') as f:
+                with open(file_path, "w", encoding="utf-8") as f:
                     f.write(content)
 
                 return True, all_changes
@@ -157,7 +159,7 @@ class RPCServiceFixer:
     def process_directory(self, directory_path):
         """Process all JavaScript files in directory"""
         path = Path(directory_path)
-        js_files = list(path.rglob('*.js'))
+        js_files = list(path.rglob("*.js"))
 
         print(f"Found {len(js_files)} JavaScript files")
         print("-" * 50)
@@ -168,12 +170,12 @@ class RPCServiceFixer:
 
         for js_file in js_files:
             # Skip node_modules and lib directories
-            if 'node_modules' in str(js_file) or '/lib/' in str(js_file):
+            if "node_modules" in str(js_file) or "/lib/" in str(js_file):
                 continue
 
             print(f"\n📄 Checking: {js_file.relative_to(path)}")
 
-            with open(js_file, 'r', encoding='utf-8') as f:
+            with open(js_file, encoding="utf-8") as f:
                 content = f.read()
 
             if self.has_rpc_service(content):
@@ -206,15 +208,20 @@ class RPCServiceFixer:
 
         return len(fixed_files), len(error_files)
 
+
 def main():
     parser = argparse.ArgumentParser(
-        description='Fix RPC service usage in Odoo 19 JavaScript files'
+        description="Fix RPC service usage in Odoo 19 JavaScript files"
     )
-    parser.add_argument('path', help='Path to file or directory')
-    parser.add_argument('--dry-run', action='store_true',
-                       help='Show what would be changed without modifying files')
-    parser.add_argument('--no-backup', action='store_true',
-                       help='Do not create backup files')
+    parser.add_argument("path", help="Path to file or directory")
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Show what would be changed without modifying files",
+    )
+    parser.add_argument(
+        "--no-backup", action="store_true", help="Do not create backup files"
+    )
 
     args = parser.parse_args()
 
@@ -223,7 +230,7 @@ def main():
 
     if path.is_file():
         # Process single file
-        if path.suffix == '.js':
+        if path.suffix == ".js":
             print(f"Processing file: {path}")
             fixed, changes = fixer.process_file(path)
             if fixed:
@@ -241,5 +248,6 @@ def main():
     else:
         print(f"Error: Path does not exist: {path}")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()

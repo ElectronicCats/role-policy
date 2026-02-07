@@ -1,9 +1,13 @@
 ---
 name: odoo-18-field
-description: Complete reference for Odoo 18 field types, parameters, and when to use each. Use this guide when defining model fields, choosing field types, or configuring field parameters.
+description:
+  Complete reference for Odoo 18 field types, parameters, and when to use each. Use this
+  guide when defining model fields, choosing field types, or configuring field
+  parameters.
 globs: "**/models/**/*.py"
 topics:
-  - Simple fields (Char, Text, Html, Boolean, Integer, Float, Monetary, Date, Datetime, Binary, Selection, Reference)
+  - Simple fields (Char, Text, Html, Boolean, Integer, Float, Monetary, Date, Datetime,
+    Binary, Selection, Reference)
   - Relational fields (Many2one, One2many, Many2many)
   - Computed fields (compute, store, search, inverse)
   - Related fields
@@ -182,7 +186,9 @@ if fields.Float.compare(self.price, self.list_price, precision_rounding=0.01) >=
     pass
 ```
 
-**Important**: Always use precision_rounding from the unit of measure (product.uom_id.rounding) or currency (res.currency.rounding) when working with Float fields to avoid floating-point comparison issues.
+**Important**: Always use precision_rounding from the unit of measure
+(product.uom_id.rounding) or currency (res.currency.rounding) when working with Float
+fields to avoid floating-point comparison issues.
 
 ---
 
@@ -200,7 +206,8 @@ amount_total = fields.Monetary(
 )
 ```
 
-**Use for**: All monetary values. Automatically handles currency formatting and precision.
+**Use for**: All monetary values. Automatically handles currency formatting and
+precision.
 
 **Important**: Always specify `currency_field` pointing to a `res.currency` many2one.
 
@@ -344,10 +351,13 @@ image_large = fields.Image(
 ```
 
 **Important**:
+
 - `Image` extends `Binary` field
-- Automatically resizes images if they exceed `max_width`/`max_height` while maintaining aspect ratio
+- Automatically resizes images if they exceed `max_width`/`max_height` while maintaining
+  aspect ratio
 - `verify_resolution=True` checks against maximum image resolution (~50MP default)
-- If `max_width` or `max_height` is 0 and `verify_resolution` is False, no verification is performed
+- If `max_width` or `max_height` is 0 and `verify_resolution` is False, no verification
+  is performed
 
 ---
 
@@ -375,7 +385,9 @@ class MyModel(models.Model):
 ```
 
 **Important**:
-- `Many2oneReference` stores value as integer ID (unlike `Reference` which stores "model,id" string)
+
+- `Many2oneReference` stores value as integer ID (unlike `Reference` which stores
+  "model,id" string)
 - Requires a separate Char field to store the model name
 - More efficient than `Reference` for database queries and joins
 - Use when you need dynamic references to multiple possible models
@@ -461,8 +473,10 @@ partner_id = fields.Many2one(
 ```
 
 **Parameters**:
+
 - `comodel_name` - Target model (positional argument)
-- `ondelete` - What to do when referenced record is deleted: `'set null'`, `'restrict'`, `'cascade'`
+- `ondelete` - What to do when referenced record is deleted: `'set null'`, `'restrict'`,
+  `'cascade'`
 - `domain` - Domain for searchable dropdown
 - `context` - Context passed to action
 - `default` - Default value (can be callable)
@@ -490,6 +504,7 @@ active_line_ids = fields.One2many(
 ```
 
 **Parameters**:
+
 - `comodel_name` - Target model (positional argument)
 - `inverse_name` - Many2one field on target model that points back (REQUIRED)
 - `domain` - Domain filter for displayed records
@@ -525,6 +540,7 @@ allowed_category_ids = fields.Many2many(
 ```
 
 **Parameters**:
+
 - `comodel_name` - Target model (positional argument)
 - `relation` - Relation table name (optional, auto-generated if omitted)
 - `column1` - Column name for this model's ID in relation table
@@ -659,20 +675,20 @@ company_currency_id = fields.Many2one(
 
 ### Common Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `string` | str | Field label (display name) |
-| `required` | bool | Field must have value (validation) |
-| `readonly` | bool | Field is read-only in UI (not enforced in code) |
-| `index` | bool/str | Create database index (`'btree'`, `'btree_not_null'`, `'trigram'`) |
-| `default` | value/callable | Default value |
-| `copy` | bool | Copy field on duplicate (default `True`, `False` for o2many) |
-| `store` | bool | Store in database (default `True`, `False` for computed) |
-| `groups` | str | Comma-separated group XML IDs for access control |
-| `company_dependent` | bool | Value varies by company (stored as jsonb) |
-| `help` | str | Tooltip text |
-| `translate` | bool | Enable translation |
-| `tracking` | bool/int | Track changes in chatter (`1`=always, `2`=only if set) |
+| Parameter           | Type           | Description                                                        |
+| ------------------- | -------------- | ------------------------------------------------------------------ |
+| `string`            | str            | Field label (display name)                                         |
+| `required`          | bool           | Field must have value (validation)                                 |
+| `readonly`          | bool           | Field is read-only in UI (not enforced in code)                    |
+| `index`             | bool/str       | Create database index (`'btree'`, `'btree_not_null'`, `'trigram'`) |
+| `default`           | value/callable | Default value                                                      |
+| `copy`              | bool           | Copy field on duplicate (default `True`, `False` for o2many)       |
+| `store`             | bool           | Store in database (default `True`, `False` for computed)           |
+| `groups`            | str            | Comma-separated group XML IDs for access control                   |
+| `company_dependent` | bool           | Value varies by company (stored as jsonb)                          |
+| `help`              | str            | Tooltip text                                                       |
+| `translate`         | bool           | Enable translation                                                 |
+| `tracking`          | bool/int       | Track changes in chatter (`1`=always, `2`=only if set)             |
 
 ### Index Types
 
@@ -769,6 +785,7 @@ def _compute_sequence(self):
 ```
 
 **Warning**: `precompute=True` can be counterproductive for:
+
 - Statistics fields (count, sum over search)
 - Fields that require database reads
 - One-off record creation (not batch)
@@ -823,22 +840,22 @@ amount = fields.Float(aggregator='sum')
 
 ## Field Type Selection Guide
 
-| Requirement | Use Field |
-|-------------|-----------|
-| Short text (name, code) | `Char` |
-| Long text (description) | `Text` |
-| HTML content (email, web) | `Html` |
-| Yes/No | `Boolean` |
-| Whole number | `Integer` |
-| Decimal (non-currency) | `Float` |
-| Money | `Monetary` |
-| Date only | `Date` |
-| Date + time | `Datetime` |
-| File/Attachment | `Binary` |
-| Dropdown options | `Selection` |
-| Many-to-one relation | `Many2one` |
-| One-to-many relation | `One2many` |
-| Many-to-many relation | `Many2many` |
-| Derived from other fields | `compute` |
-| Field from related record | `related` |
-| Multi-company value | `company_dependent=True` |
+| Requirement               | Use Field                |
+| ------------------------- | ------------------------ |
+| Short text (name, code)   | `Char`                   |
+| Long text (description)   | `Text`                   |
+| HTML content (email, web) | `Html`                   |
+| Yes/No                    | `Boolean`                |
+| Whole number              | `Integer`                |
+| Decimal (non-currency)    | `Float`                  |
+| Money                     | `Monetary`               |
+| Date only                 | `Date`                   |
+| Date + time               | `Datetime`               |
+| File/Attachment           | `Binary`                 |
+| Dropdown options          | `Selection`              |
+| Many-to-one relation      | `Many2one`               |
+| One-to-many relation      | `One2many`               |
+| Many-to-many relation     | `Many2many`              |
+| Derived from other fields | `compute`                |
+| Field from related record | `related`                |
+| Multi-company value       | `company_dependent=True` |

@@ -1,6 +1,8 @@
 ---
 name: odoo-18-view
-description: Complete reference for Odoo 18 XML views, actions, menus, and QWeb templates. Covers list, form, search, kanban, graph, pivot, calendar views and Odoo 18 changes.
+description:
+  Complete reference for Odoo 18 XML views, actions, menus, and QWeb templates. Covers
+  list, form, search, kanban, graph, pivot, calendar views and Odoo 18 changes.
 globs: "**/views/**/*.xml"
 topics:
   - View types (list, form, search, kanban, graph, pivot, calendar, activity)
@@ -41,18 +43,18 @@ Complete reference for Odoo 18 XML views, actions, menus, and QWeb templates.
 
 ## View Types
 
-| Type | XML Tag | Use For |
-|------|---------|---------|
-| `list` | `<list>` | Table/List view (formerly `<tree>`) |
-| `form` | `<form>` | Single record edit/view |
-| `search` | `<search>` | Search panel and filters |
-| `kanban` | `<kanban>` | Card-based view |
-| `graph` | `<graph>` | Bar/line/pie charts |
-| `pivot` | `<pivot>` | Pivot table |
-| `calendar` | `<calendar>` | Calendar view |
-| `activity` | `<activity>` | Activity/messaging view |
-| `cohort` | `<cohort>` | Cohort analysis |
-| `qweb` | `<template>` | QWeb template |
+| Type       | XML Tag      | Use For                             |
+| ---------- | ------------ | ----------------------------------- |
+| `list`     | `<list>`     | Table/List view (formerly `<tree>`) |
+| `form`     | `<form>`     | Single record edit/view             |
+| `search`   | `<search>`   | Search panel and filters            |
+| `kanban`   | `<kanban>`   | Card-based view                     |
+| `graph`    | `<graph>`    | Bar/line/pie charts                 |
+| `pivot`    | `<pivot>`    | Pivot table                         |
+| `calendar` | `<calendar>` | Calendar view                       |
+| `activity` | `<activity>` | Activity/messaging view             |
+| `cohort`   | `<cohort>`   | Cohort analysis                     |
+| `qweb`     | `<template>` | QWeb template                       |
 
 ---
 
@@ -62,15 +64,15 @@ Complete reference for Odoo 18 XML views, actions, menus, and QWeb templates.
 
 ```xml
 <record id="view_my_model_list" model="ir.ui.view">
-    <field name="name">my.model.list</field>
-    <field name="model">my.model</field>
-    <field name="arch" type="xml">
-        <list string="My Records">
-            <field name="name"/>
-            <field name="date"/>
-            <field name="state"/>
-        </list>
-    </field>
+  <field name="name">my.model.list</field>
+  <field name="model">my.model</field>
+  <field name="arch" type="xml">
+    <list string="My Records">
+      <field name="name" />
+      <field name="date" />
+      <field name="state" />
+    </list>
+  </field>
 </record>
 ```
 
@@ -108,15 +110,15 @@ Complete reference for Odoo 18 XML views, actions, menus, and QWeb templates.
 
 ### Decoration Types
 
-| Type | Color | Use For |
-|------|-------|---------|
-| `decoration-danger` | Red | Error, cancelled |
-| `decoration-warning` | Orange | Warning |
-| `decoration-success` | Green | Success, done |
-| `decoration-info` | Blue | Info |
-| `decoration-muted` | Gray | Inactive, archived |
-| `decoration-bf` | Bold font | Highlight |
-| `decoration-it` | Italic | Emphasis |
+| Type                 | Color     | Use For            |
+| -------------------- | --------- | ------------------ |
+| `decoration-danger`  | Red       | Error, cancelled   |
+| `decoration-warning` | Orange    | Warning            |
+| `decoration-success` | Green     | Success, done      |
+| `decoration-info`    | Blue      | Info               |
+| `decoration-muted`   | Gray      | Inactive, archived |
+| `decoration-bf`      | Bold font | Highlight          |
+| `decoration-it`      | Italic    | Emphasis           |
 
 ---
 
@@ -126,24 +128,24 @@ Complete reference for Odoo 18 XML views, actions, menus, and QWeb templates.
 
 ```xml
 <record id="view_my_model_form" model="ir.ui.view">
-    <field name="name">my.model.form</field>
-    <field name="model">my.model</field>
-    <field name="arch" type="xml">
-        <form string="My Record">
-            <sheet>
-                <group>
-                    <group>
-                        <field name="name"/>
-                        <field name="date"/>
-                    </group>
-                    <group>
-                        <field name="user_id"/>
-                        <field name="company_id"/>
-                    </group>
-                </group>
-            </sheet>
-        </form>
-    </field>
+  <field name="name">my.model.form</field>
+  <field name="model">my.model</field>
+  <field name="arch" type="xml">
+    <form string="My Record">
+      <sheet>
+        <group>
+          <group>
+            <field name="name" />
+            <field name="date" />
+          </group>
+          <group>
+            <field name="user_id" />
+            <field name="company_id" />
+          </group>
+        </group>
+      </sheet>
+    </form>
+  </field>
 </record>
 ```
 
@@ -151,68 +153,79 @@ Complete reference for Odoo 18 XML views, actions, menus, and QWeb templates.
 
 ```xml
 <form string="My Record" create="true" edit="true" delete="true">
+  <!-- Edit-only alerts -->
+  <div
+    class="alert alert-warning oe_edit_only"
+    role="alert"
+    invisible="not warning_message"
+  >
+    <field name="warning_message" />
+  </div>
 
-    <!-- Edit-only alerts -->
-    <div class="alert alert-warning oe_edit_only" role="alert"
-         invisible="not warning_message">
-        <field name="warning_message"/>
+  <!-- Ribbon (archived badge) -->
+  <widget
+    name="web_ribbon"
+    title="Archived"
+    bg_color="text-bg-danger"
+    invisible="active"
+  />
+
+  <sheet>
+    <!-- Button box (stat buttons) -->
+    <div class="oe_button_box" name="button_box">
+      <button
+        name="action_confirm"
+        type="object"
+        class="oe_stat_button"
+        icon="fa-check"
+      >
+        <div class="o_field_widget o_stat_info">
+          <span class="o_stat_text">Confirm</span>
+        </div>
+      </button>
     </div>
 
-    <!-- Ribbon (archived badge) -->
-    <widget name="web_ribbon" title="Archived"
-            bg_color="text-bg-danger" invisible="active"/>
-
-    <sheet>
-        <!-- Button box (stat buttons) -->
-        <div class="oe_button_box" name="button_box">
-            <button name="action_confirm" type="object" class="oe_stat_button" icon="fa-check">
-                <div class="o_field_widget o_stat_info">
-                    <span class="o_stat_text">Confirm</span>
-                </div>
-            </button>
-        </div>
-
-        <!-- Chatter -->
-        <div class="oe_chatter">
-            <field name="message_ids"/>
-            <field name="activity_ids"/>
-        </div>
-
-        <!-- Main content -->
-        <group>
-            <group>
-                <field name="name" default_focus="1" placeholder="Record Name"/>
-                <field name="code" required="1"/>
-            </group>
-            <group>
-                <field name="user_id"/>
-                <field name="company_id"/>
-            </group>
-        </group>
-
-        <!-- Notebook (tabs) -->
-        <notebook>
-            <page string="Information" name="info">
-                <group>
-                    <field name="description"/>
-                </group>
-            </page>
-            <page string="Lines" name="lines">
-                <field name="line_ids" nolabel="1">
-                    <tree editable="bottom">
-                        <field name="product_id"/>
-                        <field name="quantity"/>
-                    </tree>
-                </field>
-            </page>
-        </notebook>
-    </sheet>
-
-    <!-- Chatter (alternative position) -->
+    <!-- Chatter -->
     <div class="oe_chatter">
-        <field name="message_ids"/>
-        <field name="activity_ids"/>
+      <field name="message_ids" />
+      <field name="activity_ids" />
     </div>
+
+    <!-- Main content -->
+    <group>
+      <group>
+        <field name="name" default_focus="1" placeholder="Record Name" />
+        <field name="code" required="1" />
+      </group>
+      <group>
+        <field name="user_id" />
+        <field name="company_id" />
+      </group>
+    </group>
+
+    <!-- Notebook (tabs) -->
+    <notebook>
+      <page string="Information" name="info">
+        <group>
+          <field name="description" />
+        </group>
+      </page>
+      <page string="Lines" name="lines">
+        <field name="line_ids" nolabel="1">
+          <tree editable="bottom">
+            <field name="product_id" />
+            <field name="quantity" />
+          </tree>
+        </field>
+      </page>
+    </notebook>
+  </sheet>
+
+  <!-- Chatter (alternative position) -->
+  <div class="oe_chatter">
+    <field name="message_ids" />
+    <field name="activity_ids" />
+  </div>
 </form>
 ```
 
@@ -266,7 +279,7 @@ Complete reference for Odoo 18 XML views, actions, menus, and QWeb templates.
 
 ### Field Options
 
-```xml
+````xml
 <!-- Common options -->
 <field name="name" options="{'horizontal': true}"/>  <!-- radio horizontal -->
 <field name="name" options="{'line_breaks': false}"/>  <!-- text widget -->
@@ -292,7 +305,7 @@ Complete reference for Odoo 18 XML views, actions, menus, and QWeb templates.
 <field name="email" attrs="{'required': [('is_company', '=', True)]}"/>
 <field name="code" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
 <button name="action" attrs="{'invisible': [('state', '=', 'done')]}"/>
-```
+````
 
 #### ✅ GOOD: Using Direct Attributes (Odoo 18 syntax)
 
@@ -312,12 +325,12 @@ Complete reference for Odoo 18 XML views, actions, menus, and QWeb templates.
 
 #### Available Dynamic Attributes
 
-| Attribute | Use For | Example |
-|-----------|---------|---------|
-| `invisible` | Hide field/element conditionally | `invisible="state == 'done'"` |
-| `readonly` | Make field read-only conditionally | `readonly="state != 'draft'"` |
-| `required` | Make field required conditionally | `required="is_company"` |
-| `column_invisible` | Hide list column | `column_invisible="True"` |
+| Attribute          | Use For                            | Example                       |
+| ------------------ | ---------------------------------- | ----------------------------- |
+| `invisible`        | Hide field/element conditionally   | `invisible="state == 'done'"` |
+| `readonly`         | Make field read-only conditionally | `readonly="state != 'draft'"` |
+| `required`         | Make field required conditionally  | `required="is_company"`       |
+| `column_invisible` | Hide list column                   | `column_invisible="True"`     |
 
 ### Context / Domain
 
@@ -338,16 +351,16 @@ Complete reference for Odoo 18 XML views, actions, menus, and QWeb templates.
 
 ```xml
 <record id="view_my_model_search" model="ir.ui.view">
-    <field name="name">my.model.search</field>
-    <field name="model">my.model</field>
-    <field name="arch" type="xml">
-        <search string="Search My Model">
-            <field name="name"/>
-            <field name="code"/>
-            <filter string="Active" name="active" domain="[('active', '=', True)]"/>
-            <filter string="Draft" name="draft" domain="[('state', '=', 'draft')]"/>
-        </search>
-    </field>
+  <field name="name">my.model.search</field>
+  <field name="model">my.model</field>
+  <field name="arch" type="xml">
+    <search string="Search My Model">
+      <field name="name" />
+      <field name="code" />
+      <filter string="Active" name="active" domain="[('active', '=', True)]" />
+      <filter string="Draft" name="draft" domain="[('state', '=', 'draft')]" />
+    </search>
+  </field>
 </record>
 ```
 
@@ -355,29 +368,32 @@ Complete reference for Odoo 18 XML views, actions, menus, and QWeb templates.
 
 ```xml
 <search string="Search My Model">
+  <!-- Searchable fields -->
+  <field
+    name="name"
+    filter_domain="['|', ('name', 'ilike', self), ('code', 'ilike', self)]"
+    string="Name"
+  />
+  <field name="partner_id" />
+  <field name="date" />
 
-    <!-- Searchable fields -->
-    <field name="name"
-           filter_domain="['|', ('name', 'ilike', self), ('code', 'ilike', self)]"
-           string="Name"/>
-    <field name="partner_id"/>
-    <field name="date"/>
+  <!-- Filters (saved searches) -->
+  <filter string="My Records" name="my_records" domain="[('user_id', '=', uid)]" />
+  <filter
+    string="This Month"
+    name="this_month"
+    domain="[('date', '>=', (context_today() + relativedelta(day=1)).strftime('%Y-%m-%d'))]"
+  />
 
-    <!-- Filters (saved searches) -->
-    <filter string="My Records" name="my_records"
-            domain="[('user_id', '=', uid)]"/>
-    <filter string="This Month" name="this_month"
-            domain="[('date', '>=', (context_today() + relativedelta(day=1)).strftime('%Y-%m-%d'))]"/>
+  <!-- Separator -->
+  <separator />
 
-    <!-- Separator -->
-    <separator/>
-
-    <!-- Group By -->
-    <group expand="0" string="Group By">
-        <filter string="State" name="state" context="{'group_by': 'state'}"/>
-        <filter string="Partner" name="partner" context="{'group_by': 'partner_id'}"/>
-        <filter string="Date" name="date" context="{'group_by': 'date:month'}"/>
-    </group>
+  <!-- Group By -->
+  <group expand="0" string="Group By">
+    <filter string="State" name="state" context="{'group_by': 'state'}" />
+    <filter string="Partner" name="partner" context="{'group_by': 'partner_id'}" />
+    <filter string="Date" name="date" context="{'group_by': 'date:month'}" />
+  </group>
 </search>
 ```
 
@@ -389,59 +405,62 @@ Complete reference for Odoo 18 XML views, actions, menus, and QWeb templates.
 
 ```xml
 <record id="view_my_model_kanban" model="ir.ui.view">
-    <field name="name">my.model.kanban</field>
-    <field name="model">my.model</field>
-    <field name="arch" type="xml">
-        <kanban default_group_by="state" quick_create="false">
-            <field name="name"/>
-            <field name="state"/>
-            <templates>
-                <t t-name="kanban-box">
-                    <div class="oe_kanban_card">
-                        <field name="name"/>
-                        <field name="state"/>
-                    </div>
-                </t>
-            </templates>
-        </kanban>
-    </field>
+  <field name="name">my.model.kanban</field>
+  <field name="model">my.model</field>
+  <field name="arch" type="xml">
+    <kanban default_group_by="state" quick_create="false">
+      <field name="name" />
+      <field name="state" />
+      <templates>
+        <t t-name="kanban-box">
+          <div class="oe_kanban_card">
+            <field name="name" />
+            <field name="state" />
+          </div>
+        </t>
+      </templates>
+    </kanban>
+  </field>
 </record>
 ```
 
 ### Kanban with Color and Progress
 
 ```xml
-<kanban default_group_by="state"
-       class="o_kanban_small_column"
-       quick_create="true"
-       drag_drop="true"
-       group_drag_drop="true">
+<kanban
+  default_group_by="state"
+  class="o_kanban_small_column"
+  quick_create="true"
+  drag_drop="true"
+  group_drag_drop="true"
+>
+  <field name="name" />
+  <field name="priority" />
+  <field name="color" />
 
-    <field name="name"/>
-    <field name="priority"/>
-    <field name="color"/>
+  <templates>
+    <t t-name="kanban-box">
+      <div t-attf-class="oe_kanban_card oe_kanban_global_click">
+        <div class="oe_kanban_content">
+          <!-- Color bar -->
+          <div
+            class="oe_kanban_card_header"
+            t-attf-style="background-color: #{record.color.raw_value or '#EEE'}"
+          >
+            <field name="name" />
+          </div>
 
-    <templates>
-        <t t-name="kanban-box">
-            <div t-attf-class="oe_kanban_card oe_kanban_global_click">
-                <div class="oe_kanban_content">
-                    <!-- Color bar -->
-                    <div class="oe_kanban_card_header"
-                         t-attf-style="background-color: #{record.color.raw_value or '#EEE'}">
-                        <field name="name"/>
-                    </div>
+          <!-- Priority -->
+          <field name="priority" widget="priority" />
 
-                    <!-- Priority -->
-                    <field name="priority" widget="priority"/>
-
-                    <!-- Footer -->
-                    <div class="oe_kanban_footer">
-                        <field name="date"/>
-                    </div>
-                </div>
-            </div>
-        </t>
-    </templates>
+          <!-- Footer -->
+          <div class="oe_kanban_footer">
+            <field name="date" />
+          </div>
+        </div>
+      </div>
+    </t>
+  </templates>
 </kanban>
 ```
 
@@ -453,19 +472,20 @@ Complete reference for Odoo 18 XML views, actions, menus, and QWeb templates.
 
 ```xml
 <record id="view_my_model_graph" model="ir.ui.view">
-    <field name="name">my.model.graph</field>
-    <field name="model">my.model</field>
-    <field name="arch" type="xml">
-        <graph string="Sales Analysis" type="bar">
-            <field name="date" interval="month" type="row"/>
-            <field name="partner_id" type="col"/>
-            <field name="amount" type="measure"/>
-        </graph>
-    </field>
+  <field name="name">my.model.graph</field>
+  <field name="model">my.model</field>
+  <field name="arch" type="xml">
+    <graph string="Sales Analysis" type="bar">
+      <field name="date" interval="month" type="row" />
+      <field name="partner_id" type="col" />
+      <field name="amount" type="measure" />
+    </graph>
+  </field>
 </record>
 ```
 
 **Graph attributes**:
+
 - `type`: `bar`, `line`, `pie`
 - `stacked`: `true` for stacked charts
 - `interval`: `day`, `week`, `month`, `quarter`, `year`
@@ -474,15 +494,15 @@ Complete reference for Odoo 18 XML views, actions, menus, and QWeb templates.
 
 ```xml
 <record id="view_my_model_pivot" model="ir.ui.view">
-    <field name="name">my.model.pivot</field>
-    <field name="model">my.model</field>
-    <field name="arch" type="xml">
-        <pivot string="Sales Analysis">
-            <field name="date" interval="month" type="row"/>
-            <field name="partner_id" type="col"/>
-            <field name="amount" type="measure"/>
-        </pivot>
-    </field>
+  <field name="name">my.model.pivot</field>
+  <field name="model">my.model</field>
+  <field name="arch" type="xml">
+    <pivot string="Sales Analysis">
+      <field name="date" interval="month" type="row" />
+      <field name="partner_id" type="col" />
+      <field name="amount" type="measure" />
+    </pivot>
+  </field>
 </record>
 ```
 
@@ -492,22 +512,25 @@ Complete reference for Odoo 18 XML views, actions, menus, and QWeb templates.
 
 ```xml
 <record id="view_my_model_calendar" model="ir.ui.view">
-    <field name="name">my.model.calendar</field>
-    <field name="model">my.model</field>
-    <field name="arch" type="xml">
-        <calendar string="My Meetings"
-                  date_start="start"
-                  date_stop="stop"
-                  color="partner_id"
-                  mode="month">
-            <field name="name"/>
-            <field name="partner_id"/>
-        </calendar>
-    </field>
+  <field name="name">my.model.calendar</field>
+  <field name="model">my.model</field>
+  <field name="arch" type="xml">
+    <calendar
+      string="My Meetings"
+      date_start="start"
+      date_stop="stop"
+      color="partner_id"
+      mode="month"
+    >
+      <field name="name" />
+      <field name="partner_id" />
+    </calendar>
+  </field>
 </record>
 ```
 
 **Calendar attributes**:
+
 - `date_start`: Start date field (required)
 - `date_stop`: End date field
 - `date_delay`: Duration alternative to date_stop
@@ -522,19 +545,20 @@ Complete reference for Odoo 18 XML views, actions, menus, and QWeb templates.
 
 ```xml
 <record id="action_my_model" model="ir.actions.act_window">
-    <field name="name">My Model</field>
-    <field name="res_model">my.model</field>
-    <field name="view_mode">tree,form</field>
-    <field name="domain">[]</field>
-    <field name="context">{'search_default_active': 1}</field>
-    <field name="view_id" ref="view_my_model_tree"/>
-    <field name="limit">80</field>
-    <field name="target">current</field>  <!-- or "new" for popup -->
-    <field name="help" type="html">
-        <p class="o_view_nocontent_smiling_face">
+  <field name="name">My Model</field>
+  <field name="res_model">my.model</field>
+  <field name="view_mode">tree,form</field>
+  <field name="domain">[]</field>
+  <field name="context">{'search_default_active': 1}</field>
+  <field name="view_id" ref="view_my_model_tree" />
+  <field name="limit">80</field>
+  <field name="target">current</field>
+  <!-- or "new" for popup -->
+  <field name="help" type="html">
+    <p class="o_view_nocontent_smiling_face">
             Create your first record!
         </p>
-    </field>
+  </field>
 </record>
 ```
 
@@ -542,16 +566,17 @@ Complete reference for Odoo 18 XML views, actions, menus, and QWeb templates.
 
 ```xml
 <record id="action_my_server" model="ir.actions.server">
-    <field name="name">My Server Action</field>
-    <field name="model_id" ref="model_my_model"/>
-    <field name="state">code</field>
-    <field name="code">
+  <field name="name">My Server Action</field>
+  <field name="model_id" ref="model_my_model" />
+  <field name="state">code</field>
+  <field name="code">
         records.action_done()
     </field>
 </record>
 ```
 
 **Server action states**:
+
 - `code`: Execute Python code
 - `object_create`: Create new record
 - `object_write`: Update records
@@ -562,9 +587,10 @@ Complete reference for Odoo 18 XML views, actions, menus, and QWeb templates.
 
 ```xml
 <record id="action_my_client" model="ir.actions.client">
-    <field name="name">My Client Action</field>
-    <field name="tag">reload</field>  <!-- reload, opening, etc. -->
-    <field name="params">{'param': 'value'}</field>
+  <field name="name">My Client Action</field>
+  <field name="tag">reload</field>
+  <!-- reload, opening, etc. -->
+  <field name="params">{'param': 'value'}</field>
 </record>
 ```
 
@@ -572,13 +598,13 @@ Complete reference for Odoo 18 XML views, actions, menus, and QWeb templates.
 
 ```xml
 <record id="report_my_model" model="ir.actions.report">
-    <field name="name">My Report</field>
-    <field name="model">my.model</field>
-    <field name="report_type">qweb-pdf</field>
-    <field name="report_name">my_module.report_template</field>
-    <field name="report_file">my_report</field>
-    <field name="binding_model_id" ref="model_my_model"/>
-    <field name="binding_type">report</field>
+  <field name="name">My Report</field>
+  <field name="model">my.model</field>
+  <field name="report_type">qweb-pdf</field>
+  <field name="report_name">my_module.report_template</field>
+  <field name="report_file">my_report</field>
+  <field name="binding_model_id" ref="model_my_model" />
+  <field name="binding_type">report</field>
 </record>
 ```
 
@@ -610,16 +636,16 @@ Complete reference for Odoo 18 XML views, actions, menus, and QWeb templates.
 
 ### Menu Attributes
 
-| Attribute | Description |
-|-----------|-------------|
-| `id` | Unique XML ID |
-| `name` | Display name |
-| `parent` | Parent menu XML ID |
-| `action` | Action to execute |
+| Attribute  | Description                |
+| ---------- | -------------------------- |
+| `id`       | Unique XML ID              |
+| `name`     | Display name               |
+| `parent`   | Parent menu XML ID         |
+| `action`   | Action to execute          |
 | `sequence` | Sort order (lower = first) |
-| `groups` | Comma-separated group IDs |
-| `web_icon` | Icon for web client |
-| `active` | True/False |
+| `groups`   | Comma-separated group IDs  |
+| `web_icon` | Icon for web client        |
+| `active`   | True/False                 |
 
 ---
 
@@ -629,46 +655,44 @@ Complete reference for Odoo 18 XML views, actions, menus, and QWeb templates.
 
 ```xml
 <record id="view_res_partner_form_inherit" model="ir.ui.view">
-    <field name="name">res.partner.form.inherit</field>
-    <field name="model">res.partner</field>
-    <field name="inherit_id" ref="base.view_partner_form"/>
-    <field name="arch" type="xml">
+  <field name="name">res.partner.form.inherit</field>
+  <field name="model">res.partner</field>
+  <field name="inherit_id" ref="base.view_partner_form" />
+  <field name="arch" type="xml">
+    <!-- Insert after existing field -->
+    <xpath expr="//field[@name='email']" position="after">
+      <field name="my_field" />
+    </xpath>
 
-        <!-- Insert after existing field -->
-        <xpath expr="//field[@name='email']" position="after">
-            <field name="my_field"/>
-        </xpath>
+    <!-- Replace entire element -->
+    <xpath expr="//field[@name='name']" position="replace">
+      <field name="name" required="1" placeholder="Name..." />
+    </xpath>
 
-        <!-- Replace entire element -->
-        <xpath expr="//field[@name='name']" position="replace">
-            <field name="name" required="1" placeholder="Name..."/>
-        </xpath>
+    <!-- Add inside element (before content) -->
+    <xpath expr="//sheet/group" position="inside">
+      <field name="extra_field" />
+    </xpath>
 
-        <!-- Add inside element (before content) -->
-        <xpath expr="//sheet/group" position="inside">
-            <field name="extra_field"/>
-        </xpath>
+    <!-- Add before element -->
+    <xpath expr="//field[@name='email']" position="before">
+      <field name="prefix_field" />
+    </xpath>
 
-        <!-- Add before element -->
-        <xpath expr="//field[@name='email']" position="before">
-            <field name="prefix_field"/>
-        </xpath>
+    <!-- Remove element -->
+    <xpath expr="//field[@name='old_field']" position="replace" />
 
-        <!-- Remove element -->
-        <xpath expr="//field[@name='old_field']" position="replace"/>
+    <!-- Modify attributes -->
+    <xpath expr="//field[@name='name']" position="attributes">
+      <attribute name="required">True</attribute>
+      <attribute name="readonly">True</attribute>
+    </xpath>
 
-        <!-- Modify attributes -->
-        <xpath expr="//field[@name='name']" position="attributes">
-            <attribute name="required">True</attribute>
-            <attribute name="readonly">True</attribute>
-        </xpath>
-
-        <!-- Add attribute -->
-        <xpath expr="//field[@name='name']" position="attributes">
-            <attribute name="placeholder" add="true">Enter name</attribute>
-        </xpath>
-
-    </field>
+    <!-- Add attribute -->
+    <xpath expr="//field[@name='name']" position="attributes">
+      <attribute name="placeholder" add="true">Enter name</attribute>
+    </xpath>
+  </field>
 </record>
 ```
 
@@ -694,137 +718,152 @@ Complete reference for Odoo 18 XML views, actions, menus, and QWeb templates.
 ## Complete Module Example
 
 ```xml
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-    <data>
+  <data>
+    <!-- LIST VIEW -->
+    <record id="view_my_module_list" model="ir.ui.view">
+      <field name="name">my.module.list</field>
+      <field name="model">my.module</field>
+      <field name="arch" type="xml">
+        <list string="My Modules">
+          <field name="name" decoration-success="state == 'done'" />
+          <field name="date" />
+          <field name="state" />
+          <field name="user_id" optional="show" />
+        </list>
+      </field>
+    </record>
 
-        <!-- LIST VIEW -->
-        <record id="view_my_module_list" model="ir.ui.view">
-            <field name="name">my.module.list</field>
-            <field name="model">my.module</field>
-            <field name="arch" type="xml">
-                <list string="My Modules">
-                    <field name="name" decoration-success="state == 'done'"/>
-                    <field name="date"/>
-                    <field name="state"/>
-                    <field name="user_id" optional="show"/>
-                </list>
-            </field>
-        </record>
+    <!-- FORM VIEW -->
+    <record id="view_my_module_form" model="ir.ui.view">
+      <field name="name">my.module.form</field>
+      <field name="model">my.module</field>
+      <field name="arch" type="xml">
+        <form string="My Module" create="true">
+          <sheet>
+            <div class="oe_button_box" name="button_box">
+              <button
+                name="action_confirm"
+                type="object"
+                string="Confirm"
+                class="oe_stat_button"
+                icon="fa-check"
+              />
+            </div>
+            <widget
+              name="web_ribbon"
+              title="Archived"
+              bg_color="text-bg-danger"
+              invisible="active"
+            />
+            <div class="oe_title">
+              <h1>
+                <field name="name" placeholder="Module Name" />
+              </h1>
+            </div>
+            <group>
+              <group>
+                <field name="date" />
+                <field name="user_id" />
+              </group>
+              <group>
+                <field name="state" widget="statusbar" />
+                <field name="priority" widget="priority" />
+              </group>
+            </group>
+            <notebook>
+              <page string="Description">
+                <field name="description" nolabel="1" />
+              </page>
+              <page string="Lines">
+                <field name="line_ids" nolabel="1">
+                  <tree editable="bottom">
+                    <field name="product_id" />
+                    <field name="quantity" />
+                    <field name="price" />
+                  </tree>
+                </field>
+              </page>
+            </notebook>
+          </sheet>
+          <div class="oe_chatter">
+            <field name="message_ids" />
+            <field name="activity_ids" />
+          </div>
+        </form>
+      </field>
+    </record>
 
-        <!-- FORM VIEW -->
-        <record id="view_my_module_form" model="ir.ui.view">
-            <field name="name">my.module.form</field>
-            <field name="model">my.module</field>
-            <field name="arch" type="xml">
-                <form string="My Module" create="true">
-                    <sheet>
-                        <div class="oe_button_box" name="button_box">
-                            <button name="action_confirm" type="object"
-                                    string="Confirm" class="oe_stat_button" icon="fa-check"/>
-                        </div>
-                        <widget name="web_ribbon" title="Archived"
-                                bg_color="text-bg-danger" invisible="active"/>
-                        <div class="oe_title">
-                            <h1>
-                                <field name="name" placeholder="Module Name"/>
-                            </h1>
-                        </div>
-                        <group>
-                            <group>
-                                <field name="date"/>
-                                <field name="user_id"/>
-                            </group>
-                            <group>
-                                <field name="state" widget="statusbar"/>
-                                <field name="priority" widget="priority"/>
-                            </group>
-                        </group>
-                        <notebook>
-                            <page string="Description">
-                                <field name="description" nolabel="1"/>
-                            </page>
-                            <page string="Lines">
-                                <field name="line_ids" nolabel="1">
-                                    <tree editable="bottom">
-                                        <field name="product_id"/>
-                                        <field name="quantity"/>
-                                        <field name="price"/>
-                                    </tree>
-                                </field>
-                            </page>
-                        </notebook>
-                    </sheet>
-                    <div class="oe_chatter">
-                        <field name="message_ids"/>
-                        <field name="activity_ids"/>
-                    </div>
-                </form>
-            </field>
-        </record>
+    <!-- SEARCH VIEW -->
+    <record id="view_my_module_search" model="ir.ui.view">
+      <field name="name">my.module.search</field>
+      <field name="model">my.module</field>
+      <field name="arch" type="xml">
+        <search string="Search My Module">
+          <field
+            name="name"
+            filter_domain="['|', ('name', 'ilike', self), ('code', 'ilike', self)]"
+          />
+          <filter string="My Items" name="my_items" domain="[('user_id', '=', uid)]" />
+          <separator />
+          <filter string="Draft" name="draft" domain="[('state', '=', 'draft')]" />
+          <filter string="Done" name="done" domain="[('state', '=', 'done')]" />
+          <group expand="0" string="Group By">
+            <filter string="State" name="state" context="{'group_by': 'state'}" />
+            <filter string="User" name="user" context="{'group_by': 'user_id'}" />
+          </group>
+        </search>
+      </field>
+    </record>
 
-        <!-- SEARCH VIEW -->
-        <record id="view_my_module_search" model="ir.ui.view">
-            <field name="name">my.module.search</field>
-            <field name="model">my.module</field>
-            <field name="arch" type="xml">
-                <search string="Search My Module">
-                    <field name="name" filter_domain="['|', ('name', 'ilike', self), ('code', 'ilike', self)]"/>
-                    <filter string="My Items" name="my_items" domain="[('user_id', '=', uid)]"/>
-                    <separator/>
-                    <filter string="Draft" name="draft" domain="[('state', '=', 'draft')]"/>
-                    <filter string="Done" name="done" domain="[('state', '=', 'done')]"/>
-                    <group expand="0" string="Group By">
-                        <filter string="State" name="state" context="{'group_by': 'state'}"/>
-                        <filter string="User" name="user" context="{'group_by': 'user_id'}"/>
-                    </group>
-                </search>
-            </field>
-        </record>
+    <!-- KANBAN VIEW -->
+    <record id="view_my_module_kanban" model="ir.ui.view">
+      <field name="name">my.module.kanban</field>
+      <field name="model">my.module</field>
+      <field name="arch" type="xml">
+        <kanban default_group_by="state">
+          <field name="name" />
+          <field name="state" />
+          <templates>
+            <t t-name="kanban-box">
+              <div class="oe_kanban_card">
+                <div class="oe_kanban_content">
+                  <strong>
+                    <field name="name" />
+                  </strong>
+                  <field name="state" />
+                </div>
+              </div>
+            </t>
+          </templates>
+        </kanban>
+      </field>
+    </record>
 
-        <!-- KANBAN VIEW -->
-        <record id="view_my_module_kanban" model="ir.ui.view">
-            <field name="name">my.module.kanban</field>
-            <field name="model">my.module</field>
-            <field name="arch" type="xml">
-                <kanban default_group_by="state">
-                    <field name="name"/>
-                    <field name="state"/>
-                    <templates>
-                        <t t-name="kanban-box">
-                            <div class="oe_kanban_card">
-                                <div class="oe_kanban_content">
-                                    <strong><field name="name"/></strong>
-                                    <field name="state"/>
-                                </div>
-                            </div>
-                        </t>
-                    </templates>
-                </kanban>
-            </field>
-        </record>
-
-        <!-- ACTION -->
-        <record id="action_my_module" model="ir.actions.act_window">
-            <field name="name">My Module</field>
-            <field name="res_model">my.module</field>
-            <field name="view_mode">tree,form,kanban</field>
-            <field name="context">{'search_default_my_items': 1}</field>
-            <field name="help" type="html">
-                <p class="o_view_nocontent_smiling_face">
+    <!-- ACTION -->
+    <record id="action_my_module" model="ir.actions.act_window">
+      <field name="name">My Module</field>
+      <field name="res_model">my.module</field>
+      <field name="view_mode">tree,form,kanban</field>
+      <field name="context">{'search_default_my_items': 1}</field>
+      <field name="help" type="html">
+        <p class="o_view_nocontent_smiling_face">
                     Create your first record!
                 </p>
-            </field>
-        </record>
+      </field>
+    </record>
 
-        <!-- MENU -->
-        <menuitem id="menu_my_root" name="My Module" sequence="50"/>
-        <menuitem id="menu_my_module" name="Records"
-                  parent="menu_my_root"
-                  action="action_my_module"
-                  sequence="1"/>
-
-    </data>
+    <!-- MENU -->
+    <menuitem id="menu_my_root" name="My Module" sequence="50" />
+    <menuitem
+      id="menu_my_module"
+      name="Records"
+      parent="menu_my_root"
+      action="action_my_module"
+      sequence="1"
+    />
+  </data>
 </odoo>
 ```
 
@@ -836,17 +875,17 @@ Complete reference for Odoo 18 XML views, actions, menus, and QWeb templates.
 
 ```xml
 <template id="my_module_template">
-    <div class="my_class">
-        <h1>My Template</h1>
-        <t t-if="records">
-            <t t-foreach="records" t-as="record">
-                <span t-esc="record.name"/>
-            </t>
-        </t>
-        <t t-else="">
-            <p>No records found</p>
-        </t>
-    </div>
+  <div class="my_class">
+    <h1>My Template</h1>
+    <t t-if="records">
+      <t t-foreach="records" t-as="record">
+        <span t-esc="record.name" />
+      </t>
+    </t>
+    <t t-else="">
+      <p>No records found</p>
+    </t>
+  </div>
 </template>
 ```
 
@@ -854,9 +893,9 @@ Complete reference for Odoo 18 XML views, actions, menus, and QWeb templates.
 
 ```xml
 <template id="website_sale_products_inherit" inherit_id="website_sale.products">
-    <xpath expr="//div[@id='products_wrap']" position="inside">
-        <div class="my_extra_content">Extra content</div>
-    </xpath>
+  <xpath expr="//div[@id='products_wrap']" position="inside">
+    <div class="my_extra_content">Extra content</div>
+  </xpath>
 </template>
 ```
 
@@ -884,14 +923,17 @@ Complete reference for Odoo 18 XML views, actions, menus, and QWeb templates.
 <button name="action" invisible="state == 'done'"/>
 ```
 
-**Migration Note**: Replace all `attrs="{'invisible': [...]}"` with `invisible="..."`, `attrs="{'readonly': [...]}"` with `readonly="..."`, and `attrs="{'required': [...]}"` with `required="..."`. The domain syntax inside these attributes is now a Python expression, not a domain tuple list.
+**Migration Note**: Replace all `attrs="{'invisible': [...]}"` with `invisible="..."`,
+`attrs="{'readonly': [...]}"` with `readonly="..."`, and `attrs="{'required': [...]}"`
+with `required="..."`. The domain syntax inside these attributes is now a Python
+expression, not a domain tuple list.
 
 ### ❌ BAD: Using old `<tree>` tag
 
 ```xml
 <!-- Odoo 17- -->
 <tree string="Records">
-    <field name="name"/>
+  <field name="name" />
 </tree>
 ```
 
@@ -900,30 +942,30 @@ Complete reference for Odoo 18 XML views, actions, menus, and QWeb templates.
 ```xml
 <!-- Odoo 18+ -->
 <list string="Records">
-    <field name="name"/>
+  <field name="name" />
 </list>
 ```
 
 ### ❌ BAD: Missing `inverse_name` for One2many
 
 ```xml
-<field name="line_ids" comodel_name="sale.order.line"/>
+<field name="line_ids" comodel_name="sale.order.line" />
 ```
 
 ### ✅ GOOD: Always specify `inverse_name`
 
 ```xml
-<field name="line_ids" comodel_name="sale.order.line" inverse_name="order_id"/>
+<field name="line_ids" comodel_name="sale.order.line" inverse_name="order_id" />
 ```
 
 ### ❌ BAD: Hardcoded domain in view
 
 ```xml
-<field name="partner_id" domain="[('id', '=', 1)]"/>
+<field name="partner_id" domain="[('id', '=', 1)]" />
 ```
 
 ### ✅ GOOD: Use dynamic domain or none
 
 ```xml
-<field name="partner_id" domain="[('supplier_rank', '>', 0)]"/>
+<field name="partner_id" domain="[('supplier_rank', '>', 0)]" />
 ```

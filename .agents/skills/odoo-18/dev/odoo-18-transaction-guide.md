@@ -1,6 +1,8 @@
 ---
 name: odoo-18-transaction
-description: Complete guide for handling database transactions, UniqueViolation errors, savepoints, and commit operations in Odoo 18.
+description:
+  Complete guide for handling database transactions, UniqueViolation errors, savepoints,
+  and commit operations in Odoo 18.
 globs: "**/*.{py,xml}"
 topics:
   - Transaction states and error handling
@@ -18,7 +20,8 @@ when_to_use:
 
 # Odoo 18 Transaction Guide
 
-Complete guide for handling database transactions, UniqueViolation errors, savepoints, and commit operations in Odoo 18.
+Complete guide for handling database transactions, UniqueViolation errors, savepoints,
+and commit operations in Odoo 18.
 
 ## Table of Contents
 
@@ -35,7 +38,8 @@ Complete guide for handling database transactions, UniqueViolation errors, savep
 
 ### PostgreSQL Transaction Isolation
 
-Odoo uses `REPEATABLE READ` isolation level by default (defined in `odoo/sql_db.py:303`):
+Odoo uses `REPEATABLE READ` isolation level by default (defined in
+`odoo/sql_db.py:303`):
 
 ```python
 # From odoo/sql_db.py
@@ -47,6 +51,7 @@ class Cursor(BaseCursor):
 ```
 
 **What this means**:
+
 - Transactions operate on snapshots taken at the first query
 - Concurrent updates are detected and may cause serialization errors
 - Changes from other transactions are not visible during your transaction
@@ -59,7 +64,8 @@ Normal → [Error] → Aborted → [rollback] → Normal
                  [commit] → ERROR! (cannot commit aborted transaction)
 ```
 
-**Key Point**: Once a transaction enters the "aborted" state due to an error, **all subsequent commands will fail** until you execute `ROLLBACK`.
+**Key Point**: Once a transaction enters the "aborted" state due to an error, **all
+subsequent commands will fail** until you execute `ROLLBACK`.
 
 ---
 
@@ -67,7 +73,8 @@ Normal → [Error] → Aborted → [rollback] → Normal
 
 ### What is UniqueViolation?
 
-PostgreSQL error code `23505` (UniqueViolation) occurs when inserting or updating data violates a unique constraint.
+PostgreSQL error code `23505` (UniqueViolation) occurs when inserting or updating data
+violates a unique constraint.
 
 ```python
 # Example: Trying to create a duplicate record
@@ -79,7 +86,8 @@ duplicate = self.create({'email': 'test@example.com'})
 
 ### Odoo's Error Handling
 
-Odoo maps PostgreSQL errors to user-friendly messages via `PGERROR_TO_OE` (defined in `odoo/models.py:7618`):
+Odoo maps PostgreSQL errors to user-friendly messages via `PGERROR_TO_OE` (defined in
+`odoo/models.py:7618`):
 
 ```python
 PGERROR_TO_OE = defaultdict(
@@ -112,7 +120,8 @@ def convert_pgerror_unique(model, fields, info, e):
         constraint, table, ufields = cr_tmp.fetchone() or (None, None, None)
 ```
 
-**Why a new cursor?** The current transaction is in "aborted" state after the error. A new cursor creates a fresh transaction for the error handler.
+**Why a new cursor?** The current transaction is in "aborted" state after the error. A
+new cursor creates a fresh transaction for the error handler.
 
 ### Handling UniqueViolation Correctly
 
@@ -144,7 +153,8 @@ if not existing:
 
 ### What is a Savepoint?
 
-A savepoint creates a nested transaction that can be rolled back without affecting the outer transaction.
+A savepoint creates a nested transaction that can be rolled back without affecting the
+outer transaction.
 
 ```python
 # From odoo/sql_db.py:79
@@ -191,6 +201,7 @@ def savepoint(self, flush=True) -> Savepoint:
 ```
 
 **`flush=True` (default)**: Flushes ORM changes before entering savepoint
+
 ```python
 with self.env.cr.savepoint():  # Equivalent to flush=True
     # All pending ORM changes are written to DB first
@@ -198,13 +209,14 @@ with self.env.cr.savepoint():  # Equivalent to flush=True
 ```
 
 **`flush=False`**: Does NOT flush - changes remain in cache
+
 ```python
 with self.env.cr.savepoint(flush=False):
     # Changes remain in memory, not written yet
     # Useful for schema operations in odoo/tools/sql.py
 ```
 
-### _FlushingSavepoint Behavior
+### \_FlushingSavepoint Behavior
 
 ```python
 # From odoo/sql_db.py:123
@@ -329,6 +341,7 @@ def rollback(self):
 ```
 
 **When to use rollback**:
+
 - After catching critical errors in cron jobs
 - In test cleanup
 - In multi-phase operations where you want to undo everything
@@ -431,7 +444,8 @@ with self.env.cr.savepoint():  # Savepoint A
 
 ### What is Serialization Error?
 
-PostgreSQL error code `40001` (serialization_error) occurs when concurrent transactions conflict:
+PostgreSQL error code `40001` (serialization_error) occurs when concurrent transactions
+conflict:
 
 ```
 ERROR: could not serialize access due to concurrent update
@@ -510,13 +524,13 @@ for amount, ids in value_groups.items():
 
 ### PostgreSQL Error Codes
 
-| Code | Name | Odoo Handler |
-|------|------|--------------|
-| 23502 | NOT NULL violation | `convert_pgerror_not_null` |
-| 23505 | UNIQUE violation | `convert_pgerror_unique` |
-| 23514 | CHECK violation | `convert_pgerror_constraint` |
-| 40001 | Serialization failure | Must retry with retry_on_serializable=True |
-| 25P02 | InFailedSqlTransaction | Must rollback |
+| Code  | Name                   | Odoo Handler                               |
+| ----- | ---------------------- | ------------------------------------------ |
+| 23502 | NOT NULL violation     | `convert_pgerror_not_null`                 |
+| 23505 | UNIQUE violation       | `convert_pgerror_unique`                   |
+| 23514 | CHECK violation        | `convert_pgerror_constraint`               |
+| 40001 | Serialization failure  | Must retry with retry_on_serializable=True |
+| 25P02 | InFailedSqlTransaction | Must rollback                              |
 
 ### Savepoint Decision Tree
 
@@ -637,4 +651,3 @@ def get_aggregated_data(self):
 - `odoo/models.py:7618` - `PGERROR_TO_OE` mapping
 - `odoo/tools/sql.py` - Schema operations with savepoints
 - PostgreSQL Documentation: Transaction Isolation, Error Codes
-

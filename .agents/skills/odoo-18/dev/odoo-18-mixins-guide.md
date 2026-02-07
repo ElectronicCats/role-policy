@@ -1,6 +1,9 @@
 ---
 name: odoo-18-mixins
-description: Complete reference for Odoo 18 mixins and useful classes. Covers mail.thread (messaging, chatter, field tracking), mail.alias.mixin, mail.activity.mixin, utm.mixin, website.published.mixin, website.seo.metadata, and rating.mixin.
+description:
+  Complete reference for Odoo 18 mixins and useful classes. Covers mail.thread
+  (messaging, chatter, field tracking), mail.alias.mixin, mail.activity.mixin,
+  utm.mixin, website.published.mixin, website.seo.metadata, and rating.mixin.
 globs: "**/models/**/*.py"
 topics:
   - mail.thread (messaging, chatter, followers)
@@ -21,7 +24,8 @@ when_to_use:
 
 # Odoo 18 Mixins Guide
 
-Complete reference for Odoo 18 mixins: messaging, email, activities, tracking, website features, and ratings.
+Complete reference for Odoo 18 mixins: messaging, email, activities, tracking, website
+features, and ratings.
 
 ## Table of Contents
 
@@ -39,7 +43,8 @@ Complete reference for Odoo 18 mixins: messaging, email, activities, tracking, w
 
 ### Basic Messaging Integration
 
-The `mail.thread` mixin provides full messaging capabilities: chatter, followers, messages, and field tracking.
+The `mail.thread` mixin provides full messaging capabilities: chatter, followers,
+messages, and field tracking.
 
 #### Minimal Setup
 
@@ -60,31 +65,31 @@ class BusinessTrip(models.Model):
 
 ```xml
 <record id="business_trip_form" model="ir.ui.view">
-    <field name="name">business.trip.form</field>
-    <field name="model">business.trip</field>
-    <field name="arch" type="xml">
-        <form string="Business Trip">
-            <!-- Your fields -->
-            <group>
-                <field name="name"/>
-                <field name="partner_id"/>
-                <field name="guest_ids" widget="many2many_tags"/>
-            </group>
-            <!-- Chatter integration -->
-            <chatter open_attachments="True"/>
-        </form>
-    </field>
+  <field name="name">business.trip.form</field>
+  <field name="model">business.trip</field>
+  <field name="arch" type="xml">
+    <form string="Business Trip">
+      <!-- Your fields -->
+      <group>
+        <field name="name" />
+        <field name="partner_id" />
+        <field name="guest_ids" widget="many2many_tags" />
+      </group>
+      <!-- Chatter integration -->
+      <chatter open_attachments="True" />
+    </form>
+  </field>
 </record>
 ```
 
 #### Chatter Options
 
-| Option | Description |
-|--------|-------------|
-| `open_attachments` | Show attachment section expanded by default |
-| `reload_on_attachment` | Reload form when attachments change |
-| `reload_on_follower` | Reload form when followers change |
-| `reload_on_post` | Reload form when messages posted |
+| Option                 | Description                                 |
+| ---------------------- | ------------------------------------------- |
+| `open_attachments`     | Show attachment section expanded by default |
+| `reload_on_attachment` | Reload form when attachments change         |
+| `reload_on_follower`   | Reload form when followers change           |
+| `reload_on_post`       | Reload form when messages posted            |
 
 ### Field Tracking
 
@@ -203,28 +208,28 @@ Subtypes classify notifications, allowing users to customize what they receive.
 
 ```xml
 <record id="mt_state_change" model="mail.message.subtype">
-    <field name="name">Trip Confirmed</field>
-    <field name="res_model">business.trip</field>
-    <field name="default" eval="True"/>
-    <field name="description">Business Trip confirmed!</field>
-    <field name="internal" eval="False"/>
+  <field name="name">Trip Confirmed</field>
+  <field name="res_model">business.trip</field>
+  <field name="default" eval="True" />
+  <field name="description">Business Trip confirmed!</field>
+  <field name="internal" eval="False" />
 </record>
 ```
 
 #### Subtype Fields
 
-| Field | Description |
-|-------|-------------|
-| `name` | Display name in notification popup |
-| `description` | Message added when posted |
-| `internal` | If `True`, only visible to employees |
-| `parent_id` | Link to parent subtype (for auto-subscription) |
-| `relation_field` | Field linking to parent (e.g., `project_id`) |
-| `res_model` | Model this applies to (`False` = all models) |
-| `default` | Activated by default when subscribing |
-| `hidden` | Hidden in notification customization popup |
+| Field            | Description                                    |
+| ---------------- | ---------------------------------------------- |
+| `name`           | Display name in notification popup             |
+| `description`    | Message added when posted                      |
+| `internal`       | If `True`, only visible to employees           |
+| `parent_id`      | Link to parent subtype (for auto-subscription) |
+| `relation_field` | Field linking to parent (e.g., `project_id`)   |
+| `res_model`      | Model this applies to (`False` = all models)   |
+| `default`        | Activated by default when subscribing          |
+| `hidden`         | Hidden in notification customization popup     |
 
-#### _track_subtype() - Trigger Specific Subtype
+#### \_track_subtype() - Trigger Specific Subtype
 
 ```python
 class BusinessTrip(models.Model):
@@ -245,7 +250,7 @@ class BusinessTrip(models.Model):
 
 ### Customizing Notifications
 
-#### _notify_get_groups() - Custom Action Buttons
+#### \_notify_get_groups() - Custom Action Buttons
 
 ```python
 class BusinessTrip(models.Model):
@@ -276,7 +281,7 @@ class BusinessTrip(models.Model):
         return [new_group] + groups
 ```
 
-#### _notify_get_action_link() - Generate Links
+#### \_notify_get_action_link() - Generate Links
 
 ```python
 # View link
@@ -298,14 +303,14 @@ new_link = self._notify_get_action_link('new', action_id='action_id')
 
 ### Context Keys for Control
 
-| Key | Effect |
-|-----|--------|
-| `mail_create_nosubscribe` | Don't subscribe current user on create |
-| `mail_create_nolog` | Don't log 'Document created' message |
-| `mail_notrack` | Don't perform value tracking |
-| `tracking_disable` | Disable all MailThread features |
-| `mail_auto_delete` | Auto delete notifications (default: `True`) |
-| `mail_notify_force_send` | Send directly if < 50 emails (default: `True`) |
+| Key                       | Effect                                         |
+| ------------------------- | ---------------------------------------------- |
+| `mail_create_nosubscribe` | Don't subscribe current user on create         |
+| `mail_create_nolog`       | Don't log 'Document created' message           |
+| `mail_notrack`            | Don't perform value tracking                   |
+| `tracking_disable`        | Disable all MailThread features                |
+| `mail_auto_delete`        | Auto delete notifications (default: `True`)    |
+| `mail_notify_force_send`  | Send directly if < 50 emails (default: `True`) |
 
 ```python
 # Example: create without auto-subscription
@@ -314,7 +319,7 @@ record = self.env['business.trip'].with_context(
 ).create({'name': 'Trip'})
 ```
 
-### _mail_post_access
+### \_mail_post_access
 
 Control required access rights to post messages:
 
@@ -365,31 +370,31 @@ class BusinessTrip(models.Model):
 
 ```xml
 <page string="Emails">
-    <group name="group_alias">
-        <label for="alias_name" string="Email Alias"/>
-        <div name="alias_def">
-            <field name="alias_id" class="oe_read_only oe_inline" string="Email Alias"/>
-            <div class="oe_edit_only oe_inline" style="display: inline;">
-                <field name="alias_name" class="oe_inline"/>
+  <group name="group_alias">
+    <label for="alias_name" string="Email Alias" />
+    <div name="alias_def">
+      <field name="alias_id" class="oe_read_only oe_inline" string="Email Alias" />
+      <div class="oe_edit_only oe_inline" style="display: inline;">
+                <field name="alias_name" class="oe_inline" />
                 @
-                <field name="alias_domain" class="oe_inline" readonly="1"/>
+                <field name="alias_domain" class="oe_inline" readonly="1" />
             </div>
-        </div>
-        <field name="alias_contact" class="oe_inline" string="Accept Emails From"/>
-    </group>
+    </div>
+    <field name="alias_contact" class="oe_inline" string="Accept Emails From" />
+  </group>
 </page>
 ```
 
 ### Alias Configuration Fields
 
-| Field | Description |
-|-------|-------------|
-| `alias_name` | Email alias name (e.g., 'jobs' for jobs@example.com) |
-| `alias_user_id` | Owner of created records |
-| `alias_defaults` | Python dict of default values |
-| `alias_force_thread_id` | If set, all messages go to this thread |
-| `alias_contact` | Who can post: `everyone`, `partners`, `followers` |
-| `alias_domain` | Email domain (automatic from system) |
+| Field                   | Description                                          |
+| ----------------------- | ---------------------------------------------------- |
+| `alias_name`            | Email alias name (e.g., 'jobs' for jobs@example.com) |
+| `alias_user_id`         | Owner of created records                             |
+| `alias_defaults`        | Python dict of default values                        |
+| `alias_force_thread_id` | If set, all messages go to this thread               |
+| `alias_contact`         | Who can post: `everyone`, `partners`, `followers`    |
+| `alias_domain`          | Email domain (automatic from system)                 |
 
 ### message_new() - Handle Incoming Emails
 
@@ -464,12 +469,12 @@ class BusinessTrip(models.Model):
 
 ```xml
 <form string="Business Trip">
-    <!-- Your fields -->
-    <chatter>
-        <field name="message_follower_ids" widget="mail_followers"/>
-        <field name="activity_ids" widget="mail_activity"/>
-        <field name="message_ids" widget="mail_thread"/>
-    </chatter>
+  <!-- Your fields -->
+  <chatter>
+    <field name="message_follower_ids" widget="mail_followers" />
+    <field name="activity_ids" widget="mail_activity" />
+    <field name="message_ids" widget="mail_thread" />
+  </chatter>
 </form>
 ```
 
@@ -477,16 +482,16 @@ class BusinessTrip(models.Model):
 
 ```xml
 <kanban>
-    <field name="activity_ids"/>
-    <field name="activity_state"/>
-    <templates>
-        <t t-name="kanban-box">
-            <div>
-                <!-- Your content -->
-                <div class="oe_kanban_activity"/>
-            </div>
-        </t>
-    </templates>
+  <field name="activity_ids" />
+  <field name="activity_state" />
+  <templates>
+    <t t-name="kanban-box">
+      <div>
+        <!-- Your content -->
+        <div class="oe_kanban_activity" />
+      </div>
+    </t>
+  </templates>
 </kanban>
 ```
 
@@ -494,11 +499,11 @@ class BusinessTrip(models.Model):
 
 The mixin provides these methods:
 
-| Method | Description |
-|--------|-------------|
-| `activity_schedule()` | Schedule an activity |
-| `activity_unlink()` | Remove activities |
-| `action_feedback()` | Add feedback to activity |
+| Method                | Description              |
+| --------------------- | ------------------------ |
+| `activity_schedule()` | Schedule an activity     |
+| `activity_unlink()`   | Remove activities        |
+| `action_feedback()`   | Add feedback to activity |
 
 ```python
 # Schedule activity
@@ -538,11 +543,11 @@ class Lead(models.Model):
 
 #### Added Fields
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `campaign_id` | Many2one | UTM Campaign (e.g., Christmas_Special) |
-| `source_id` | Many2one | UTM Source (e.g., Search Engine) |
-| `medium_id` | Many2one | UTM Medium (e.g., Email, Social Network) |
+| Field         | Type     | Description                              |
+| ------------- | -------- | ---------------------------------------- |
+| `campaign_id` | Many2one | UTM Campaign (e.g., Christmas_Special)   |
+| `source_id`   | Many2one | UTM Source (e.g., Search Engine)         |
+| `medium_id`   | Many2one | UTM Medium (e.g., Email, Social Network) |
 
 #### How It Works
 
@@ -604,30 +609,39 @@ class BlogPost(models.Model):
 
 #### Added Fields
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `website_published` | Boolean | Publication status |
-| `website_url` | Char | URL to access the record |
+| Field               | Type    | Description              |
+| ------------------- | ------- | ------------------------ |
+| `website_published` | Boolean | Publication status       |
+| `website_url`       | Char    | URL to access the record |
 
 #### Backend Button
 
 ```xml
 <div name="button_box">
-    <button class="oe_stat_button" name="website_publish_button" type="object" icon="fa-globe">
-        <field name="website_published" widget="website_button"/>
-    </button>
+  <button
+    class="oe_stat_button"
+    name="website_publish_button"
+    type="object"
+    icon="fa-globe"
+  >
+    <field name="website_published" widget="website_button" />
+  </button>
 </div>
 ```
 
 #### Frontend Button
 
 ```xml
-<div id="website_published_button" class="float-right" groups="base.group_website_publisher">
-    <t t-call="website.publish_management">
-        <t t-set="object" t-value="blog_post"/>
-        <t t-set="publish_edit" t-value="True"/>
-        <t t-set="action" t-value="'blog.blog_post_action'"/>
-    </t>
+<div
+  id="website_published_button"
+  class="float-right"
+  groups="base.group_website_publisher"
+>
+  <t t-call="website.publish_management">
+    <t t-set="object" t-value="blog_post" />
+    <t t-set="publish_edit" t-value="True" />
+    <t t-set="action" t-value="'blog.blog_post_action'" />
+  </t>
 </div>
 ```
 
@@ -652,11 +666,11 @@ class BlogPost(models.Model):
 
 #### Added Fields
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `website_meta_title` | Char | Additional page title |
-| `website_meta_description` | Char | Short description for search results |
-| `website_meta_keywords` | Char | Keywords for search engine classification |
+| Field                      | Type | Description                               |
+| -------------------------- | ---- | ----------------------------------------- |
+| `website_meta_title`       | Char | Additional page title                     |
+| `website_meta_description` | Char | Short description for search results      |
+| `website_meta_keywords`    | Char | Keywords for search engine classification |
 
 These fields are editable via the "Promote" tool in the website editor.
 
@@ -684,6 +698,7 @@ class ProjectTask(models.Model):
 #### Behavior
 
 The mixin automatically:
+
 - Links `rating.rating` records to `partner_id` field (if exists)
 - Links to `user_id` partner (if exists)
 - Displays rating events in chatter (if inherits `mail.thread`)
@@ -707,12 +722,12 @@ class MyModel(models.Model):
 
 ```xml
 <record id="rating_email_template" model="mail.template">
-    <field name="name">Rating Request</field>
-    <field name="subject">Service Rating</field>
-    <field name="model_id" ref="model_my_model"/>
-    <field name="partner_to">${object.rating_get_partner_id().id}</field>
-    <field name="auto_delete" eval="True"/>
-    <field name="body_html"><![CDATA[
+  <field name="name">Rating Request</field>
+  <field name="subject">Service Rating</field>
+  <field name="model_id" ref="model_my_model" />
+  <field name="partner_to">${object.rating_get_partner_id().id}</field>
+  <field name="auto_delete" eval="True" />
+  <field name="body_html"><![CDATA[
         % set access_token = object.rating_get_access_token()
         <p>How satisfied are you?</p>
         <ul>
@@ -728,10 +743,10 @@ class MyModel(models.Model):
 
 ```xml
 <record id="rating_action" model="ir.actions.act_window">
-    <field name="name">Customer Ratings</field>
-    <field name="res_model">rating.rating</field>
-    <field name="view_mode">kanban,pivot,graph</field>
-    <field name="domain">[
+  <field name="name">Customer Ratings</field>
+  <field name="res_model">rating.rating</field>
+  <field name="view_mode">kanban,pivot,graph</field>
+  <field name="domain">[
         ('res_model', '=', 'my.model'),
         ('res_id', '=', active_id),
         ('consumed', '=', True)
@@ -743,9 +758,14 @@ class MyModel(models.Model):
 
 ```xml
 <xpath expr="//div[@name='button_box']" position="inside">
-    <button name="%(rating_action)d" type="action" class="oe_stat_button" icon="fa-smile-o">
-        <field name="rating_count" string="Rating" widget="statinfo"/>
-    </button>
+  <button
+    name="%(rating_action)d"
+    type="action"
+    class="oe_stat_button"
+    icon="fa-smile-o"
+  >
+    <field name="rating_count" string="Rating" widget="statinfo" />
+  </button>
 </xpath>
 ```
 
@@ -755,15 +775,15 @@ class MyModel(models.Model):
 
 ### Mixin Comparison
 
-| Mixin | Purpose | Key Features |
-|-------|---------|--------------|
-| `mail.thread` | Messaging | Chatter, followers, field tracking |
-| `mail.alias.mixin` | Email | Create records via email |
-| `mail.activity.mixin` | Activities | Schedule activities |
-| `utm.mixin` | Marketing | Campaign tracking |
-| `website.published.mixin` | Website | Publish/unpublish toggle |
-| `website.seo.metadata` | SEO | Meta title, description, keywords |
-| `rating.mixin` | Ratings | Customer feedback system |
+| Mixin                     | Purpose    | Key Features                       |
+| ------------------------- | ---------- | ---------------------------------- |
+| `mail.thread`             | Messaging  | Chatter, followers, field tracking |
+| `mail.alias.mixin`        | Email      | Create records via email           |
+| `mail.activity.mixin`     | Activities | Schedule activities                |
+| `utm.mixin`               | Marketing  | Campaign tracking                  |
+| `website.published.mixin` | Website    | Publish/unpublish toggle           |
+| `website.seo.metadata`    | SEO        | Meta title, description, keywords  |
+| `rating.mixin`            | Ratings    | Customer feedback system           |
 
 ### Common Combinations
 

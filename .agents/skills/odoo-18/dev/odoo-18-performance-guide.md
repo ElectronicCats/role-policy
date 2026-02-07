@@ -1,6 +1,8 @@
 ---
 name: odoo-18-performance
-description: Complete guide for writing performant Odoo 18 code, focusing on N+1 query prevention, batch operations, and optimization patterns.
+description:
+  Complete guide for writing performant Odoo 18 code, focusing on N+1 query prevention,
+  batch operations, and optimization patterns.
 globs: "**/*.{py,xml}"
 topics:
   - Prefetch mechanism (how it works, understanding groups)
@@ -20,7 +22,8 @@ when_to_use:
 
 # Odoo 18 Performance Guide
 
-Complete guide for writing performant Odoo 18 code, focusing on N+1 query prevention and clean patterns.
+Complete guide for writing performant Odoo 18 code, focusing on N+1 query prevention and
+clean patterns.
 
 ## Table of Contents
 
@@ -47,7 +50,9 @@ UPDATE_BATCH_SIZE = 100
 ```
 
 **How it works**:
-1. When you access a field on a recordset, Odoo loads that field for ALL records in the recordset
+
+1. When you access a field on a recordset, Odoo loads that field for ALL records in the
+   recordset
 2. This happens per model, not per relation
 3. Related records are also prefetched up to `PREFETCH_MAX`
 
@@ -289,6 +294,7 @@ def _compute_sequence(self):
 ```
 
 **Warning**: `precompute=True` can be counterproductive for:
+
 - Statistics fields (count, sum over search)
 - Fields that require database reads
 - One-off record creation (not batch)
@@ -333,6 +339,7 @@ def _compute_total(self):
 ### When to Use Direct SQL
 
 **Use SQL for**:
+
 - Complex aggregations (count with grouping)
 - Bulk data migration
 - Reports with joins across many tables
@@ -354,6 +361,7 @@ def get_statistics(self):
 ```
 
 **Use SQL class for safety** (Odoo 18):
+
 ```python
 from odoo.tools import SQL
 
@@ -460,7 +468,8 @@ orders.with_context(tracking_disable=True).write({'state': 'done'})
 - [ ] Add all dependencies to `@api.depends`
 - [ ] Use `with_context(bin_size=True)` for binary fields
 - [ ] Use `with_context(active_test=False)` when including archived
-- [ ] Use `read_group()` for aggregations (prefer over `_read_group()` - it has lazy grouping and metadata)
+- [ ] Use `read_group()` for aggregations (prefer over `_read_group()` - it has lazy
+      grouping and metadata)
 - [ ] Batch create/write/unlink operations
 - [ ] Add indexes on frequently searched fields
 - [ ] Use `filtered()` before operations

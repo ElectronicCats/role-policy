@@ -1,6 +1,10 @@
 ---
 name: odoo-18-translation
-description: Complete guide for Odoo 18 translations and localization. Covers Python translations with _() and _lt(), JavaScript/OWL translations with _t(), QWeb template translations, field translations with translate=True, PO file structure, translation export/import, language management, and translation term loading.
+description:
+  Complete guide for Odoo 18 translations and localization. Covers Python translations
+  with _() and _lt(), JavaScript/OWL translations with _t(), QWeb template translations,
+  field translations with translate=True, PO file structure, translation export/import,
+  language management, and translation term loading.
 globs: "**/*.{py,js,xml}"
 topics:
   - Python translations (_ and _lt)
@@ -23,12 +27,12 @@ Complete guide for translating and localizing Odoo 18 modules.
 
 ## Quick Reference
 
-| Context | Function | Example |
-|---------|----------|---------|
-| Python code | `_()` | `_("Hello World")` |
-| Python module constants | `_lt()` | `TITLE = _lt("Module Title")` |
-| JavaScript/OWL | `_t()` | `_t("Hello World")` |
-| Field definition | `translate=True` | `name = fields.Char(translate=True)` |
+| Context                 | Function         | Example                              |
+| ----------------------- | ---------------- | ------------------------------------ |
+| Python code             | `_()`            | `_("Hello World")`                   |
+| Python module constants | `_lt()`          | `TITLE = _lt("Module Title")`        |
+| JavaScript/OWL          | `_t()`           | `_t("Hello World")`                  |
+| Field definition        | `translate=True` | `name = fields.Char(translate=True)` |
 
 ---
 
@@ -87,6 +91,7 @@ def get_title(self):
 ```
 
 **When to use `_lt()`:**
+
 - Module-level constants
 - Class-level attributes
 - Default values for fields
@@ -126,11 +131,12 @@ class MyModel(models.Model):
 ```
 
 **Storage:** Translations stored as JSONB in database:
+
 ```json
 {
-    "en_US": "Product",
-    "fr_FR": "Produit",
-    "es_ES": "Producto"
+  "en_US": "Product",
+  "fr_FR": "Produit",
+  "es_ES": "Producto"
 }
 ```
 
@@ -183,9 +189,11 @@ record._update_field_translations('name', {
 
 **File:** `odoo/tools/translate.py` (Lines 153-196)
 
-**Translatable Elements:** `span`, `div`, `p`, `h1`-`h6`, `button`, `b`, `i`, `strong`, `em`, `small`, `text`, `option`, etc.
+**Translatable Elements:** `span`, `div`, `p`, `h1`-`h6`, `button`, `b`, `i`, `strong`,
+`em`, `small`, `text`, `option`, etc.
 
-**Translatable Attributes:** `string`, `placeholder`, `title`, `alt`, `help`, `confirm`, `aria-label`, `data-tooltip`, etc.
+**Translatable Attributes:** `string`, `placeholder`, `title`, `alt`, `help`, `confirm`,
+`aria-label`, `data-tooltip`, etc.
 
 ### Basic QWeb Translation
 
@@ -193,19 +201,19 @@ record._update_field_translations('name', {
 <template xml:space="preserve">
     <!-- Text content is automatically translatable -->
     <div>
-        <p>This text will be extracted for translation</p>
-        <h2>Welcome to Odoo</h2>
-    </div>
+    <p>This text will be extracted for translation</p>
+    <h2>Welcome to Odoo</h2>
+  </div>
 
     <!-- Using JavaScript _t in templates -->
-    <span t-esc="_t('Translate me')"/>
+    <span t-esc="_t('Translate me')" />
 
     <!-- String attributes are translatable -->
-    <button string="Click Me"/>
-    <field name="name" string="Name" placeholder="Enter name"/>
+    <button string="Click Me" />
+    <field name="name" string="Name" placeholder="Enter name" />
 
     <!-- Help text -->
-    <field name="email" help="Email address for notifications"/>
+    <field name="email" help="Email address for notifications" />
 </template>
 ```
 
@@ -264,7 +272,7 @@ record._update_field_translations('name', {
 **File:** `addons/web/static/src/core/l10n/translation.js`
 
 ```javascript
-import { _t } from "@web/core/l10n/translation";
+import {_t} from "@web/core/l10n/translation";
 
 // Simple translation
 const message = _t("Good morning");
@@ -274,8 +282,8 @@ const msg = _t("Good morning %s", userName);
 
 // With named arguments
 const formatted = _t("Hello %(name)s, you have %(count)d new messages", {
-    name: user.name,
-    count: messageCount
+  name: user.name,
+  count: messageCount,
 });
 ```
 
@@ -283,25 +291,25 @@ const formatted = _t("Hello %(name)s, you have %(count)d new messages", {
 
 ```javascript
 /** @odoo-module **/
-import { Component, useState } from "@owl/swidget";
-import { _t } from "@web/core/l10n/translation";
+import {Component, useState} from "@owl/swidget";
+import {_t} from "@web/core/l10n/translation";
 
 class MyComponent extends Component {
-    static template = "my_module.MyComponent";
+  static template = "my_module.MyComponent";
 
-    setup() {
-        this.state = useState({
-            title: _t("My Component Title"),
-            message: _t("Loading...")
-        });
-    }
+  setup() {
+    this.state = useState({
+      title: _t("My Component Title"),
+      message: _t("Loading..."),
+    });
+  }
 
-    showMessage() {
-        this.displayNotification({
-            message: _t("Operation completed successfully"),
-            type: 'success',
-        });
-    }
+  showMessage() {
+    this.displayNotification({
+      message: _t("Operation completed successfully"),
+      type: "success",
+    });
+  }
 }
 ```
 
@@ -318,7 +326,7 @@ console.log(`${lazyText}`); // Translated at this point
 ### Translation with Markup
 
 ```javascript
-import { markup } from "@odoo/owl";
+import {markup} from "@odoo/owl";
 
 // HTML-safe markup in translations
 const message = _t("I love %s", markup("<b>Odoo</b>"));
@@ -574,6 +582,7 @@ def print_name(self):
 **Storage:** Loaded from PO files into memory at runtime
 
 **Location in PO file:**
+
 ```po
 #. odoo-python
 #: code:addons/my_module/models.py:42
@@ -588,6 +597,7 @@ msgstr ""
 **Storage:** JSONB in database column
 
 **Example:**
+
 ```python
 name = fields.Char(translate=True)
 # Stored as: {"en_US": "Name", "fr_FR": "Nom"}
@@ -600,6 +610,7 @@ name = fields.Char(translate=True)
 **Storage:** JSONB with individual term translations
 
 **Example:**
+
 ```python
 description = fields.Html(translate=html_translate)
 # Stored as: {"en_US": "<p>Hello</p>", "fr_FR": "<p>Bonjour</p>"}
@@ -766,18 +777,18 @@ def test_translation_loaded(self):
 
 ## Key Files Reference
 
-| Purpose | File |
-|---------|------|
-| Core translation system | `odoo/tools/translate.py` |
-| Field definitions | `odoo/fields.py` |
-| Model translation methods | `odoo/models.py` |
-| Language model | `odoo/addons/base/models/res_lang.py` |
-| JS translation utilities | `addons/web/static/src/core/l10n/translation.js` |
-| Translation web controller | `addons/web/controllers/webclient.py` |
-| Export wizard | `odoo/addons/base/wizard/base_export_language.py` |
-| Import wizard | `odoo/addons/base/wizard/base_import_language.py` |
-| Translation tests | `odoo/addons/base/tests/test_translate.py` |
-| Base translation template | `odoo/addons/base/i18n/base.pot` |
+| Purpose                    | File                                              |
+| -------------------------- | ------------------------------------------------- |
+| Core translation system    | `odoo/tools/translate.py`                         |
+| Field definitions          | `odoo/fields.py`                                  |
+| Model translation methods  | `odoo/models.py`                                  |
+| Language model             | `odoo/addons/base/models/res_lang.py`             |
+| JS translation utilities   | `addons/web/static/src/core/l10n/translation.js`  |
+| Translation web controller | `addons/web/controllers/webclient.py`             |
+| Export wizard              | `odoo/addons/base/wizard/base_export_language.py` |
+| Import wizard              | `odoo/addons/base/wizard/base_import_language.py` |
+| Translation tests          | `odoo/addons/base/tests/test_translate.py`        |
+| Base translation template  | `odoo/addons/base/i18n/base.pot`                  |
 
 ---
 

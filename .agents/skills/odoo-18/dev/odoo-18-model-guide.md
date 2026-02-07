@@ -1,6 +1,9 @@
 ---
 name: odoo-18-model
-description: Complete reference for Odoo 18 ORM model methods, CRUD operations, domain syntax, and recordset handling. Use this guide when writing model methods, ORM queries, search operations, or working with recordsets.
+description:
+  Complete reference for Odoo 18 ORM model methods, CRUD operations, domain syntax, and
+  recordset handling. Use this guide when writing model methods, ORM queries, search
+  operations, or working with recordsets.
 globs: "**/models/**/*.py"
 topics:
   - Recordset basics (browse, exists, empty)
@@ -19,7 +22,8 @@ when_to_use:
 
 # Odoo 18 Model Guide
 
-Complete reference for Odoo 18 ORM model methods, CRUD operations, and recordset handling.
+Complete reference for Odoo 18 ORM model methods, CRUD operations, and recordset
+handling.
 
 ## Table of Contents
 
@@ -49,7 +53,8 @@ empty = self.browse()
 # When accessing fields on related records, they are fetched in batch
 ```
 
-**Important**: `browse()` always returns a recordset, even for IDs that don't exist. Use `.exists()` to filter.
+**Important**: `browse()` always returns a recordset, even for IDs that don't exist. Use
+`.exists()` to filter.
 
 ```python
 records = self.browse([1, 999, 1000])  # 999, 1000 may not exist
@@ -125,7 +130,8 @@ data = self.search_read(
 )
 ```
 
-**Performance**: `search_read()` is more efficient than `search().read()` when you only need specific fields as dicts.
+**Performance**: `search_read()` is more efficient than `search().read()` when you only
+need specific fields as dicts.
 
 ### search_count() - Count Records
 
@@ -179,13 +185,16 @@ records = self.search([('state', '=', 'done')], order='date DESC', limit=10)
 records.fetch(['name', 'amount_total', 'partner_id'])
 ```
 
-**Performance**: `search_fetch()` is optimized to fetch specified fields in the same query as the search, minimizing database round trips. Use when you know exactly which fields you'll need.
+**Performance**: `search_fetch()` is optimized to fetch specified fields in the same
+query as the search, minimizing database round trips. Use when you know exactly which
+fields you'll need.
 
 ---
 
-## _read_group Internal Methods (Odoo 18)
+## \_read_group Internal Methods (Odoo 18)
 
-These internal methods are used by Odoo's ORM and can be extended when overriding `_read_group()`.
+These internal methods are used by Odoo's ORM and can be extended when overriding
+`_read_group()`.
 
 ### READ_GROUP Constants
 
@@ -229,7 +238,7 @@ READ_GROUP_AGGREGATE = {
 <field_name>.<property>:<granularity>  # e.g., "date_deadline:month"
 ```
 
-### _read_group_select (Odoo 18)
+### \_read_group_select (Odoo 18)
 
 Internal method to generate SQL for aggregation.
 
@@ -239,7 +248,7 @@ sql_expr = self._read_group_select('amount:sum', query)
 # Returns: SQL('SUM(%s)', sql_field)
 ```
 
-### _read_group_groupby (Odoo 18)
+### \_read_group_groupby (Odoo 18)
 
 Internal method to generate SQL for groupby.
 
@@ -274,9 +283,11 @@ result = self.read_group(
 # ]
 ```
 
-### _read_group() - Low-Level Internal Method (Odoo 18)
+### \_read_group() - Low-Level Internal Method (Odoo 18)
 
-**IMPORTANT**: `_read_group()` is a **low-level internal method** used by the ORM. It returns raw tuples without `__domain`, `__context`, or `__range` metadata. Prefer using `read_group()` for typical use cases.
+**IMPORTANT**: `_read_group()` is a **low-level internal method** used by the ORM. It
+returns raw tuples without `__domain`, `__context`, or `__range` metadata. Prefer using
+`read_group()` for typical use cases.
 
 ```python
 # Internal use only - returns list of tuples
@@ -289,16 +300,18 @@ rows = self._read_group(
 # Result: [(1, 1500.0), (2, 2000.0), ...] - raw tuples
 ```
 
-**When to use `_read_group`**: Rarely, only for low-level custom SQL aggregation where you don't need the extra metadata that `read_group()` provides.
+**When to use `_read_group`**: Rarely, only for low-level custom SQL aggregation where
+you don't need the extra metadata that `read_group()` provides.
 
-### read_group() vs _read_group()
+### read_group() vs \_read_group()
 
-| Method | Return Type | Has lazy | Has __domain | When to Use |
-|--------|-------------|---------|--------------|-------------|
-| `read_group()` | List of dicts | Yes | Yes | Most cases - calling aggregation from other models |
-| `_read_group()` | List of tuples | No | No | Low-level internal use only |
+| Method          | Return Type    | Has lazy | Has \_\_domain | When to Use                                        |
+| --------------- | -------------- | -------- | -------------- | -------------------------------------------------- |
+| `read_group()`  | List of dicts  | Yes      | Yes            | Most cases - calling aggregation from other models |
+| `_read_group()` | List of tuples | No       | No             | Low-level internal use only                        |
 
 **For extending aggregation behavior**, use these helper methods instead:
+
 - `_read_group_expand_states()` - Expand selection groups
 - `_read_group_select()` - Custom aggregate SQL
 - `_read_group_groupby()` - Custom groupby SQL
@@ -353,6 +366,7 @@ records = self.create([{
 ```
 
 **One2many commands**:
+
 - `(0, 0, {...})` - Create new record
 - `(1, id, {...})` - Update existing record
 - `(2, id, ...)` - Remove record (delete from db)
@@ -375,7 +389,8 @@ data = records.read()
 data = records.read(['name'], load='_classic_read')
 ```
 
-**Note**: Using record.field access is usually more efficient than `read()` for recordsets due to prefetching.
+**Note**: Using record.field access is usually more efficient than `read()` for
+recordsets due to prefetching.
 
 ### write() - Update Records
 
@@ -417,26 +432,26 @@ self.unlink()
 
 ### Basic Operators
 
-| Operator | Description | Example |
-|----------|-------------|---------|
-| `=` | equals | `[('state', '=', 'draft')]` |
-| `!=` | not equals | `[('state', '!=', 'draft')]` |
-| `>` | greater than | `[('amount', '>', 100)]` |
-| `>=` | greater or equal | `[('amount', '>=', 100)]` |
-| `<` | less than | `[('amount', '<', 100)]` |
-| `<=` | less or equal | `[('amount', '<=', 100)]` |
-| `=?` | undefined or equals | `[('partner_id', '=?', user_id)]` |
-| `in` | in list | `[('id', 'in', [1, 2, 3])]` |
-| `not in` | not in list | `[('id', 'not in', [1, 2, 3])]` |
-| `like` | contains (case-sensitive) | `[('name', 'like', 'test')]` |
-| `ilike` | contains (case-insensitive) | `[('name', 'ilike', 'TEST')]` |
-| `not like` | does not contain | `[('name', 'not like', 'test')]` |
-| `=ilike` | contains (case-insensitive, undefined or equals) | `[('name', '=ilike', 'test')]` |
-| `=like` | contains (case-sensitive, undefined or equals) | `[('name', '=like', 'test')]` |
-| `child_of` | is child (in hierarchy) | `[('category_id', 'child_of', category_id)]` |
-| `parent_of` | is parent (in hierarchy) | `[('company_id', 'parent_of', company_id)]` |
-| `any` | any related record matches domain | `[('line_ids', 'any', [('state', '=', 'done')])]` |
-| `not any` | no related record matches domain | `[('line_ids', 'not any', [('state', '=', 'done')])]` |
+| Operator    | Description                                      | Example                                               |
+| ----------- | ------------------------------------------------ | ----------------------------------------------------- |
+| `=`         | equals                                           | `[('state', '=', 'draft')]`                           |
+| `!=`        | not equals                                       | `[('state', '!=', 'draft')]`                          |
+| `>`         | greater than                                     | `[('amount', '>', 100)]`                              |
+| `>=`        | greater or equal                                 | `[('amount', '>=', 100)]`                             |
+| `<`         | less than                                        | `[('amount', '<', 100)]`                              |
+| `<=`        | less or equal                                    | `[('amount', '<=', 100)]`                             |
+| `=?`        | undefined or equals                              | `[('partner_id', '=?', user_id)]`                     |
+| `in`        | in list                                          | `[('id', 'in', [1, 2, 3])]`                           |
+| `not in`    | not in list                                      | `[('id', 'not in', [1, 2, 3])]`                       |
+| `like`      | contains (case-sensitive)                        | `[('name', 'like', 'test')]`                          |
+| `ilike`     | contains (case-insensitive)                      | `[('name', 'ilike', 'TEST')]`                         |
+| `not like`  | does not contain                                 | `[('name', 'not like', 'test')]`                      |
+| `=ilike`    | contains (case-insensitive, undefined or equals) | `[('name', '=ilike', 'test')]`                        |
+| `=like`     | contains (case-sensitive, undefined or equals)   | `[('name', '=like', 'test')]`                         |
+| `child_of`  | is child (in hierarchy)                          | `[('category_id', 'child_of', category_id)]`          |
+| `parent_of` | is parent (in hierarchy)                         | `[('company_id', 'parent_of', company_id)]`           |
+| `any`       | any related record matches domain                | `[('line_ids', 'any', [('state', '=', 'done')])]`     |
+| `not any`   | no related record matches domain                 | `[('line_ids', 'not any', [('state', '=', 'done')])]` |
 
 ### Logical Operators
 
@@ -499,7 +514,8 @@ domain = [
 ]
 ```
 
-**Important**: `any` and `not any` work with `Many2one`, `One2many`, and `Many2many` fields to check if ANY/NO related record satisfies the given domain.
+**Important**: `any` and `not any` work with `Many2one`, `One2many`, and `Many2many`
+fields to check if ANY/NO related record satisfies the given domain.
 
 ### Date Field Granularities (Odoo 18)
 
@@ -527,20 +543,21 @@ result = self.read_group(
 
 **Supported Date Granularities**:
 
-| Granularity | Type | Use Case |
-|-------------|------|----------|
-| `year_number` | Integer | Year number (2024, 2025, ...) |
-| `quarter_number` | Integer | Quarter number (1-4) |
-| `month_number` | Integer | Month number (1-12) |
-| `iso_week_number` | Integer | ISO week number (1-53) |
-| `day_of_year` | Integer | Day of year (1-366) |
-| `day_of_month` | Integer | Day of month (1-31) |
-| `day_of_week` | Integer | Day of week (0=Mon, 6=Sun) |
-| `hour_number` | Integer | Hour (0-23) |
-| `minute_number` | Integer | Minute (0-59) |
-| `second_number` | Integer | Second (0-59) |
+| Granularity       | Type    | Use Case                      |
+| ----------------- | ------- | ----------------------------- |
+| `year_number`     | Integer | Year number (2024, 2025, ...) |
+| `quarter_number`  | Integer | Quarter number (1-4)          |
+| `month_number`    | Integer | Month number (1-12)           |
+| `iso_week_number` | Integer | ISO week number (1-53)        |
+| `day_of_year`     | Integer | Day of year (1-366)           |
+| `day_of_month`    | Integer | Day of month (1-31)           |
+| `day_of_week`     | Integer | Day of week (0=Mon, 6=Sun)    |
+| `hour_number`     | Integer | Hour (0-23)                   |
+| `minute_number`   | Integer | Minute (0-59)                 |
+| `second_number`   | Integer | Second (0-59)                 |
 
-**Note**: For `read_group`, you can use `day`, `week`, `month`, `quarter`, `year`, `hour` which truncate the date to that granularity.
+**Note**: For `read_group`, you can use `day`, `week`, `month`, `quarter`, `year`,
+`hour` which truncate the date to that granularity.
 
 ---
 
@@ -759,13 +776,13 @@ sorted_records = records.sorted()  # Uses model's _order
 
 ### Method Comparison
 
-| Method | Returns | Use Case |
-|--------|---------|----------|
-| `mapped()` | list or recordset | Extract values from all records |
-| `filtered()` | recordset | Keep records matching condition |
-| `filtered_domain()` | recordset | Filter by domain (keeps order) |
-| `grouped()` | dict | Group by key (no aggregation) |
-| `sorted()` | recordset | Sort records by key |
+| Method              | Returns           | Use Case                        |
+| ------------------- | ----------------- | ------------------------------- |
+| `mapped()`          | list or recordset | Extract values from all records |
+| `filtered()`        | recordset         | Keep records matching condition |
+| `filtered_domain()` | recordset         | Filter by domain (keeps order)  |
+| `grouped()`         | dict              | Group by key (no aggregation)   |
+| `sorted()`          | recordset         | Sort records by key             |
 
 ---
 
@@ -866,7 +883,7 @@ records = self.search(domain, order='date DESC')
 
 ## Advanced Model Attributes (Odoo 18)
 
-### _check_company_auto - Automatic Company Consistency
+### \_check_company_auto - Automatic Company Consistency
 
 ```python
 class MyModel(models.Model):
@@ -881,12 +898,13 @@ class MyModel(models.Model):
 ```
 
 **Behavior**:
+
 - Automatically calls `_check_company()` on `create()` and `write()`
 - Ensures relational fields with `check_company=True` have consistent companies
 - Prevents records from linking to companies incompatible with their own company
 - Use in multi-company environments to maintain data integrity
 
-### _parent_store - Hierarchical Tree Optimization
+### \_parent_store - Hierarchical Tree Optimization
 
 ```python
 class Category(models.Model):
@@ -900,6 +918,7 @@ class Category(models.Model):
 ```
 
 **Behavior**:
+
 - Computes and stores `parent_path` field for efficient tree queries
 - Enables fast `child_of` and `parent_of` domain operators
 - Automatically maintained when records are created/updated
@@ -907,21 +926,23 @@ class Category(models.Model):
 - Requires `parent_path` field with `index=True`
 
 **Benefits**:
+
 - Tree queries are much faster with `parent_path` than recursive queries
 - No need for recursive SQL queries
 - `child_of` and `parent_of` operators become efficient
 
-**Note**: `_parent_store` requires a properly configured `parent_id` field and `parent_path` field.
+**Note**: `_parent_store` requires a properly configured `parent_id` field and
+`parent_path` field.
 
 ### Model Attribute Reference
 
-| Attribute | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `_check_company_auto` | bool | `False` | Auto-check company consistency on write/create |
-| `_parent_name` | str | `'parent_id'` | Field to use as parent in hierarchy |
-| `_parent_store` | bool | `False` | Enable parent_path for fast tree queries |
-| `_fold_name` | str | `'fold'` | Field to determine folded groups in kanban |
-| `_order` | str | `'id'` | Default order for search results |
-| `_rec_name` | str | `'name'` | Field to use for display name |
-| `_sequence` | int | auto | Sequence number for model ordering |
-| `_register` | bool | `False` | Registry visibility (set to False for abstract classes) |
+| Attribute             | Type | Default       | Description                                             |
+| --------------------- | ---- | ------------- | ------------------------------------------------------- |
+| `_check_company_auto` | bool | `False`       | Auto-check company consistency on write/create          |
+| `_parent_name`        | str  | `'parent_id'` | Field to use as parent in hierarchy                     |
+| `_parent_store`       | bool | `False`       | Enable parent_path for fast tree queries                |
+| `_fold_name`          | str  | `'fold'`      | Field to determine folded groups in kanban              |
+| `_order`              | str  | `'id'`        | Default order for search results                        |
+| `_rec_name`           | str  | `'name'`      | Field to use for display name                           |
+| `_sequence`           | int  | auto          | Sequence number for model ordering                      |
+| `_register`           | bool | `False`       | Registry visibility (set to False for abstract classes) |

@@ -1,6 +1,9 @@
 ---
 name: odoo-18-manifest
-description: Complete reference for Odoo 18 module manifest (__manifest__.py) covering all fields, dependencies, assets, external dependencies, hooks, auto_install, and module structure.
+description:
+  Complete reference for Odoo 18 module manifest (__manifest__.py) covering all fields,
+  dependencies, assets, external dependencies, hooks, auto_install, and module
+  structure.
 globs: "**/__manifest__.py"
 topics:
   - All __manifest__.py fields
@@ -21,7 +24,8 @@ when_to_use:
 
 # Odoo 18 Module Manifest Guide
 
-Complete reference for Odoo 18 `__manifest__.py`: all fields, dependencies, assets, hooks, and configuration.
+Complete reference for Odoo 18 `__manifest__.py`: all fields, dependencies, assets,
+hooks, and configuration.
 
 ## Table of Contents
 
@@ -92,18 +96,18 @@ my_module/
 
 Only `name` is truly required, but `version` and `depends` should always be specified.
 
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `name` | str | - | Human-readable module name (required) |
-| `version` | str | - | Module version (should use semantic versioning) |
-| `description` | str | - | Extended description in RST |
-| `author` | str | - | Module author name |
-| `website` | str | - | Author website URL |
-| `license` | str | LGPL-3 | Distribution license |
-| `category` | str | Uncategorized | Module category |
-| `depends` | list(str) | - | Required modules |
-| `data` | list(str) | - | Data files to load |
-| `installable` | bool | True | Whether module can be installed |
+| Field         | Type      | Default       | Description                                     |
+| ------------- | --------- | ------------- | ----------------------------------------------- |
+| `name`        | str       | -             | Human-readable module name (required)           |
+| `version`     | str       | -             | Module version (should use semantic versioning) |
+| `description` | str       | -             | Extended description in RST                     |
+| `author`      | str       | -             | Module author name                              |
+| `website`     | str       | -             | Author website URL                              |
+| `license`     | str       | LGPL-3        | Distribution license                            |
+| `category`    | str       | Uncategorized | Module category                                 |
+| `depends`     | list(str) | -             | Required modules                                |
+| `data`        | list(str) | -             | Data files to load                              |
+| `installable` | bool      | True          | Whether module can be installed                 |
 
 ### name (Required)
 
@@ -120,8 +124,10 @@ The display name shown in Apps menu.
 ```
 
 Should follow [semantic versioning](https://semver.org):
+
 - `MAJOR.MINOR.PATCH`
-- Increment: MAJOR for incompatible changes, MINOR for backwards-compatible features, PATCH for bug fixes
+- Increment: MAJOR for incompatible changes, MINOR for backwards-compatible features,
+  PATCH for bug fixes
 
 ```python
 # Examples
@@ -173,18 +179,18 @@ Can be person name, company name, or both:
 
 Valid values:
 
-| License | Description |
-|---------|-------------|
-| `LGPL-3` | GNU Lesser General Public License v3 (default) |
-| `GPL-2` | GNU General Public License v2 |
-| `GPL-3` | GNU General Public License v3 |
-| `GPL-2 or any later version` | GPL v2 or later |
-| `GPL-3 or any later version` | GPL v3 or later |
-| `AGPL-3` | GNU Affero General Public License v3 |
-| `OEEL-1` | Odoo Enterprise Edition License v1.0 |
-| `OPL-1` | Odoo Proprietary License v1.0 |
-| `Other OSI approved licence` | Other OSI-approved license |
-| `Other proprietary` | Proprietary license |
+| License                      | Description                                    |
+| ---------------------------- | ---------------------------------------------- |
+| `LGPL-3`                     | GNU Lesser General Public License v3 (default) |
+| `GPL-2`                      | GNU General Public License v2                  |
+| `GPL-3`                      | GNU General Public License v3                  |
+| `GPL-2 or any later version` | GPL v2 or later                                |
+| `GPL-3 or any later version` | GPL v3 or later                                |
+| `AGPL-3`                     | GNU Affero General Public License v3           |
+| `OEEL-1`                     | Odoo Enterprise Edition License v1.0           |
+| `OPL-1`                      | Odoo Proprietary License v1.0                  |
+| `Other OSI approved licence` | Other OSI-approved license                     |
+| `Other proprietary`          | Proprietary license                            |
 
 ### category
 
@@ -194,22 +200,22 @@ Valid values:
 
 Common categories (use existing when possible):
 
-| Category |
-|----------|
-| Accounting |
-| Discussion |
+| Category            |
+| ------------------- |
+| Accounting          |
+| Discussion          |
 | Document Management |
-| eCommerce |
-| Human Resources |
-| Marketing |
-| Manufacturing |
-| Point of Sale |
-| Project |
-| Purchases |
-| Sales |
-| Tools |
-| Warehouse |
-| Website |
+| eCommerce           |
+| Human Resources     |
+| Marketing           |
+| Manufacturing       |
+| Point of Sale       |
+| Project             |
+| Purchases           |
+| Sales               |
+| Tools               |
+| Warehouse           |
+| Website             |
 
 Custom categories with hierarchy:
 
@@ -327,9 +333,9 @@ Files loaded **only in demo mode**.
 
 ### data vs demo
 
-| Type | When Loaded |
-|------|-------------|
-| `data` | Install and update |
+| Type   | When Loaded                      |
+| ------ | -------------------------------- |
+| `data` | Install and update               |
 | `demo` | Only in demo mode (install only) |
 
 ### File Paths
@@ -367,12 +373,12 @@ Paths are relative to module root:
 
 ### Asset Bundles
 
-| Bundle | Description |
-|--------|-------------|
-| `web.assets_frontend` | Website frontend assets |
-| `web.assets_backend` | Backend interface assets |
-| `web.assets_tests` | Test assets |
-| `web.assets_common` | Common assets (rarely used) |
+| Bundle                | Description                 |
+| --------------------- | --------------------------- |
+| `web.assets_frontend` | Website frontend assets     |
+| `web.assets_backend`  | Backend interface assets    |
+| `web.assets_tests`    | Test assets                 |
+| `web.assets_common`   | Common assets (rarely used) |
 
 ### Asset Paths
 

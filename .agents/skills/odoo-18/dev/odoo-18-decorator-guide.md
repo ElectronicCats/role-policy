@@ -1,6 +1,9 @@
 ---
 name: odoo-18-decorator
-description: "Complete reference for Odoo 18 API decorators (@api.model, @api.depends, @api.constrains, @api.onchange, @api.ondelete, @api.returns) and their proper usage patterns."
+description:
+  "Complete reference for Odoo 18 API decorators (@api.model, @api.depends,
+  @api.constrains, @api.onchange, @api.ondelete, @api.returns) and their proper usage
+  patterns."
 globs: "**/models/**/*.py"
 topics:
   - api.model (model-level methods)
@@ -37,7 +40,8 @@ Complete reference for Odoo 18 API decorators and their proper usage.
 
 ## @api.model
 
-**Purpose**: Decorate methods where `self` is a recordset, but the actual records don't matter - only the model class.
+**Purpose**: Decorate methods where `self` is a recordset, but the actual records don't
+matter - only the model class.
 
 ```python
 from odoo import api, models
@@ -61,11 +65,13 @@ class SaleOrder(models.Model):
 ```
 
 **When to use**:
+
 - Factory methods that create records
 - Methods that don't depend on `self` content
 - Utility methods for the model
 
 **Common pattern** - Default value callable:
+
 ```python
 partner_id = fields.Many2one(
     'res.partner',
@@ -82,7 +88,8 @@ def _default_partner_id(self):
 
 ## @api.depends
 
-**Purpose**: Declare dependencies for computed fields. The method is re-computed when any dependency changes.
+**Purpose**: Declare dependencies for computed fields. The method is re-computed when
+any dependency changes.
 
 ```python
 from odoo import api, fields, models
@@ -112,6 +119,7 @@ class SaleOrder(models.Model):
 ```
 
 **Relational field dependencies**:
+
 ```python
 @api.depends('partner_id.name', 'partner_id.email')
 def _compute_partner_display(self):
@@ -123,6 +131,7 @@ def _compute_partner_display(self):
 ```
 
 **One2many traversal**:
+
 ```python
 @api.depends('line_ids.price_subtotal')
 def _compute_amount_total(self):
@@ -131,6 +140,7 @@ def _compute_amount_total(self):
 ```
 
 **Nested dependencies**:
+
 ```python
 @api.depends('line_ids.product_id.list_price')
 def _compute_max_price(self):
@@ -140,6 +150,7 @@ def _compute_max_price(self):
 ```
 
 **Important rules**:
+
 1. **Cannot depend on `id`** - use `depends_context('uid')` instead
 2. **Must list all dependencies** - missed dependencies cause stale values
 3. **Dot notation for relations** - `partner_id.name` not just `partner_id`
@@ -149,7 +160,8 @@ def _compute_max_price(self):
 
 ## @api.depends_context
 
-**Purpose**: Make computed field depend on context values. Field recomputed when context changes.
+**Purpose**: Make computed field depend on context values. Field recomputed when context
+changes.
 
 ```python
 from odoo import api, fields, models
@@ -176,6 +188,7 @@ class ProductProduct(models.Model):
 ```
 
 **Built-in context keys**:
+
 ```python
 # Company context
 @api.depends_context('company')
@@ -202,6 +215,7 @@ def _compute_all_records(self):
 ```
 
 **Custom context keys**:
+
 ```python
 @api.depends_context('show_prices')
 def _compute_display_price(self):
@@ -242,6 +256,7 @@ class SaleOrder(models.Model):
 ```
 
 **Validation with relational fields**:
+
 ```python
 @api.constrains('line_ids')
 def _check_lines(self):
@@ -256,11 +271,14 @@ def _check_lines(self):
 ```
 
 **Limitations**:
+
 1. **No dotted paths** - `partner_id.name` won't work
 2. **Must use simple field names** - only direct fields on the model
-3. **Only triggers on included fields** - if field not in create/write, constraint won't run
+3. **Only triggers on included fields** - if field not in create/write, constraint won't
+   run
 
 **Workaround for full validation**:
+
 ```python
 # Override create/write to ensure constraints always run
 @api.model_create_multi
@@ -302,6 +320,7 @@ class SaleOrderLine(models.Model):
 ```
 
 **Return warning/notification**:
+
 ```python
 @api.onchange('discount')
 def _onchange_discount(self):
@@ -316,6 +335,7 @@ def _onchange_discount(self):
 ```
 
 **Update domain**:
+
 ```python
 @api.onchange('partner_id')
 def _onchange_partner_id(self):
@@ -331,11 +351,13 @@ def _onchange_partner_id(self):
 ```
 
 **Limitations**:
+
 1. **No CRUD operations** - cannot call `create()`, `read()`, `write()`, `unlink()`
 2. **Only simple field names** - dotted paths not supported
 3. **Pseudo-record** - `self` is a single pseudo-record, not saved to DB
 
 **Correct pattern**:
+
 ```python
 # GOOD: Set field values
 @api.onchange('partner_id')
@@ -381,12 +403,13 @@ class SaleOrder(models.Model):
 
 **`at_uninstall` parameter**:
 
-| Value | Behavior |
-|-------|----------|
+| Value             | Behavior                                                  |
+| ----------------- | --------------------------------------------------------- |
 | `False` (default) | Check runs during normal use, NOT during module uninstall |
-| `True` | Check runs always, including during module uninstall |
+| `True`            | Check runs always, including during module uninstall      |
 
 **When to use `at_uninstall=True`**:
+
 - System-critical data (default language, main company)
 - Data that would break basic functionality if deleted
 
@@ -399,6 +422,7 @@ def _unlink_if_default_language(self):
 ```
 
 **Why not override `unlink()`?**:
+
 - Overriding `unlink()` breaks module uninstallation
 - `@api.ondelete` is smart about module lifecycle
 - Prevents leftover data after uninstall
@@ -427,6 +451,7 @@ class SaleOrder(models.Model):
 ```
 
 **Common usage in Odoo base**:
+
 ```python
 # Many methods use @api.returns
 @api.returns('mail.message', lambda value: value.id)
@@ -482,7 +507,8 @@ def _check_code_format(self):
 
 ## @api.model_create_multi (Odoo 18)
 
-**Purpose**: Decorate batch create method. The method expects a list of dicts and can be called with either a single dict or a list.
+**Purpose**: Decorate batch create method. The method expects a list of dicts and can be
+called with either a single dict or a list.
 
 ```python
 from odoo import api
@@ -508,7 +534,8 @@ def create(self, vals_list):
 # records = model.create([{'name': 'A'}, ...]) # List of dicts
 ```
 
-**Note**: If you override `create()` without `@api.model_create_multi`, Odoo 18 will show a deprecation warning.
+**Note**: If you override `create()` without `@api.model_create_multi`, Odoo 18 will
+show a deprecation warning.
 
 ---
 
@@ -540,13 +567,15 @@ def _internal_method(self):
     pass
 ```
 
-**Best practice**: Prefix business methods that should not be called over RPC with `_` instead of using this decorator.
+**Best practice**: Prefix business methods that should not be called over RPC with `_`
+instead of using this decorator.
 
 ---
 
 ## @api.autovacuum
 
-**Purpose**: Decorate a method to be called by the daily vacuum cron job (model `ir.autovacuum`).
+**Purpose**: Decorate a method to be called by the daily vacuum cron job (model
+`ir.autovacuum`).
 
 ```python
 @api.autovacuum
@@ -557,6 +586,7 @@ def _gc_expired_records(self):
 ```
 
 **Requirements**:
+
 - Method name must start with `_` (private)
 - Use for garbage-collection-like tasks that don't deserve a specific cron job
 
@@ -564,19 +594,19 @@ def _gc_expired_records(self):
 
 ## All API Decorators Reference
 
-| Decorator | Purpose | Odoo Version |
-|----------|---------|--------------|
-| `@api.model` | Model-level method (self not relevant) | All |
-| `@api.depends` | Computed field dependencies | All |
-| `@api.depends_context` | Context dependencies | All |
-| `@api.constrains` | Data validation | All |
-| `@api.onchange` | Form UI updates | All |
-| `@api.ondelete` | Delete validation (Odoo 18) | **18+** |
-| `@api.returns` | Return type specification | All |
-| `@api.model_create_multi` | Batch create | **18+** |
-| `@api.readonly` | Readonly cursor | **18+** |
-| `@api.private` | Non-RPC callable | **18+** |
-| `@api.autovacuum` | Daily vacuum job | **18+** |
+| Decorator                 | Purpose                                | Odoo Version |
+| ------------------------- | -------------------------------------- | ------------ |
+| `@api.model`              | Model-level method (self not relevant) | All          |
+| `@api.depends`            | Computed field dependencies            | All          |
+| `@api.depends_context`    | Context dependencies                   | All          |
+| `@api.constrains`         | Data validation                        | All          |
+| `@api.onchange`           | Form UI updates                        | All          |
+| `@api.ondelete`           | Delete validation (Odoo 18)            | **18+**      |
+| `@api.returns`            | Return type specification              | All          |
+| `@api.model_create_multi` | Batch create                           | **18+**      |
+| `@api.readonly`           | Readonly cursor                        | **18+**      |
+| `@api.private`            | Non-RPC callable                       | **18+**      |
+| `@api.autovacuum`         | Daily vacuum job                       | **18+**      |
 
 ---
 
