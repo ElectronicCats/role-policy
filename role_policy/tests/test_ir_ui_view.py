@@ -164,13 +164,13 @@ class TestIrUiView(RolePolicyTestCommon):
         """Verify groups are stripped from <page> container elements too."""
         view = self.env["ir.ui.view"]
         arch = etree.fromstring(
-            '<form>'
-            '<notebook>'
+            "<form>"
+            "<notebook>"
             '<page name="sales" groups="sales_team.group_sale_manager">'
             '<field name="name"/>'
-            '</page>'
-            '</notebook>'
-            '</form>'
+            "</page>"
+            "</notebook>"
+            "</form>"
         )
         view._remove_security_groups(arch)
         page = arch.xpath('//page[@name="sales"]')[0]
@@ -184,11 +184,11 @@ class TestIrUiView(RolePolicyTestCommon):
         """Verify groups are stripped from <group> elements."""
         view = self.env["ir.ui.view"]
         arch = etree.fromstring(
-            '<form>'
+            "<form>"
             '<group name="grp1" groups="account.group_account_invoice">'
             '<field name="name"/>'
-            '</group>'
-            '</form>'
+            "</group>"
+            "</form>"
         )
         view._remove_security_groups(arch)
         grp = arch.xpath('//group[@name="grp1"]')[0]
@@ -198,9 +198,9 @@ class TestIrUiView(RolePolicyTestCommon):
         """Verify multiple untouchable groups are all preserved."""
         view = self.env["ir.ui.view"]
         arch = etree.fromstring(
-            '<form>'
+            "<form>"
             '<field name="test" groups="base.group_no_one,base.group_system"/>'
-            '</form>'
+            "</form>"
         )
         view._remove_security_groups(arch)
         field = arch.xpath('//field[@name="test"]')[0]
@@ -212,9 +212,9 @@ class TestIrUiView(RolePolicyTestCommon):
         """Verify groups are stripped from buttons."""
         view = self.env["ir.ui.view"]
         arch = etree.fromstring(
-            '<form>'
+            "<form>"
             '<button name="action" groups="sales_team.group_sale_manager"/>'
-            '</form>'
+            "</form>"
         )
         view._remove_security_groups(arch)
         btn = arch.xpath("//button")[0]
@@ -224,13 +224,13 @@ class TestIrUiView(RolePolicyTestCommon):
         """Verify that removing a roles-gated element also removes children."""
         view = self.env["ir.ui.view"]
         arch = etree.fromstring(
-            '<form>'
+            "<form>"
             '<group roles="NONEXISTENT">'
             '<field name="name"/>'
             '<field name="email"/>'
-            '</group>'
+            "</group>"
             '<field name="phone"/>'
-            '</form>'
+            "</form>"
         )
         view.with_user(self.test_user)._handle_roles(arch)
         # The entire group and its children should be gone

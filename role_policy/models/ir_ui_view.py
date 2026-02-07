@@ -6,7 +6,6 @@ import logging
 from lxml import etree
 from odoo import _, api, models
 from odoo.exceptions import UserError
-from odoo.tools import safe_eval
 from odoo.tools.template_inheritance import locate_node
 
 _logger = logging.getLogger(__name__)
@@ -30,34 +29,6 @@ class IrUiView(models.Model):
                 return True
         return super().write(vals)
 
-    def read_combined(self, fields=None):
-        res = super().read_combined(fields=fields)
-        if self.env.user.exclude_from_role_policy:
-            return res
-        res["arch"] = self._remove_xml_comments(res["arch"])
-        res["arch"] = self._apply_view_type_attribute_rules(res["arch"])
-        archs = [(res["arch"], self.id)]
-        archs = self._apply_view_modifier_remove_rules(self.model, archs)
-        archs = self._apply_view_modifier_rules(self.model, archs)
-        if archs:
-            arch_node = etree.fromstring(archs[0][0])
-            self._remove_security_groups(arch_node)
-            self._handle_roles(arch_node)
-            arch = etree.tostring(arch_node, encoding="unicode")
-        else:
-            arch = self._no_access_view_arch(res)
-        res["arch"] = arch
-        return res
-
-    @api.model
-    def get_inheriting_views_arch(self, view_id, model):
-        archs = super().get_inheriting_views_arch(view_id, model)
-        if self.env.user.exclude_from_role_policy:
-            return archs
-        archs = self._apply_view_modifier_remove_rules(model, archs)
-        archs = self._apply_view_modifier_rules(model, archs)
-        return archs
-
     def _remove_xml_comments(self, arch):
         if "<!--" in arch:
             s0, s1 = arch.split("<!--", 1)
@@ -72,7 +43,7 @@ class IrUiView(models.Model):
         if vta_rules:
             [arch_node.set(r.attrib, r.attrib_val) for r in vta_rules]
 
-        if not self.env.is_admin():
+        if not self.env.user.exclude_from_role_policy:
             operations = self.env["view.model.operation"]._operations_dict()
             vmo_rules = self.env["view.model.operation"]._get_rules(model=self.model)
             rules = vmo_rules.filtered(
@@ -137,7 +108,11 @@ class IrUiView(models.Model):
                 el = rule.element
                 try:
                     if el[:5] == "xpath":
-                        expr = safe_eval(el.split("expr=")[1])
+                        raw = el.split("expr=")[1]
+                        # Strip surrounding quotes (single or double)
+                        expr = raw.strip()
+                        if expr and expr[0] in ('"', "'"):
+                            expr = expr[1:-1]
                     else:
                         parts = el.split(" ")
                         tag = parts[0].strip()

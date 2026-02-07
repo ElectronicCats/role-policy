@@ -4,7 +4,6 @@
 import unittest.mock
 
 from lxml import etree
-
 from odoo.tests.common import tagged
 from odoo.tools.misc import mute_logger
 
@@ -194,9 +193,7 @@ class TestViewTypeAttributeApplication(RolePolicyTestCommon):
         """
         su_env = self.env(user=self.test_user, su=True)
         view = self.env["ir.ui.view"].with_env(su_env).browse(self.test_view.id)
-        arch_str = etree.tostring(
-            etree.fromstring(view.arch), encoding="unicode"
-        )
+        arch_str = etree.tostring(etree.fromstring(view.arch), encoding="unicode")
         with unittest.mock.patch(self.VTA_CONFIG) as mock_config:
             mock_config.get.return_value = False
             result = view._apply_view_type_attribute_rules(arch_str)

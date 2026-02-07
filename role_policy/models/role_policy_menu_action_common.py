@@ -23,7 +23,13 @@ class RolePolicyMenuActionCommon(models.AbstractModel):
                 else:
                     del vals["groups_id"]
             if "role_ids" in vals:
-                roles = self.env["res.role"].browse(vals["role_ids"][0][2])
+                role_ids = []
+                for cmd in vals["role_ids"]:
+                    if cmd[0] == 6:
+                        role_ids.extend(cmd[2])
+                    elif cmd[0] == 4:
+                        role_ids.append(cmd[1])
+                roles = self.env["res.role"].browse(role_ids)
                 vals.setdefault("groups_id", []).extend(
                     [(4, x.id) for x in roles.mapped("group_id")]
                 )
@@ -42,5 +48,5 @@ class RolePolicyMenuActionCommon(models.AbstractModel):
         res = super().write(vals)
         if "role_ids" in vals:
             for o in self:
-                o.groups_id += [(4, x.id) for x in o.role_ids.mapped("group_id")]
+                o.groups_id |= o.role_ids.mapped("group_id")
         return res

@@ -293,6 +293,12 @@ class ViewModifierRule(models.Model):
         model = model or False
         rules = self.browse()
         if config.get("test_enable"):
+            _logger.warning(
+                "view.modifier.rule._get_rules: SKIPPING (test_enable=True) "
+                "model=%s view_id=%s",
+                model,
+                view_id,
+            )
             return rules
         signature_fields = self._rule_signature_fields()
         user_roles = self.env.user.enabled_role_ids or self.env.user.role_ids
@@ -306,6 +312,16 @@ class ViewModifierRule(models.Model):
         if view_type:
             dom += ["|", ("view_type", "=", view_type), ("view_type", "=", False)]
         all_rules = self.search(dom)
+        _logger.warning(
+            "view.modifier.rule._get_rules: model=%s view_id=%s view_type=%s "
+            "remove=%s user_roles=%s found=%d rules",
+            model,
+            view_id,
+            view_type,
+            remove,
+            user_roles.mapped("code"),
+            len(all_rules),
+        )
         rules_dict = {}
         for rule in all_rules:
             key = "-".join([str(getattr(rule, f)) for f in signature_fields])
@@ -324,9 +340,28 @@ class ViewModifierRule(models.Model):
                     key_rules, user_roles
                 )
                 if len(key_rules) != roles_nbr:
+                    _logger.warning(
+                        "view.modifier.rule._get_rules: SKIPPING key=%s "
+                        "(rules=%d != roles=%d)",
+                        key,
+                        len(key_rules),
+                        roles_nbr,
+                    )
                     continue
             if key_rules:
-                rules += key_rules.sorted(lambda r: r.priority)[0]
+                selected = key_rules.sorted(lambda r: r.priority)[0]
+                _logger.warning(
+                    "view.modifier.rule._get_rules: SELECTED rule=%s "
+                    "element=%s priority=%s",
+                    selected.id,
+                    selected.element,
+                    selected.priority,
+                )
+                rules += selected
+        _logger.warning(
+            "view.modifier.rule._get_rules: returning %d rules",
+            len(rules),
+        )
         return rules
 
     def _get_rules_multiple_roles(self, key_rules, user_roles):

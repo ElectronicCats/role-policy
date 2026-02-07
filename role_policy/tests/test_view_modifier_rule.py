@@ -4,7 +4,6 @@
 import unittest.mock
 
 from lxml import etree
-
 from odoo.exceptions import UserError
 from odoo.tests.common import tagged
 from odoo.tools.misc import mute_logger
@@ -339,9 +338,7 @@ class TestViewModifierRuleApplication(RolePolicyTestCommon):
         """Run _apply_view_modifier_rules with _get_rules mocked."""
         view = self.test_view
         IrUiView = self.env["ir.ui.view"]
-        arch = etree.tostring(
-            etree.fromstring(view.arch), encoding="unicode"
-        )
+        arch = etree.tostring(etree.fromstring(view.arch), encoding="unicode")
         archs = [(arch, view.id)]
         with unittest.mock.patch.object(
             type(self.env["view.modifier.rule"]),
@@ -355,27 +352,21 @@ class TestViewModifierRuleApplication(RolePolicyTestCommon):
         """Run _apply_view_modifier_remove_rules with _get_rules mocked."""
         view = self.test_view
         IrUiView = self.env["ir.ui.view"]
-        arch = etree.tostring(
-            etree.fromstring(view.arch), encoding="unicode"
-        )
+        arch = etree.tostring(etree.fromstring(view.arch), encoding="unicode")
         archs = [(arch, view.id)]
         with unittest.mock.patch.object(
             type(self.env["view.modifier.rule"]),
             "_get_rules",
             return_value=rules,
         ):
-            archs = IrUiView._apply_view_modifier_remove_rules(
-                view.model, archs
-            )
+            archs = IrUiView._apply_view_modifier_remove_rules(view.model, archs)
         if archs:
             return etree.fromstring(archs[0][0])
         return None
 
     def test_readonly_modifier_applied_to_field(self):
         """Verify readonly='1' actually appears on the field in rendered XML."""
-        rule = self._create_rule(
-            element_ui='field name="name"', modifier_readonly="1"
-        )
+        rule = self._create_rule(element_ui='field name="name"', modifier_readonly="1")
         arch_node = self._apply_rules(rule)
         field = arch_node.xpath('//field[@name="name"]')[0]
         self.assertEqual(
@@ -386,9 +377,7 @@ class TestViewModifierRuleApplication(RolePolicyTestCommon):
 
     def test_readonly_modifier_adds_force_save(self):
         """Verify readonly on field also sets force_save='1'."""
-        rule = self._create_rule(
-            element_ui='field name="email"', modifier_readonly="1"
-        )
+        rule = self._create_rule(element_ui='field name="email"', modifier_readonly="1")
         arch_node = self._apply_rules(rule)
         field = arch_node.xpath('//field[@name="email"]')[0]
         self.assertEqual(field.get("force_save"), "1")
@@ -408,9 +397,7 @@ class TestViewModifierRuleApplication(RolePolicyTestCommon):
 
     def test_required_modifier_applied_to_field(self):
         """Verify required='1' actually appears on the field."""
-        rule = self._create_rule(
-            element_ui='field name="city"', modifier_required="1"
-        )
+        rule = self._create_rule(element_ui='field name="city"', modifier_required="1")
         arch_node = self._apply_rules(rule)
         field = arch_node.xpath('//field[@name="city"]')[0]
         self.assertEqual(
@@ -448,9 +435,7 @@ class TestViewModifierRuleApplication(RolePolicyTestCommon):
 
     def test_remove_rule_removes_element_from_arch(self):
         """Verify remove=True physically removes the element from the XML."""
-        rule = self._create_rule(
-            element_ui='field name="phone"', remove=True
-        )
+        rule = self._create_rule(element_ui='field name="phone"', remove=True)
         arch_node = self._apply_remove_rules(rule)
         phones = arch_node.xpath('//field[@name="phone"]')
         self.assertEqual(
@@ -478,9 +463,7 @@ class TestViewModifierRuleApplication(RolePolicyTestCommon):
 
     def test_unaffected_fields_remain_unchanged(self):
         """Verify fields without rules are not modified."""
-        rule = self._create_rule(
-            element_ui='field name="name"', modifier_readonly="1"
-        )
+        rule = self._create_rule(element_ui='field name="name"', modifier_readonly="1")
         arch_node = self._apply_rules(rule)
         email_field = arch_node.xpath('//field[@name="email"]')[0]
         self.assertIsNone(
