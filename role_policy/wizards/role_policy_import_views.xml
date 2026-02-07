@@ -5,7 +5,7 @@
         <field name="model">role.policy.import</field>
         <field name="priority">1</field>
         <field name="arch" type="xml">
-            <form string="Import Role Policy">
+            <form>
                 <group col="4">
                     <separator string="Select your file :" colspan="4" />
                     <field name="policy_data" filename="policy_fname" />
@@ -19,7 +19,6 @@
                         class="alert alert-info"
                         role="alert"
                     />
-                    <newline />
                     <field name="file_type" invisible="1" force_save="1" />
                     <field name="codepage" invisible="1" force_save="1" />
                     <field name="sheet" />
@@ -44,9 +43,9 @@
         <field name="model">role.policy.import</field>
         <field name="priority">2</field>
         <field name="arch" type="xml">
-            <form string="Import File">
+            <form>
                 <separator colspan="4" string="Results :" />
-                <field name="note" colspan="4" nolabel="1" width="850" height="400" />
+                <field name="note" colspan="4" nolabel="1" />
                 <footer>
                     <button string="Close" class="oe_link" special="cancel" />
                 </footer>

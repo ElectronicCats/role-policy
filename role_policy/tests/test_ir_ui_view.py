@@ -90,21 +90,6 @@ class TestIrUiView(RolePolicyTestCommon):
         fields = arch.xpath('//field[@name="test"]')
         self.assertEqual(len(fields), 1)
 
-    def test_no_access_view_arch_form(self):
-        """Verify arch generated when no access for form view."""
-        view = self.env["ir.ui.view"]
-        view_dict = {"type": "form"}
-        arch = view._no_access_view_arch(view_dict)
-        self.assertIn("<form>", arch)
-        self.assertIn("</form>", arch)
-
-    def test_no_access_view_arch_other_raises(self):
-        """Verify that other view types raise NotImplementedError."""
-        view = self.env["ir.ui.view"]
-        view_dict = {"type": "list"}
-        with self.assertRaises(NotImplementedError):
-            view._no_access_view_arch(view_dict)
-
     def test_create_removes_groups_without_context(self):
         """Verify that create removes groups_id without special context."""
         # When creating without role_policy_init context, groups_id should be removed
@@ -172,3 +157,97 @@ class TestIrUiView(RolePolicyTestCommon):
         # Should not raise, returns source unchanged
         result = view.apply_inheritance_specs(source, specs)
         self.assertIsNotNone(result)
+
+    # --- Security groups stripping depth tests ---
+
+    def test_remove_security_groups_on_page_element(self):
+        """Verify groups are stripped from <page> container elements too."""
+        view = self.env["ir.ui.view"]
+        arch = etree.fromstring(
+            '<form>'
+            '<notebook>'
+            '<page name="sales" groups="sales_team.group_sale_manager">'
+            '<field name="name"/>'
+            '</page>'
+            '</notebook>'
+            '</form>'
+        )
+        view._remove_security_groups(arch)
+        page = arch.xpath('//page[@name="sales"]')[0]
+        self.assertNotIn(
+            "groups",
+            page.attrib,
+            "Non-untouchable groups should be stripped from <page>",
+        )
+
+    def test_remove_security_groups_on_group_element(self):
+        """Verify groups are stripped from <group> elements."""
+        view = self.env["ir.ui.view"]
+        arch = etree.fromstring(
+            '<form>'
+            '<group name="grp1" groups="account.group_account_invoice">'
+            '<field name="name"/>'
+            '</group>'
+            '</form>'
+        )
+        view._remove_security_groups(arch)
+        grp = arch.xpath('//group[@name="grp1"]')[0]
+        self.assertNotIn("groups", grp.attrib)
+
+    def test_remove_security_groups_preserves_multiple_untouchables(self):
+        """Verify multiple untouchable groups are all preserved."""
+        view = self.env["ir.ui.view"]
+        arch = etree.fromstring(
+            '<form>'
+            '<field name="test" groups="base.group_no_one,base.group_system"/>'
+            '</form>'
+        )
+        view._remove_security_groups(arch)
+        field = arch.xpath('//field[@name="test"]')[0]
+        groups = field.get("groups", "").split(",")
+        self.assertIn("base.group_no_one", groups)
+        self.assertIn("base.group_system", groups)
+
+    def test_remove_security_groups_strips_from_buttons(self):
+        """Verify groups are stripped from buttons."""
+        view = self.env["ir.ui.view"]
+        arch = etree.fromstring(
+            '<form>'
+            '<button name="action" groups="sales_team.group_sale_manager"/>'
+            '</form>'
+        )
+        view._remove_security_groups(arch)
+        btn = arch.xpath("//button")[0]
+        self.assertNotIn("groups", btn.attrib)
+
+    def test_handle_roles_removes_nested_elements(self):
+        """Verify that removing a roles-gated element also removes children."""
+        view = self.env["ir.ui.view"]
+        arch = etree.fromstring(
+            '<form>'
+            '<group roles="NONEXISTENT">'
+            '<field name="name"/>'
+            '<field name="email"/>'
+            '</group>'
+            '<field name="phone"/>'
+            '</form>'
+        )
+        view.with_user(self.test_user)._handle_roles(arch)
+        # The entire group and its children should be gone
+        self.assertEqual(len(arch.xpath("//group")), 0)
+        self.assertEqual(len(arch.xpath('//field[@name="name"]')), 0)
+        # But phone should still be there
+        self.assertEqual(len(arch.xpath('//field[@name="phone"]')), 1)
+
+    def test_no_access_view_arch_form(self):
+        """Verify _no_access_view_arch returns form with message."""
+        view = self.env["ir.ui.view"]
+        result = view._no_access_view_arch({"type": "form"})
+        self.assertIn("<form>", result)
+        self.assertIn("not allowed", result)
+
+    def test_no_access_view_arch_other_raises(self):
+        """Verify _no_access_view_arch raises for non-form views."""
+        view = self.env["ir.ui.view"]
+        with self.assertRaises(NotImplementedError):
+            view._no_access_view_arch({"type": "list"})

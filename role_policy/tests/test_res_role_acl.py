@@ -287,3 +287,122 @@ class TestResRoleAcl(RolePolicyTestCommon):
         # Delete first ACL - user should still have group via role2
         acl1.unlink()
         self.assertIn(shared_group, role2.group_id.implied_ids)
+
+    # --- ACL Enforcement Tests ---
+
+    def test_acl_ir_model_access_created_with_correct_model(self):
+        """Verify ir.model.access points to the correct model."""
+        acl = self.env["res.role.acl"].create(
+            {
+                "role_id": self.role.id,
+                "model_id": self.partner_model.id,
+                "perm_read": True,
+                "perm_write": True,
+            }
+        )
+        self.assertEqual(
+            acl.access_id.model_id,
+            self.partner_model,
+            "ir.model.access should point to res.partner model",
+        )
+
+    def test_acl_user_gets_group_through_role(self):
+        """Verify user gets ACL group through role's group implication chain."""
+        acl = self.env["res.role.acl"].create(
+            {
+                "role_id": self.role.id,
+                "model_id": self.partner_model.id,
+                "perm_read": True,
+            }
+        )
+        # The test_user has self.role, which implies acl.group_id
+        self.test_user.invalidate_recordset()
+        self.assertIn(
+            acl.group_id,
+            self.test_user.groups_id,
+            "User should inherit ACL group through role group implication",
+        )
+
+    def test_acl_user_loses_group_when_acl_deactivated(self):
+        """Verify user loses ACL group when the ACL is deactivated."""
+        acl = self.env["res.role.acl"].create(
+            {
+                "role_id": self.role.id,
+                "model_id": self.partner_model.id,
+                "perm_read": True,
+            }
+        )
+        self.test_user.invalidate_recordset()
+        self.assertIn(acl.group_id, self.test_user.groups_id)
+        acl.write({"active": False})
+        self.test_user.invalidate_recordset()
+        self.assertNotIn(
+            acl.group_id,
+            self.test_user.groups_id,
+            "User should lose ACL group when ACL is deactivated",
+        )
+
+    def test_acl_combined_permissions_two_roles(self):
+        """Verify user with two roles gets union of ACL permissions."""
+        role_read = self._create_role_with_acl("RREAD", "res.country", "r")
+        country_model = self.env["ir.model"].search(
+            [("model", "=", "res.country")], limit=1
+        )
+        role_write = self.env["res.role"].create(
+            {"name": "Writer Role", "code": "RWRIT"}
+        )
+        self.env["res.role.acl"].create(
+            {
+                "role_id": role_write.id,
+                "model_id": country_model.id,
+                "perm_write": True,
+            }
+        )
+        user = self.env["res.users"].create(
+            {
+                "name": "Dual Role",
+                "login": "dual_role_test",
+                "role_ids": [(6, 0, [role_read.id, role_write.id])],
+            }
+        )
+        user.invalidate_recordset()
+        # User should have groups from both roles
+        read_acl = self.env["res.role.acl"].search(
+            [("role_id", "=", role_read.id), ("model_id", "=", country_model.id)]
+        )
+        write_acl = self.env["res.role.acl"].search(
+            [("role_id", "=", role_write.id), ("model_id", "=", country_model.id)]
+        )
+        self.assertIn(
+            read_acl.group_id,
+            user.groups_id,
+            "User should have read group from first role",
+        )
+        self.assertIn(
+            write_acl.group_id,
+            user.groups_id,
+            "User should have write group from second role",
+        )
+
+    def test_acl_write_changes_ir_model_access_permissions(self):
+        """Verify updating ACL permissions updates the underlying ir.model.access."""
+        acl = self.env["res.role.acl"].create(
+            {
+                "role_id": self.role.id,
+                "model_id": self.partner_model.id,
+                "perm_read": True,
+            }
+        )
+        self.assertTrue(acl.access_id.perm_read)
+        self.assertFalse(acl.access_id.perm_write)
+
+        acl.write({"perm_write": True})
+        # After update, new access should have both permissions
+        self.assertTrue(
+            acl.access_id.perm_read,
+            "Read permission should be preserved after adding write",
+        )
+        self.assertTrue(
+            acl.access_id.perm_write,
+            "Write permission should be set after update",
+        )

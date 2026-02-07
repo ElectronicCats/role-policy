@@ -4,7 +4,7 @@
         <field name="name">view.type.attribute.search</field>
         <field name="model">view.type.attribute</field>
         <field name="arch" type="xml">
-            <search string="Search Rule">
+            <search>
                 <field name="view_id" string="Model" />
                 <separator />
                 <filter
@@ -19,7 +19,7 @@
         <field name="name">view.type.attribute.tree</field>
         <field name="model">view.type.attribute</field>
         <field name="arch" type="xml">
-            <list string="View Type Attributes" editable="bottom">
+            <list editable="bottom">
                 <field name="sequence" widget="handle" />
                 <field
                     name="role_id"

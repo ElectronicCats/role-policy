@@ -4,7 +4,7 @@
         <field name="name">security.policy.tag.search</field>
         <field name="model">security.policy.tag</field>
         <field name="arch" type="xml">
-            <search string="Search Tag">
+            <search>
                 <field
                     name="name"
                     string="Name / Code"
@@ -24,7 +24,7 @@
         <field name="name">security.policy.tag.tree</field>
         <field name="model">security.policy.tag</field>
         <field name="arch" type="xml">
-            <list string="Tags">
+            <list>
                 <field name="code" />
                 <field name="name" />
             </list>
@@ -34,7 +34,7 @@
         <field name="name">security.policy.tag.form</field>
         <field name="model">security.policy.tag</field>
         <field name="arch" type="xml">
-            <form string="Tag">
+            <form>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
                         <button

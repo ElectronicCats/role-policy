@@ -4,7 +4,7 @@
         <field name="name">res.role.acl.search</field>
         <field name="model">res.role.acl</field>
         <field name="arch" type="xml">
-            <search string="Search ACL">
+            <search>
                 <field name="name" string="Name" />
                 <field name="role_id" string="Role" />
                 <field name="model_id" string="Model" />
@@ -21,7 +21,7 @@
         <field name="name">res.role.acl.tree</field>
         <field name="model">res.role.acl</field>
         <field name="arch" type="xml">
-            <list string="Role ACL" editable="bottom">
+            <list editable="bottom">
                 <field
                     name="role_id"
                     readonly="not context.get('base_model_name')"

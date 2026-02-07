@@ -4,7 +4,7 @@
         <field name="name">view.modifier.rule.search</field>
         <field name="model">view.modifier.rule</field>
         <field name="arch" type="xml">
-            <search string="Search Rule">
+            <search>
                 <field name="model_id" string="Model" />
                 <separator />
                 <filter
@@ -27,7 +27,7 @@
         <field name="name">view.modifier.rule.tree</field>
         <field name="model">view.modifier.rule</field>
         <field name="arch" type="xml">
-            <list string="View Modifiers Rule" editable="bottom">
+            <list editable="bottom">
                 <field name="sequence" widget="handle" />
                 <field
                     name="role_id"

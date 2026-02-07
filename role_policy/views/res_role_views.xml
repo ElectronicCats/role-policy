@@ -4,7 +4,7 @@
         <field name="name">res.role.search</field>
         <field name="model">res.role</field>
         <field name="arch" type="xml">
-            <search string="Search Role">
+            <search>
                 <field
                     name="name"
                     string="Role"
@@ -23,7 +23,7 @@
         <field name="name">res.role.tree</field>
         <field name="model">res.role</field>
         <field name="arch" type="xml">
-            <list string="Roles">
+            <list>
                 <field name="name" />
                 <field name="code" />
                 <field name="active" />
@@ -34,7 +34,7 @@
         <field name="name">res.role.form</field>
         <field name="model">res.role</field>
         <field name="arch" type="xml">
-            <form string="Role">
+            <form>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
                         <button

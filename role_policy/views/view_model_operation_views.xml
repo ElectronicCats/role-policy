@@ -4,7 +4,7 @@
         <field name="name">view.model.operation.search</field>
         <field name="model">view.model.operation</field>
         <field name="arch" type="xml">
-            <search string="Search Rule">
+            <search>
                 <field name="model" string="Model" />
                 <separator />
                 <filter
@@ -19,7 +19,7 @@
         <field name="name">view.model.operation.tree</field>
         <field name="model">view.model.operation</field>
         <field name="arch" type="xml">
-            <list string="View Model Operations" editable="bottom">
+            <list editable="bottom">
                 <field name="sort" invisible="1" />
                 <field
                     name="role_id"
